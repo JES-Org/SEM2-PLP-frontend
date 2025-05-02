@@ -109,9 +109,24 @@ const SignupPage = () => {
 					router.push('/auth/verify-email')
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`signup error ${JSON.stringify(err)}`)
-					toast.error('Signup failed')
-				})
+					console.log(`signup error ${JSON.stringify(err)}`);
+					const errorList = err?.data?.errors;
+				  
+					let errorMessage = 'Signup failed';
+					if (Array.isArray(errorList) && errorList.length > 0) {
+					  const rawError = errorList[0];
+				  
+					  // Try to extract the message from the string using regex
+					  const match = rawError.match(/ErrorDetail\(string='(.*?)'/);
+					  if (match && match[1]) {
+						errorMessage += `: ${match[1]}`;
+					  }
+					}
+				  
+					toast.error(errorMessage);
+				  });
+				  
+				  
 		} else if (credentials.role.toLowerCase() === 'teacher') {
 			teacherSignup(credentials)
 				.unwrap()
@@ -129,9 +144,24 @@ const SignupPage = () => {
 					router.push('/auth/verify-email')
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`signup error ${JSON.stringify(err)}`)
-					toast.error('Signup failed')
-				})
+					console.log(`signup error ${JSON.stringify(err)}`);
+					const errorList = err?.data?.errors;
+				  
+					let errorMessage = 'Signup failed';
+					if (Array.isArray(errorList) && errorList.length > 0) {
+					  const rawError = errorList[0];
+				  
+					  // Try to extract the message from the string using regex
+					  const match = rawError.match(/ErrorDetail\(string='(.*?)'/);
+					  if (match && match[1]) {
+						errorMessage += `: ${match[1]}`;
+					  }
+					}
+				  
+					toast.error(errorMessage);
+				  });
+				  
+				  
 		}
 	}
 
