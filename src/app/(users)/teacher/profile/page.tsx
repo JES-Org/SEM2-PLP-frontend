@@ -1,7 +1,8 @@
+// @ts-nocheck
+
 'use client'
-
-import React from 'react'
-
+import React, { useEffect } from 'react'
+import { useGetTeacherProfileQuery } from '@/store/teacher/teacherApi'
 import { Calendar, CircleUser, Library, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -11,16 +12,50 @@ import { Button } from '@/components/ui/button'
 
 const Page = () => {
 	const router = useRouter()
+	const {
+		data: profile,
+		isLoading,
+		isError,
+		refetch,
+	} = useGetTeacherProfileQuery(undefined, {
+		refetchOnMountOrArgChange: true,
+	})
+ console.log("Teacher profile",profile)
+	useEffect(() => {
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === 'visible') {
+				refetch()
+			}
+		}
+		document.addEventListener('visibilitychange', handleVisibilityChange)
+		return () => {
+			document.removeEventListener('visibilitychange', handleVisibilityChange)
+		}
+	}, [refetch])
 	const handleSubmit = () => {
 		router.push('/teacher/profile/edit')
 	}
+	if (isLoading)
+		return <div className='text-center mt-20'>Loading profile...</div>
+	if (isError || !profile)
+		return (
+			<div className='text-center mt-20 text-red-500'>
+				Failed to load profile.
+			</div>
+		)
 
 	return (
 		<div>
 			<div className='flex justify-center pt-20 md:pl-40'>
 				<Avatar className='w-40 h-40'>
-					<AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
-					<AvatarFallback>CN</AvatarFallback>
+					<AvatarImage
+						src={profile.imageUrl || 'https://github.com/shadcn.png'}
+						alt='Profile'
+					/>
+					<AvatarFallback>
+						{profile.first_name?.[0]?.toUpperCase() ?? 'U'}
+						{profile.last_name?.[0]?.toUpperCase() ?? ''}
+					</AvatarFallback>
 				</Avatar>
 			</div>
 
@@ -31,14 +66,14 @@ const Page = () => {
 							ProfileFieldItems={{
 								icon: <CircleUser />,
 								text: 'Full Name',
-								value: 'Shadman Ahmed',
+								value: `${profile.first_name} ${profile.last_name}`,
 							}}
 						/>
 						<NonEditableProfileFields
 							ProfileFieldItems={{
 								icon: <Library />,
 								text: 'Department',
-								value: 'Computer science',
+								value: profile.department || 'N/A',
 							}}
 						/>
 					</div>
@@ -48,14 +83,14 @@ const Page = () => {
 							ProfileFieldItems={{
 								icon: <Calendar />,
 								text: 'Date of Birth',
-								value: 'June 2, 2002',
+								value: profile.dob,
 							}}
 						/>
 						<NonEditableProfileFields
 							ProfileFieldItems={{
 								icon: <Phone />,
 								text: 'Phone',
-								value: '+25197979779',
+								value: profile.phone,
 							}}
 						/>
 					</div>
