@@ -13,26 +13,22 @@ const PhoneField = ({ ProfileFieldItems }: profileFieldsProps) => {
 	const [error, setError] = useState('')
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValue(event.target.value)
-
-		if (!event.target.value.trim()) {
+		const val = event.target.value
+		setValue(val)
+		ProfileFieldItems.onChange(val)
+	
+		if (!val.trim()) {
 			setError(`${ProfileFieldItems.text} is required`)
 			ProfileFieldItems.setError(`${ProfileFieldItems.text} is required`)
-		} else if (
-			event.target.value.match(/[^0-9]/) ||
-			event.target.value.length !== 8
-		) {
-			setError(
-				`${ProfileFieldItems.text} should contain only numbers and have a length of 8.`,
-			)
-			ProfileFieldItems.setError(
-				`${ProfileFieldItems.text} should contain only numbers and have a length of 8.`,
-			)
+		} else if (val.match(/[^0-9]/) || val.length !== 8) {
+			setError(`${ProfileFieldItems.text} should contain only numbers and have a length of 8.`)
+			ProfileFieldItems.setError(`${ProfileFieldItems.text} should contain only numbers and have a length of 8.`)
 		} else {
 			setError('')
 			ProfileFieldItems.setError('')
 		}
 	}
+	
 
 	return (
 		<div className='flex flex-col space-y-3 md:w-5/12 w-11/12 '>
