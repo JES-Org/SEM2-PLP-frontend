@@ -14,6 +14,7 @@ import {
 	useGetStudentProfileQuery,
 	useEditStudentProfileMutation,
 } from '@/store/student/studentApi'
+import { toast } from 'sonner'
 
 const Page = () => {
 	const router = useRouter()
@@ -29,6 +30,7 @@ const Page = () => {
 	const [dob, setDob] = useState('')
 	const [phone, setPhone] = useState('')
 	const [avatarUrl, setAvatarUrl] = useState('https://github.com/shadcn.png')
+	const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
 	useEffect(() => {
 		if (profile) {
@@ -41,18 +43,21 @@ const Page = () => {
 		}
 	}, [profile])
 
+	console.log('imageUrl Profile:', profile)
+
 	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
 		if (file) {
-			const reader = new FileReader()
-			reader.onload = () => {
-				if (typeof reader.result === 'string') {
-					setAvatarUrl(reader.result)
-				}
+		  setSelectedFile(file) // Store actual file
+		  const reader = new FileReader()
+		  reader.onload = () => {
+			if (typeof reader.result === 'string') {
+			  setAvatarUrl(reader.result) // For preview
 			}
-			reader.readAsDataURL(file)
+		  }
+		  reader.readAsDataURL(file)
 		}
-	}
+	  }
 
 	const handleFileInputChange = (event: Event) => {
 		const target = event.target as HTMLInputElement
@@ -75,23 +80,28 @@ const Page = () => {
 	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
 		if (phoneError || inputError) return
-
-		const body = {
-			first_name: firstName,
-			last_name: lastName,
-			email,
-			phone,
-			dob,
-			imageUrl: avatarUrl,
+	
+		const formData = new FormData()
+		formData.append('first_name', firstName)
+		formData.append('last_name', lastName)
+		formData.append('user.email', email)
+		formData.append('phone', phone)
+		formData.append('dob', dob)
+	
+		if (selectedFile) {
+			formData.append('image', selectedFile)  // ← this must be a File object
 		}
-
+	   console.log('FormData:', formData)
 		try {
-			await editStudentProfile(body).unwrap()
+			await editStudentProfile(formData).unwrap()
+			toast.success('Profile updated successfully')
 			router.push('/student/profile')
 		} catch (err) {
-			console.error('Error updating profile:', err)
+			toast.error('Error updating profile')
+			console.error(err)
 		}
 	}
+	
 
 	return (
 		<div className='pt-20'>
