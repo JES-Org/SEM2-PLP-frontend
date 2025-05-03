@@ -53,6 +53,24 @@ export const studentAuthApi = createApi({
         };
       },
     }),
+
+
+
+    getStudentProfile: builder.query<GetSingleStudentResponse, void>({
+      query: () => {
+        const token = localStorage.getItem('currUser') 
+          ? JSON.parse(localStorage.getItem('currUser') as string).token 
+          : null;
+        return {
+          url: 'student/profile/update/',
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      },
+    }),
+    
 }),
 })
 
@@ -62,4 +80,6 @@ export const {
   useGetStudentByIdQuery, 
   useEditStudentProfileMutation,
   useAggregateGetStudentByIdQuery,
+  useGetStudentProfileQuery,
+
 } = studentAuthApi
