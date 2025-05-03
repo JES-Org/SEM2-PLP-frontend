@@ -43,7 +43,6 @@ const Page = () => {
 		}
 	}, [profile])
 
-	console.log('imageUrl Profile:', profile)
 
 	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
@@ -90,7 +89,6 @@ const Page = () => {
 		if (selectedFile) {
 			formData.append('image', selectedFile)  // ← this must be a File object
 		}
-	   console.log('dob:', dob)
 		try {
 			await editStudentProfile(formData).unwrap()
 			toast.success('Profile updated successfully')
