@@ -1,7 +1,8 @@
 export const departments = {
-  'Computer Science': 1,
-  'Mathematics': 2,
-  'Physics': 3,
-  'Chemistry': 4,
-  'Biology': 5,
+  'Computer Science': 'Computer Science',
+  'Software Engineering': 'Software Engineering',
+  'ITBed': 'ITBed',
+  'Inforamation Technology': 'Information Technology',
+  'Cyber Cecurity': 'Cyber Security',
+  'Data Science': 'Data Science',
 }
