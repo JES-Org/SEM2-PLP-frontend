@@ -48,7 +48,7 @@ export const studentAuthApi = createApi({
           method: 'PUT',
           body,
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           }
         };
       },
