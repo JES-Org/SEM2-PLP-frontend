@@ -11,7 +11,6 @@ import { useGetStudentProfileQuery } from '@/store/student/studentApi'
 
 const Page = () => {
 	const router = useRouter()
-	// add useeffect
 	const { data: profile, isLoading, isError, refetch } = useGetStudentProfileQuery(undefined, {
 		refetchOnMountOrArgChange: true,
 	})
