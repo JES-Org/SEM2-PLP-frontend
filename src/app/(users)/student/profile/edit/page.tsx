@@ -84,14 +84,13 @@ const Page = () => {
 		const formData = new FormData()
 		formData.append('first_name', firstName)
 		formData.append('last_name', lastName)
-		formData.append('user.email', email)
 		formData.append('phone', phone)
 		formData.append('dob', dob)
 	
 		if (selectedFile) {
 			formData.append('image', selectedFile)  // ← this must be a File object
 		}
-	   console.log('FormData:', formData)
+	   console.log('dob:', dob)
 		try {
 			await editStudentProfile(formData).unwrap()
 			toast.success('Profile updated successfully')
@@ -143,15 +142,7 @@ const Page = () => {
 				</div>
 
 				<div className='md:flex justify-around mt-8 space-y-8 md:space-y-0'>
-					<EditableProfileFields
-						ProfileFieldItems={{
-							icon: <Mail />,
-							text: 'Email',
-							value: email,
-							onChange: setEmail,
-							setError: setInputError,
-						}}
-					/>
+			
 					<PhoneField
 						ProfileFieldItems={{
 							icon: <Phone />,
@@ -161,9 +152,6 @@ const Page = () => {
 							setError: setPhoneError,
 						}}
 					/>
-				</div>
-
-				<div className='md:flex justify-around mt-8 space-y-8 md:space-y-0'>
 					<EditableProfileDatePickerField
 						ProfileFieldItems={{
 							icon: <Calendar />,
@@ -174,6 +162,8 @@ const Page = () => {
 						}}
 					/>
 				</div>
+
+			
 
 				<div className='flex justify-center mt-10'>
 					<Button className='md:w-2/12 w-4/12' type='submit' onClick={handleSubmit} disabled={isUpdating}>
