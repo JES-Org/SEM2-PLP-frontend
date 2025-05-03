@@ -39,7 +39,25 @@ export const teacherAuthApi = createApi({
           }
         };
       }
-    })
+    }),
+    getTeacherProfile: builder.query<GetSingleTeacherResponse, void>({
+      query: () => {
+        const token = localStorage.getItem('currUser') 
+          ? JSON.parse(localStorage.getItem('currUser') as string).token 
+          : null;
+    
+        return {
+          url: 'teacher/profile/update/',
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+      },
+    }),
+    
+
+
 }),
 })
 
@@ -47,4 +65,6 @@ export const {
   useTeacherSignupMutation, 
   useTeacherSigninMutation, 
   useGetTeacherByIdQuery, 
-  useEditTeacherProfileMutation } = teacherAuthApi
+  useEditTeacherProfileMutation,
+  useGetTeacherProfileQuery, 
+} = teacherAuthApi
