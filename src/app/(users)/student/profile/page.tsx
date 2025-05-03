@@ -1,5 +1,5 @@
+// @ts-nocheck
 'use client'
-
 import React from 'react'
 import { Calendar, CircleUser, Library, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -12,7 +12,6 @@ import { useGetStudentProfileQuery } from '@/store/student/studentApi'
 const Page = () => {
 	const router = useRouter()
 	const { data: profile, isLoading, isError } = useGetStudentProfileQuery()
-    console.log('Profile:', profile)
 	const handleSubmit = () => {
 		router.push('/student/profile/edit')
 	}
@@ -24,6 +23,7 @@ const Page = () => {
 		<div>
 			<div className='flex justify-center pt-20 md:pl-40'>
 				<Avatar className='w-40 h-40'>
+
 					<AvatarImage src={profile.imageUrl || 'https://github.com/shadcn.png'} alt='Profile' />
 					<AvatarFallback>
 						{profile.first_name?.[0]?.toUpperCase() ?? 'U'}

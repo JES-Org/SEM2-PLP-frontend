@@ -3,7 +3,7 @@ export interface Student {
   firstName?:   string;
   lastName?:    string;
   dateOfBirth?: Date;
-  department?:  number;
+  department?:  string;
   phoneNumber?: string;
   joinDate?:    Date;
   year?:        number;
