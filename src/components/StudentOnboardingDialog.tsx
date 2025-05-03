@@ -196,9 +196,9 @@ export default function StudentOnboardingDialog() {
 													<SelectValue placeholder='Select your department' />
 												</SelectTrigger>
 												<SelectContent>
-													{Object.entries(departments).map(([key, value]) => (
-														<SelectItem key={value} value={value.toString()}>
-															{key}
+													{departments.map((dept) => (
+														<SelectItem key={dept} value={dept}>
+															{dept}
 														</SelectItem>
 													))}
 												</SelectContent>
@@ -208,6 +208,7 @@ export default function StudentOnboardingDialog() {
 									</FormItem>
 								)}
 							/>
+
 							<FormField
 								control={form.control}
 								name='section'
