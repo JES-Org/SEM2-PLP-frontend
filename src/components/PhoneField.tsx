@@ -42,11 +42,10 @@ const PhoneField = ({ ProfileFieldItems }: profileFieldsProps) => {
 				<span className='bg-profile_input py-4 px-2 rounded-lg w-20 border'>
 					+251
 				</span>
-				<Input
-					defaultValue={value}
+				<Input value={ProfileFieldItems.value}
 					onChange={handleChange}
-					className='bg-profile_input py-7 rounded-lg'
-				/>
+					className='bg-profile_input py-7 rounded-lg' />
+
 			</div>
 			{error && <div className='text-red-500'>{error}</div>}
 		</div>
