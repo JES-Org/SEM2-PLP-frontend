@@ -1,28 +1,33 @@
-import React, { useState } from 'react'
-
+import React, { useState, useEffect } from 'react'
 import { profileFieldItems } from '@/types/profileFieldItems'
-
 import { Input } from '@/components/ui/input'
 
-interface profileFieldsProps {
+interface ProfileFieldsProps {
 	ProfileFieldItems: profileFieldItems
 }
 
-const EditableProfileFields = ({ ProfileFieldItems }: profileFieldsProps) => {
+const EditableProfileFields = ({ ProfileFieldItems }: ProfileFieldsProps) => {
 	const [value, setValue] = useState(ProfileFieldItems.value)
 	const [error, setError] = useState('')
+
+	useEffect(() => {
+		setValue(ProfileFieldItems.value) // update local value if parent value changes
+	}, [ProfileFieldItems.value])
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const inputValue = event.target.value
 		setValue(inputValue)
 
 		if (!inputValue.trim()) {
-			setError(`${ProfileFieldItems.text} is required`)
-			ProfileFieldItems.setError(`${ProfileFieldItems.text} is required`)
+			const errorMsg = `${ProfileFieldItems.text} is required`
+			setError(errorMsg)
+			ProfileFieldItems.setError(errorMsg)
 		} else {
 			setError('')
 			ProfileFieldItems.setError('')
 		}
+
+		ProfileFieldItems.onChange(inputValue) // propagate change to parent
 	}
 
 	return (
@@ -34,7 +39,7 @@ const EditableProfileFields = ({ ProfileFieldItems }: profileFieldsProps) => {
 				</span>
 			</div>
 			<Input
-				defaultValue={value}
+				value={value}
 				onChange={handleChange}
 				className='bg-profile_input py-7 rounded-lg'
 			/>
