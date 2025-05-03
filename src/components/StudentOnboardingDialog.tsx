@@ -79,7 +79,7 @@ export default function StudentOnboardingDialog() {
 			...profileData,
 			id: currUser.id as string,
 			email: currUser.email as string,
-			department: parseInt(profileData.department),
+			department: profileData.department,
 			joinDate: '2024-05-19',
 			dateOfBirth: '2001-10-04',
 			year: parseInt(profileData.year),
@@ -97,7 +97,7 @@ export default function StudentOnboardingDialog() {
 			email: profile.email,
 		}
 
-		console.log(transformedData)
+		console.log('transformedData',transformedData)
 		changeProfile(transformedData)
 			.unwrap()
 			.then((res) => {
