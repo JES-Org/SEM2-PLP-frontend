@@ -1,26 +1,34 @@
 'use client'
 
 import React from 'react'
-
 import { Calendar, CircleUser, Library, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import NonEditableProfileFields from '@/components/NonEditableProfileFields'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { useGetStudentProfileQuery } from '@/store/student/studentApi'
 
 const Page = () => {
 	const router = useRouter()
+	const { data: profile, isLoading, isError } = useGetStudentProfileQuery()
+    console.log('Profile:', profile)
 	const handleSubmit = () => {
 		router.push('/student/profile/edit')
 	}
+
+	if (isLoading) return <div className='text-center mt-20'>Loading profile...</div>
+	if (isError || !profile) return <div className='text-center mt-20 text-red-500'>Failed to load profile.</div>
 
 	return (
 		<div>
 			<div className='flex justify-center pt-20 md:pl-40'>
 				<Avatar className='w-40 h-40'>
-					<AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
-					<AvatarFallback>CN</AvatarFallback>
+					<AvatarImage src={profile.imageUrl || 'https://github.com/shadcn.png'} alt='Profile' />
+					<AvatarFallback>
+						{profile.first_name?.[0]?.toUpperCase() ?? 'U'}
+						{profile.last_name?.[0]?.toUpperCase() ?? ''}
+					</AvatarFallback>
 				</Avatar>
 			</div>
 
@@ -31,31 +39,44 @@ const Page = () => {
 							ProfileFieldItems={{
 								icon: <CircleUser />,
 								text: 'Full Name',
-								value: 'Shadman Ahmed',
+								value: `${profile.first_name} ${profile.last_name}`,
 							}}
 						/>
 						<NonEditableProfileFields
 							ProfileFieldItems={{
 								icon: <Library />,
 								text: 'Department',
-								value: 'Computer science',
+								value: profile.department || 'N/A',
+							}}
+						/>
+						<NonEditableProfileFields
+							ProfileFieldItems={{
+								icon: <Library />,
+								text: 'Student ID',
+								value: profile.student_id,
 							}}
 						/>
 					</div>
 					<div className='md:flex flex-col md:ml-0 ml-3 items-start mb-8 space-y-8 md:space-y-0'>
-						{/* Changed items-center to items-start */}
 						<NonEditableProfileFields
 							ProfileFieldItems={{
 								icon: <Calendar />,
 								text: 'Date of Birth',
-								value: 'June 2, 2002',
+								value: profile.dob,
 							}}
 						/>
 						<NonEditableProfileFields
 							ProfileFieldItems={{
 								icon: <Phone />,
 								text: 'Phone',
-								value: '+25197979779',
+								value: profile.phone,
+							}}
+						/>
+						<NonEditableProfileFields
+							ProfileFieldItems={{
+								icon: <Library />,
+								text: 'Year & Section',
+								value: `Year ${profile.year}, Section ${profile.section}`,
 							}}
 						/>
 					</div>
