@@ -1,6 +1,6 @@
 // @ts-nocheck
 'use client'
-import React from 'react'
+import React,{useEffect} from 'react'
 import { Calendar, CircleUser, Library, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -11,7 +11,22 @@ import { useGetStudentProfileQuery } from '@/store/student/studentApi'
 
 const Page = () => {
 	const router = useRouter()
-	const { data: profile, isLoading, isError } = useGetStudentProfileQuery()
+	// add useeffect
+	const { data: profile, isLoading, isError, refetch } = useGetStudentProfileQuery(undefined, {
+		refetchOnMountOrArgChange: true,
+	})
+		useEffect(() => {
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === 'visible') {
+				refetch()
+			}
+		}
+		document.addEventListener('visibilitychange', handleVisibilityChange)
+		return () => {
+			document.removeEventListener('visibilitychange', handleVisibilityChange)
+		}
+	}, [refetch])
+
 	const handleSubmit = () => {
 		router.push('/student/profile/edit')
 	}
