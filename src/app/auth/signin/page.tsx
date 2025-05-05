@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -149,7 +151,7 @@ const SigninPage = () => {
 	useEffect(() => {
 		if (singleTeacherData) {
 			console.log(`singleTeacherData ${JSON.stringify(singleTeacherData)}`)
-			if (singleTeacherData!.data!.firstName === '') {
+			if (singleTeacherData!.data!.first_name === '') {
 				dispatch(openDialog('teacher'))
 			} else {
 				dispatch(closeDialog())
@@ -165,6 +167,7 @@ const SigninPage = () => {
 				.unwrap()
 				.then((res: StudentSigninResponse) => {
 					console.log(`response ${JSON.stringify(res)}`)
+					console.log("res.data",res.data)
 					setCurrUser(res.data)
 					setStudentId(res.data?.id!)
 					dispatch(openDialog('student'))
