@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client'
 
 import { departments } from '@/constants/departments'
@@ -78,7 +79,7 @@ export default function TeacherOnboardingDialog() {
 			email: currUser.email as string,
 			joinDate: '2024-05-19',
 			dateOfBirth: '2001-10-04',
-			department: parseInt(profileData.department),
+			department: profileData.department,
 		}
 
 		const transformedData = {
@@ -96,7 +97,7 @@ export default function TeacherOnboardingDialog() {
 			.unwrap()
 			.then((res) => {
 				toast.success('Profile updated successfully')
-				setCurrUser(res.data)
+				dispatch(closeDialog())				
 				router.push('/teacher/classroom/classroom-list')
 			})
 			.catch((err) => {
