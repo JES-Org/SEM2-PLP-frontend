@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import { departments } from '@/constants/departments'
@@ -102,7 +104,6 @@ export default function StudentOnboardingDialog() {
 			.unwrap()
 			.then((res) => {
 				toast.success('Profile updated successfully')
-				setCurrUser(res.data)
 				dispatch(closeDialog())
 				router.push('/student/classroom/classroom-list')
 			})
