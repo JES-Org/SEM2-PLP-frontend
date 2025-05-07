@@ -30,7 +30,10 @@ export const classroomApi = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: [{ type: 'Classroom', id: 'LIST' }],
+      invalidatesTags: (result, error, { creatorId }) => [
+        { type: 'TeacherClassroom', id: creatorId },
+        { type: 'Classroom', id: 'LIST' }
+      ],
     }),
     editClassroom: builder.mutation({
       query: (body) => ({
@@ -42,7 +45,7 @@ export const classroomApi = createApi({
     }),
     addBatch: builder.mutation<AddBatchResponse, AddBatchRequest>({
       query: (body) => ({
-        url: '/add-batch',
+        url: '/add-batch/',
         method: 'POST',
         body,
       }),
@@ -74,7 +77,10 @@ export const classroomApi = createApi({
         url: `/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Classroom', id }, { type: 'Classroom', id: 'LIST' }],
+      invalidatesTags: (result, error, { teacherId }) => [
+        { type: 'Classroom', id: 'LIST' },
+        { type: 'TeacherClassroom', id: teacherId },
+      ],
     }),
     searchClassroom: builder.query<SearchClassroomResponse, any>({
       query: (query) => ({
