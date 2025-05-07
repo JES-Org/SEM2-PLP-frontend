@@ -1,25 +1,26 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface announcementState {
-  currAnnouncementId: string;
+	currAnnouncementId: string
 }
 
 const initialState: announcementState = {
-  currAnnouncementId: '',
-};
+	currAnnouncementId: '',
+}
 
 const announcementSlice = createSlice({
-  name: "announcement",
-  initialState,
-  reducers: {
-    setAnnouncementId: (state, action: PayloadAction<string>) => {
-      state.currAnnouncementId = action.payload;
-    },
-  },
-});
+	name: 'announcement',
+	initialState,
+	reducers: {
+		setAnnouncementId: (state, action: PayloadAction<string>) => {
+			state.currAnnouncementId = action.payload
+		},
+	},
+})
 
-export const selectAnnouncementId = (state: { announcement: announcementState }) => state.announcement.currAnnouncementId;
+export const selectAnnouncementId = (state: {
+	announcement: announcementState
+}) => state.announcement.currAnnouncementId
 
-export const { setAnnouncementId } = announcementSlice.actions;
-export default announcementSlice.reducer;
-
+export const { setAnnouncementId } = announcementSlice.actions
+export default announcementSlice.reducer
