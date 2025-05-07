@@ -13,7 +13,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const classroomApi = createApi({
   reducerPath: 'classroomApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5023/api/classroom', 
+    baseUrl: 'http://localhost:8000/api/classroom', 
     prepareHeaders: (headers) => {
     const token = JSON.parse(localStorage.getItem('currUser')!).token as string
       if (token) {
