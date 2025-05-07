@@ -29,7 +29,7 @@ const ListOfClassroomPage = () => {
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
 	const { data: currUserData, isSuccess: isSuccessCurrUser } =
-		useGetTeacherByIdQuery(currUser.id)
+		useGetTeacherByIdQuery(currUser.teacher.id)
 	const {
 		data: classrooms,
 		isSuccess: isSuccessClassrooms,
@@ -38,7 +38,7 @@ const ListOfClassroomPage = () => {
 		isError: isErrorClassrooms,
 		error: classroomsError,
 		refetch: refetchClassrooms,
-	} = useTeacherClassroomQuery(currUser.id, { skip: !isSuccessCurrUser })
+	} = useTeacherClassroomQuery(currUser.teacher.id, { skip: !isSuccessCurrUser })
 	const dispatch = useDispatch()
 
 	const onDelete = (classroomid: string) => {
@@ -60,7 +60,8 @@ const ListOfClassroomPage = () => {
 					<SearchAndBell />
 				</div>
 
-				{isLoadingClassrooms || isFetchingClassrooms ? (
+				{
+					isLoadingClassrooms || isFetchingClassrooms ? (
 					<div className='flex justify-center items-center'>
 						<Spinner />
 					</div>
