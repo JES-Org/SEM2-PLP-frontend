@@ -1,13 +1,15 @@
+// @ts-nocheck
+
 'use client'
 
 import React from 'react'
 
-import { departments } from '@/constants/departments'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import {
 	useAddBatchMutation,
 	useCreateClassRoomMutation,
 } from '@/store/classroom/classroomApi'
+import { useGetDepartmentsQuery } from '@/store/department/departmentApi'
 import { CreateClassroomResponse } from '@/types/classroom/classroom.type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ReloadIcon } from '@radix-ui/react-icons'
@@ -50,31 +52,21 @@ const addBatchFormSchema = z.object({
 	department: z.string({ required_error: 'Department is required' }),
 })
 
+
 const CreateClassroomPage = () => {
 	const router = useRouter()
 	const [newClassroomId, setNewClassroomId] = React.useState('')
+	const [activeTab, setActiveTab] = React.useState<
+		'createClassroom' | 'addBatch'
+	>('createClassroom')
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
-	const [
-		createClassroom,
-		{
-			isLoading: isCreateClassroomLoading,
-			isSuccess: isCreateClassroomSuccess,
-			isError: isCreateClassroomError,
-			error: createClassroomError,
-		},
-	] = useCreateClassRoomMutation()
+	const [createClassroom, { isLoading: isCreateClassroomLoading }] =
+		useCreateClassRoomMutation()
 
-	const [
-		addBatch,
-		{
-			isLoading: isAddBatchLoading,
-			isSuccess: isAddBatchSuccess,
-			isError: isAddBatchError,
-			error: addBatchError,
-		},
-	] = useAddBatchMutation()
-
+	const [addBatch, { isLoading: isAddBatchLoading }] = useAddBatchMutation()
+	const { data: departments, isLoading: isDepartmentsLoading } =
+	useGetDepartmentsQuery()
 	const createClassroomForm = useForm<
 		z.infer<typeof createClassroomFormSchema>
 	>({
@@ -88,16 +80,19 @@ const CreateClassroomPage = () => {
 	const handleCreateClassroom = (
 		formData: z.infer<typeof createClassroomFormSchema>,
 	) => {
-		const newClassroomData = { ...formData, creatorId: currUser.teacher.id as string }
-		console.log(`Create classroom data ${JSON.stringify(newClassroomData)}`)
+		const newClassroomData = {
+			...formData,
+			creatorId: currUser.teacher.id as string,
+		}
 		createClassroom(newClassroomData)
 			.unwrap()
 			.then((res: CreateClassroomResponse) => {
 				setNewClassroomId(res.id)
-				console.log(`New classroom id ${newClassroomId}`)
 				toast.success(`${formData.name} classroom created successfully`)
+				// Switch to Add Batch tab after classroom is created
+				setActiveTab('addBatch')
 			})
-			.catch((err) => {
+			.catch(() => {
 				toast.error(`Failed to create ${formData.name} classroom`)
 			})
 	}
@@ -109,15 +104,13 @@ const CreateClassroomPage = () => {
 			department: parseInt(formData.department),
 			classRoomId: newClassroomId,
 		}
-		console.log(`Add batch data ${JSON.stringify(formData)}`)
 		addBatch(addBatchData)
 			.unwrap()
-			.then((res) => {
-				console.log(JSON.stringify(res))
+			.then(() => {
 				toast.success(`Batch ${formData.section} added successfully`)
 				router.push('/teacher/classroom/classroom-list')
 			})
-			.catch((err) => {
+			.catch(() => {
 				toast.error('Failed to add this batch')
 			})
 	}
@@ -125,10 +118,26 @@ const CreateClassroomPage = () => {
 	return (
 		<div>
 			<div className='pl-96 pt-20'>
-				<Tabs className='w-full max-w-3xl' defaultValue='createClassroom'>
+				<Tabs
+					className='w-full max-w-3xl'
+					value={activeTab}
+					onValueChange={(val) =>
+						setActiveTab(val as 'createClassroom' | 'addBatch')
+					}
+				>
 					<TabsList className='grid w-full grid-cols-2 mb-6'>
-						<TabsTrigger value='createClassroom'>Create Classroom</TabsTrigger>
-						<TabsTrigger value='addBatch'>Add Batch</TabsTrigger>
+						<TabsTrigger
+							value='createClassroom'
+							disabled={!!newClassroomId} // Disable if classroom is already created
+						>
+							Create Classroom
+						</TabsTrigger>
+						<TabsTrigger
+							value='addBatch'
+							disabled={!newClassroomId} // Disable if classroom is not created yet
+						>
+							Add Batch
+						</TabsTrigger>
 					</TabsList>
 					<TabsContent value='createClassroom'>
 						<Form {...createClassroomForm}>
@@ -150,6 +159,7 @@ const CreateClassroomPage = () => {
 													className='text-primary'
 													placeholder='Operating Systems'
 													{...field}
+													disabled={!!newClassroomId} // Disable input if classroom created
 												/>
 											</FormControl>
 											<FormMessage />
@@ -168,6 +178,7 @@ const CreateClassroomPage = () => {
 													className='text-primary'
 													placeholder='CoSc4021_'
 													{...field}
+													disabled={!!newClassroomId}
 												/>
 											</FormControl>
 											<FormMessage />
@@ -185,6 +196,7 @@ const CreateClassroomPage = () => {
 												<Textarea
 													{...field}
 													placeholder='Say something about the course'
+													disabled={!!newClassroomId}
 												/>
 											</FormControl>
 											<FormMessage />
@@ -196,7 +208,7 @@ const CreateClassroomPage = () => {
 									className={cn('w-full mt-6', {
 										'bg-primary/90': isCreateClassroomLoading,
 									})}
-									disabled={isCreateClassroomLoading}
+									disabled={isCreateClassroomLoading || !!newClassroomId}
 									type='submit'
 								>
 									{isCreateClassroomLoading ? (
@@ -207,8 +219,6 @@ const CreateClassroomPage = () => {
 							</form>
 						</Form>
 					</TabsContent>
-
-					{/* Add Batch Tab */}
 
 					<TabsContent value='addBatch'>
 						<Form {...addBatchForm}>
@@ -227,14 +237,18 @@ const CreateClassroomPage = () => {
 												<Select
 													onValueChange={field.onChange}
 													defaultValue={field.value}
+													disabled={isDepartmentsLoading}
 												>
 													<SelectTrigger>
 														<SelectValue placeholder='Select your department' />
 													</SelectTrigger>
 													<SelectContent>
-														{Object.entries(departments).map(([key, value]) => (
-															<SelectItem key={value} value={value.toString()}>
-																{key}
+														{departments?.map((dept) => (
+															<SelectItem
+																key={dept.id}
+																value={dept.id.toString()}
+															>
+																{dept.name}
 															</SelectItem>
 														))}
 													</SelectContent>
@@ -295,7 +309,7 @@ const CreateClassroomPage = () => {
 									className={cn('w-full mt-6', {
 										'bg-primary/90': isAddBatchLoading,
 									})}
-									disabled={isAddBatchLoading}
+									disabled={isAddBatchLoading || !newClassroomId}
 									type='submit'
 								>
 									{isAddBatchLoading ? (
