@@ -88,7 +88,7 @@ const CreateClassroomPage = () => {
 	const handleCreateClassroom = (
 		formData: z.infer<typeof createClassroomFormSchema>,
 	) => {
-		const newClassroomData = { ...formData, creatorId: currUser.id as string }
+		const newClassroomData = { ...formData, creatorId: currUser.teacher.id as string }
 		console.log(`Create classroom data ${JSON.stringify(newClassroomData)}`)
 		createClassroom(newClassroomData)
 			.unwrap()
