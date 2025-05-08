@@ -26,7 +26,7 @@ const ListOfClassroomPage = () => {
 		isFetching: isFetchingClassrooms,
 		isError: isErrorClassrooms,
 		error: classroomsError,
-	} = useStudentClassroomQuery(currUser.id, { skip: !isSuccessCurrUser })
+	} = useStudentClassroomQuery(currUser.student.id, { skip: !isSuccessCurrUser })
 
 	return (
 		<div className='md:flex overflow-x-hidden md:w-11/12 md:ml-auto h-screen'>
