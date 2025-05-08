@@ -9,7 +9,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const announcementApi = createApi({
   reducerPath: "announcementApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5000/api/classroom',
+    baseUrl: 'http://localhost:8000/api/classroom',
     prepareHeaders: (headers) => {
       const token = JSON.parse(localStorage.getItem('currUser')!).token as string;
       if (token) {
@@ -22,7 +22,7 @@ export const announcementApi = createApi({
   endpoints: (builder) => ({
     createAnnouncement: builder.mutation<CreateAnnouncementResponse, CreateAnnouncementRequest>({
       query: (body) => ({
-        url: `/${body.classRoomId}/announcements`,
+        url: `/${body.classRoomId}/announcements/`,
         method: "POST",
         body,
       }),
@@ -32,7 +32,7 @@ export const announcementApi = createApi({
     }),
     makeAttachment: builder.mutation({
       query: ({ classRoomId, id, formData}) => ({
-        url: `/${classRoomId}/announcements/attach/${id}`,
+        url: `/${classRoomId}/announcements/attach/${id}/`,
         method: "POST",
         body: formData,
       }),
@@ -43,7 +43,7 @@ export const announcementApi = createApi({
     getAttachment: builder.query({
       queryFn: async ({ classRoomId, announcementId, attachmentId }, api, extraOptions, baseQuery) => {
         const result = await baseQuery({
-            url: `/${classRoomId}/announcements/${announcementId}/attachments/${attachmentId}`,
+            url: `/${classRoomId}/announcements/${announcementId}/attachments/${attachmentId}/`,
             responseHandler: ((response) => response.blob())
         })
         var hiddenElement = document.createElement('a');
