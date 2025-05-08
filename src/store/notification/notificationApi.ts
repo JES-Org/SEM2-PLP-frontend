@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const notificationApi = createApi({
   reducerPath: "notificationApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5275/api/notifications",
+    baseUrl: "http://localhost:8000/api/notifications",
     prepareHeaders: (headers) => {
       const token = JSON.parse(localStorage.getItem('currUser')!).token as string;
       if (token) {
