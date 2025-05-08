@@ -2,8 +2,8 @@
 
 'use client'
 
-import { departments } from '@/constants/departments'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useGetDepartmentsQuery } from '@/store/department/departmentApi'
 import { closeDialog } from '@/store/features/dialogSlice'
 import { RootState } from '@/store/index'
 import { useEditStudentProfileMutation } from '@/store/student/studentApi'
@@ -74,13 +74,13 @@ export default function StudentOnboardingDialog() {
 
 	const { getItem: getCurrUser, setItem: setCurrUser } =
 		useLocalStorage('currUser')
-
+	const { data: departments, isLoading: isDepartmentsLoading } =
+		useGetDepartmentsQuery()
 	const onSubmit = (profileData: FormType) => {
 		const currUser = getCurrUser()
 		const profile = {
 			...profileData,
 			id: currUser.id as string,
-			email: currUser.email as string,
 			department: profileData.department,
 			joinDate: '2024-05-19',
 			dateOfBirth: '2001-10-04',
@@ -96,10 +96,9 @@ export default function StudentOnboardingDialog() {
 			year: profile.year,
 			section: profile.section,
 			department: profile.department,
-			email: profile.email,
 		}
 
-		console.log('transformedData',transformedData)
+		console.log('transformedData', transformedData)
 		changeProfile(transformedData)
 			.unwrap()
 			.then((res) => {
@@ -198,8 +197,7 @@ export default function StudentOnboardingDialog() {
 												</SelectTrigger>
 												<SelectContent>
 													{departments.map((dept) => (
-														<SelectItem key={dept} value={dept}>
-															{dept}
+														<SelectItem key={dept.id} value={dept.id.toString()}>															{dept.name}
 														</SelectItem>
 													))}
 												</SelectContent>
