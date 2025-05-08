@@ -2,12 +2,13 @@
 
 'use client'
 
-import React from 'react'
+import React, { use } from 'react'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import {
 	useAddBatchMutation,
 	useCreateClassRoomMutation,
+	useAddStudentMutation,
 } from '@/store/classroom/classroomApi'
 import { useGetDepartmentsQuery } from '@/store/department/departmentApi'
 import { CreateClassroomResponse } from '@/types/classroom/classroom.type'
@@ -65,6 +66,7 @@ const CreateClassroomPage = () => {
 		useCreateClassRoomMutation()
 
 	const [addBatch, { isLoading: isAddBatchLoading }] = useAddBatchMutation()
+	const [addStudent, { isLoading: isAddStudentLoading }] = useAddStudentMutation()
 	const { data: departments, isLoading: isDepartmentsLoading } =
 	useGetDepartmentsQuery()
 	const createClassroomForm = useForm<
@@ -104,14 +106,32 @@ const CreateClassroomPage = () => {
 			department: parseInt(formData.department),
 			classRoomId: newClassroomId,
 		}
+		
 		addBatch(addBatchData)
 			.unwrap()
 			.then(() => {
 				toast.success(`Batch ${formData.section} added successfully`)
+				handleAddStudent(formData)
 				router.push('/teacher/classroom/classroom-list')
 			})
 			.catch(() => {
 				toast.error('Failed to add this batch')
+			})
+	}
+
+	const handleAddStudent = (formData: z.infer<typeof addBatchFormSchema>) => {
+		const addStudentData = {
+			batch: {...formData, year: parseInt(formData.year), department: parseInt(formData.department)},
+			classRoomId: newClassroomId,
+		}
+
+		addStudent(addStudentData)
+			.unwrap()
+			.then(() => {
+				toast.success(`Students added to ${formData.section} successfully`)
+			})
+			.catch(() => {
+				toast.error('Failed to add students')
 			})
 	}
 

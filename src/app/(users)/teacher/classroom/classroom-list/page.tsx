@@ -29,7 +29,7 @@ const ListOfClassroomPage = () => {
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
 	const { data: currUserData, isSuccess: isSuccessCurrUser } =
-		useGetTeacherByIdQuery(currUser.teacher.id)
+		useGetTeacherByIdQuery(currUser.id)
 	const {
 		data: classrooms,
 		isSuccess: isSuccessClassrooms,

@@ -91,10 +91,10 @@ export const classroomApi = createApi({
       providesTags: [{ type: 'Classroom', id: 'LIST' }],
     }),
     addStudent: builder.mutation({
-      query: ({ studentId, classroomId }) => ({
-        url: '/add-student',
+      query: (body) => ({
+        url: '/add-student/',
         method: 'POST',
-        params: { studentId, classroomId }
+        body,
       }),
       invalidatesTags: (result, error, { classroomId }) => [{ type: 'Classroom', id: classroomId }],
     }),
