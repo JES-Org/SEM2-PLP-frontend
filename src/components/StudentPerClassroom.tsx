@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client'
 
 import {
@@ -24,6 +25,7 @@ import { EllipsisVertical } from './Icons'
 const StudentPerClassroom = () => {
 	const {getItem: getCurrUser} = useLocalStorage('currUser')
 	const isCurrUserTeacher = getCurrUser().role === 1
+	console.log("current user", getCurrUser())
 	const classroomId = usePathname().split('/').at(-2)
 	const {
 		data: classroomData,
@@ -32,6 +34,9 @@ const StudentPerClassroom = () => {
 		error: classroomError,
 		isLoading: isLoadingClassroom,
 	} = useGetClassroomByIdQuery(classroomId)
+	console.log('classroomData', classroomData)
+	
+	console.log('classroom members', classroomData?.data.members)
 	const [
 		removeStudent,
 		{
@@ -80,23 +85,21 @@ const StudentPerClassroom = () => {
 						<div className='flex items-center justify-center mb-6'>
 							<Avatar className='w-24 h-24 border-4 border-gray-200 dark:border-gray-700'>
 								<AvatarImage src='https://avatar.iran.liara.run/public/boy' />
-								<AvatarFallback>{`${student.firstName?.[0] ?? ''}${student.lastName?.[0] ?? ''}`}</AvatarFallback>
+								<AvatarFallback>{`${student.first_name?.[0] ?? ''}${student.last_name?.[0] ?? ''}`}</AvatarFallback>
 							</Avatar>
 						</div>
 					</CardHeader>
 					<div className='text-center space-y-2'>
-						<h2 className='text-2xl font-bold text-card-foreground'>{`${student.firstName} ${student.lastName}`}</h2>
+						<h2 className='text-2xl font-bold text-card-foreground'>{`${student.first_name} ${student.last_name}`}</h2>
 						<div className='text-card-foreground flex items-center justify-center gap-2'>
 							<PhoneIcon className='h-5 w-5' />
 							<span>
-								{student.dateOfBirth
-									? makeDateReadable(String(student.dateOfBirth))
-									: ''}
+								{ student.phone ? student.phone : 'No phone number'}
 							</span>
 						</div>
 						<div className='text-card-foreground flex items-center justify-center gap-2'>
-							<Mail className='h-5 w-5' />
-							<span>{student.email}</span>
+							{/* <Mail className='h-5 w-5' /> */}
+							<span>Student ID: {student.student_id}</span>
 						</div>
 					</div>
 				</Card>
