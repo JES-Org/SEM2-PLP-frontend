@@ -33,24 +33,28 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-
 const formSchema = z
-	.object({
-		email: z
-			.string({ required_error: 'Email is required' })
-			.email({ message: 'Please enter a valid email format' }),
-		password: z
-			.string({ required_error: 'Password is required' })
-			.min(8, { message: 'Password must contain at least 8 characters' }),
-		confirmPassword: z
-			.string({ required_error: 'Password is required' })
-			.min(8, { message: 'Password must contain at least 8 characters' }),
-		role: z.string({ required_error: 'Role is required' }),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		path: ['confirmPassword'],
-		message: 'Passwords do not match',
-	})
+  .object({
+    email: z
+      .string({ required_error: 'Email is required' })
+      .email({ message: 'Please enter a valid email format' })
+      .refine(
+        (email) => email.endsWith('@bdu.edu.et'),
+        { message: 'Email must be a valid @bdu.edu.et address' }
+      ),
+    password: z
+      .string({ required_error: 'Password is required' })
+      .min(8, { message: 'Password must contain at least 8 characters' }),
+    confirmPassword: z
+      .string({ required_error: 'Password is required' })
+      .min(8, { message: 'Password must contain at least 8 characters' }),
+    role: z.string({ required_error: 'Role is required' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'Passwords do not match',
+  });
+
 
 type FormType = z.infer<typeof formSchema>
 
