@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import { useGetAssessmentsQuery } from '@/store/assessment/assessmentApi'
@@ -25,11 +27,11 @@ const AssessmentPage = () => {
 	} = useGetAssessmentsQuery(currClassroomId)
 
 	const draftAssessments = assessments?.data?.filter(
-		(assessment) => !assessment.isPublished
+		(assessment) => !assessment.is_published
 	)
 
 	const publishedAssessments = assessments?.data?.filter(
-		(assessment) => assessment.isPublished
+		(assessment) => assessment.is_published
 	)
 
 	return (

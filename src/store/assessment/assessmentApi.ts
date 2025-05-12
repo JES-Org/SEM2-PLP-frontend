@@ -24,7 +24,7 @@ export const assessmentApi = createApi({
   endpoints: (builder) => ({
     createAssessment: builder.mutation<CreateAssessementResponse, CreateAssessementRequest>({
       query: (body) => ({
-        url: `/${body.classroomId}/assessment`,
+        url: `/${body.classroomId}/assessment/`,
         method: 'POST',
         body,
       })
@@ -38,7 +38,7 @@ export const assessmentApi = createApi({
     }),
     publishAssessment: builder.mutation<PublishAssessmentResponse, any>({
       query: ({classroomId, assessmentId}) => ({
-        url: `/${classroomId}/assessment/publish/${assessmentId}`,
+        url: `/${classroomId}/assessment/publish/${assessmentId}/`,
         method: 'PUT'
       }),
       invalidatesTags: ['Assessment'],
