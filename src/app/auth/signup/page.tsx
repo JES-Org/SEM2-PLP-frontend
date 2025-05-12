@@ -106,8 +106,7 @@ const SignupPage = () => {
 					setRoleForVerification(res.data?.role!)
 					sendOtp({
 						email: res.data?.email!,
-						userId: res.data?.id!,
-						role: res.data?.role!,
+						
 					})
 					toast.success('Please check your email for verification.')
 					router.push('/auth/verify-email')
@@ -141,8 +140,7 @@ const SignupPage = () => {
 					setRoleForVerification(res.data?.role!)
 					sendOtp({
 						email: res.data?.email!,
-						userId: res.data?.id!,
-						role: res.data?.role!,
+						
 					})
 					toast.success('Please check your email for verification.')
 					router.push('/auth/verify-email')
