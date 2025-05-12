@@ -4,20 +4,14 @@ import {
   DeleteAnnouncementParams, 
   GetAnnouncementsResponse 
 } from "@/types/announcement/announcement.type";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi} from "@reduxjs/toolkit/query/react";
+import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
 
+
+const baseQueryWithReauth = createBaseQueryWithReauth('http://localhost:8000/api/classroom');
 export const announcementApi = createApi({
   reducerPath: "announcementApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8000/api/classroom',
-    prepareHeaders: (headers) => {
-      const token = JSON.parse(localStorage.getItem('currUser')!).token as string;
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    }
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ['Announcements'],
   endpoints: (builder) => ({
     createAnnouncement: builder.mutation<CreateAnnouncementResponse, CreateAnnouncementRequest>({
