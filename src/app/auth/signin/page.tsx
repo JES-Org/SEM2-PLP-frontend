@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { RootState } from '@/store'
 import { closeDialog, openDialog } from '@/store/features/dialogSlice'
+import { useSendOtpMutation } from '@/store/otp/otpApi'
 import {
 	useGetStudentByIdQuery,
 	useStudentSigninMutation,
@@ -76,6 +77,14 @@ const SigninPage = () => {
 
 	const [studentId, setStudentId] = useState('')
 	const [teacherId, setTeacherId] = useState('')
+	const [emailError, setEmailError] = useState('')
+	const [emailverfication, Setemailverfication] = useState('')
+
+	const validateEmail = (value) => {
+		// Basic email regex
+		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		return regex.test(value)
+	}
 
 	const [
 		studentSignin,
@@ -121,6 +130,7 @@ const SigninPage = () => {
 		useLocalStorage('currUser')
 	const router = useRouter()
 	const [otpSent, setOtpSent] = useState(false)
+
 	const isOpen = useSelector((state: RootState) => state.dialog.isOpen)
 	const dispatch = useDispatch()
 
@@ -160,6 +170,46 @@ const SigninPage = () => {
 		}
 	}, [singleTeacherData, dispatch, router])
 
+	const { setItem: setEmailForVerification } = useLocalStorage(
+		'emailForVerification',
+	)
+	const { setItem: setforWhatVerification } = useLocalStorage(
+		'forWhatVerification',
+	)
+
+	const [
+		sendOtp,
+		{ data: otpData, isError: isErrorOtpSend, isSuccess: isSuccessOtpSend },
+	] = useSendOtpMutation()
+
+	const onChangeEmailVerification = (e: any) => {
+		const value = e.target.value
+		Setemailverfication(value)
+
+		if (!validateEmail(value)) {
+			setEmailError('Please enter a valid email address.')
+		} else {
+			setEmailError('')
+		}
+	}
+	const onSubmitEmailVerification = () => {
+		if (emailverfication) {
+			sendOtp({ email: emailverfication })
+				.unwrap()
+				.then((res) => {
+					console.log(`response ${JSON.stringify(res)}`)
+					setEmailForVerification(emailverfication)
+					setforWhatVerification('forgotPassword')
+					toast.success('Please check your email for verification.')
+					router.push('/auth/verify-email')
+				})
+				.catch((err: ExtendedError) => {
+					console.log(`error ${JSON.stringify(err)}`)
+					toast.error('Invalid credentials')
+				})
+		}
+	}
+
 	const onSubmit = (credentials: FormType) => {
 		console.log(`credentials ${JSON.stringify(credentials)}`)
 		if (credentials.role.toLowerCase() === 'student') {
@@ -167,11 +217,12 @@ const SigninPage = () => {
 				.unwrap()
 				.then((res: StudentSigninResponse) => {
 					console.log(`response ${JSON.stringify(res)}`)
-					console.log("res.data",res.data)
+					console.log('res.data', res.data)
 					setCurrUser(res.data)
 					setStudentId(res.data?.id!)
-					dispatch(openDialog('student'))
-					toast.success('Signin successful')
+					if (res.data?.student === null) {
+						dispatch(openDialog('student'))
+					}
 				})
 				.catch((err: ExtendedError) => {
 					console.log(`error ${JSON.stringify(err)}`)
@@ -184,8 +235,9 @@ const SigninPage = () => {
 					console.log(`response ${JSON.stringify(res)}`)
 					setCurrUser(res.data)
 					setTeacherId(res.data?.id!)
-					dispatch(openDialog('teacher'))
-					toast.success('Signin successful')
+					if (res.data?.teacher === null) {
+						dispatch(openDialog('teacher'))
+					}
 				})
 				.catch((err: ExtendedError) => {
 					console.log(`error ${JSON.stringify(err)}`)
@@ -350,11 +402,24 @@ const SigninPage = () => {
 												<Label htmlFor='email' className='text-right'>
 													Email
 												</Label>
-												<Input id='email' className='col-span-3' />
+												<Input
+													id='email'
+													className='col-span-3'
+													value={emailverfication}
+													onChange={onChangeEmailVerification}
+												/>
+												{emailError && (
+													<p className='text-red-500 text-sm mt-1 col-span-3'>
+														{emailError}
+													</p>
+												)}
 											</div>
 										</div>
 										<DialogFooter>
-											<Button type='submit' onClick={() => setOtpSent(true)}>
+											<Button
+												type='submit'
+												onClick={() => onSubmitEmailVerification()}
+											>
 												Submit
 											</Button>
 										</DialogFooter>
