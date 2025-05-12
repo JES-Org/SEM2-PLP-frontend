@@ -8,20 +8,13 @@ import {
   StudentClassroomResponse, 
   TeacherClassroomResponse 
 } from "@/types/classroom/classroom.type";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi} from "@reduxjs/toolkit/query/react";
+import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
 
+const baseQueryWithReauth = createBaseQueryWithReauth('http://localhost:8000/api/classroom');
 export const classroomApi = createApi({
   reducerPath: 'classroomApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8000/api/classroom', 
-    prepareHeaders: (headers) => {
-    const token = JSON.parse(localStorage.getItem('currUser')!).token as string
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`)
-      }
-      return headers
-    }
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ['Classroom', 'TeacherClassroom', 'StudentClassroom'],
   endpoints: (builder) => ({
     createClassRoom: builder.mutation<CreateClassroomResponse, CreateClassroomRequest>({
