@@ -1,24 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
-import { tuple, z } from 'zod'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { PasswordInput } from '@/components/PasswordInput'
 import { Button } from '@/components/ui/button'
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog'
 import {
 	Form,
 	FormControl,
@@ -26,8 +17,7 @@ import {
 	FormItem,
 	FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z
 	.object({
@@ -49,9 +39,35 @@ const ForgotPasswordPage = () => {
 	const form = useForm<FormType>({
 		resolver: zodResolver(formSchema),
 	})
+	const { getItem: getEmail } = useLocalStorage('emailForVerification')
+	const router = useRouter()
 
-	const onSubmit = (values: FormType) => {
-		console.log(values)
+	const onSubmit = async (values: FormType) => {
+		try {
+			const response = await fetch(
+				'http://localhost:8000/api/user/reset-password/',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						email: getEmail(),
+						new_password: values.newPassword,
+					}),
+				},
+			)
+
+			const data = await response.json()
+			if (response.ok) {
+				toast.success('Password reset successful')
+				router.push('/auth/signin')
+			} else {
+				toast.error(data?.detail || 'Something went wrong')
+			}
+		} catch (error) {
+			toast.error('Error occurred while resetting password')
+		}
 	}
 
 	return (
@@ -115,6 +131,27 @@ const ForgotPasswordPage = () => {
 								<Button className='w-full mt-12' type='submit'>
 									Submit
 								</Button>
+
+								<div className='flex justify-between items-center text-sm text-muted-foreground mt-4'>
+									<p>
+										Remember your password?{' '}
+										<Link
+											href='/auth/signin'
+											className='text-blue-600 hover:underline'
+										>
+											Sign In
+										</Link>
+									</p>
+									<p>
+										Don’t have an account?{' '}
+										<Link
+											href='/auth/signup'
+											className='text-blue-600 hover:underline'
+										>
+											Sign Up
+										</Link>
+									</p>
+								</div>
 							</div>
 						</form>
 					</Form>
