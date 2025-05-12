@@ -18,6 +18,9 @@ const VerifyEmailPage = () => {
 	const { getItem: getEmailForVerification } = useLocalStorage(
 		'emailForVerification',
 	)
+	const { getItem: getForWhatVerification } = useLocalStorage(
+		'forWhatVerification',
+	)
 	const { getItem: getIdForVerification } = useLocalStorage('idForVerification')
 	const { getItem: getRoleForVerification } = useLocalStorage(
 		'roleForVerification',
@@ -55,10 +58,10 @@ const VerifyEmailPage = () => {
 
 	const handleSendOtp = async (e: any) => {
 		e.preventDefault()
-		if (email !== undefined && userId !== undefined && role !== undefined) {
+		if (email !== undefined) {
 			console.log(`Things for OTP Send: ${email}, ${userId}, ${role}`)
 			toast.info('Resending OTP')
-			sendOtp({ email, userId, role })
+			sendOtp({ email })
 				.unwrap()
 				.then((res) => {
 					console.log('OTP Send Response: ', JSON.stringify(res))
@@ -99,12 +102,18 @@ const VerifyEmailPage = () => {
 	const handleSubmit = async () => {
 		console.log('OTP: ', otp.join(''))
 		const otpValue = otp.join('')
-		verifyOtp({ otp: otpValue, userId, role })
+		verifyOtp({ otp: otpValue, email })
 			.unwrap()
 			.then((res) => {
 				console.log('OTP Verify Response: ', JSON.stringify(res))
 				toast.success('OTP Verified Successfully')
-				router.push('/auth/signin')
+				if (getForWhatVerification() === 'forgotPassword') {
+					router.push('/auth/forgot-password')
+				}
+				else {
+				 router.push('/auth/signin')
+
+				}
 			})
 			.catch((err) => {
 				console.error('OTP Verification Error: ', err)
