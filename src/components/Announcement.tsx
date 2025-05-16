@@ -1,19 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { useGetAttachmentQuery } from '@/store/announcement/announcementApi'
+import {
+	useDeleteAttachmentMutation,
+	useGetAttachmentQuery,
+} from '@/store/announcement/announcementApi'
 import { openDialog } from '@/store/features/announcementDialogSlice'
 import {
 	selectAnnouncementId,
 	setAnnouncementId,
+	setSelectedAnnouncement,
 } from '@/store/features/announcementSlice'
 import { selectCurrClassroomId } from '@/store/features/classroomSlice'
 import { Annoucement } from '@/types/announcement/announcement.type'
+import { Paperclip, X } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
-import { Paperclip } from 'lucide-react'
-
 import { Button } from '@/components/ui/button'
 import {
 	Card,
@@ -44,7 +48,7 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 	const dispatch = useDispatch()
 	const currClassroomId = useSelector(selectCurrClassroomId)
 	const currAnnouncementId = useSelector(selectAnnouncementId)
-	const {} = useGetAttachmentQuery(
+	const { refetch } = useGetAttachmentQuery(
 		{
 			classRoomId: currClassroomId,
 			announcementId: currAnnouncementId,
@@ -52,7 +56,7 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 		},
 		{ skip: !attachmentId },
 	)
-
+	const [deleteAttachment] = useDeleteAttachmentMutation()
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const role = getCurrUser().role == 0 ? 'student' : 'teacher'
 
@@ -65,11 +69,29 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 		}
 	}, [])
 
+	const onEdit = () => {
+		dispatch(setSelectedAnnouncement(announcement))
+		dispatch(openDialog('edit'))
+	}
+
 	const onAttachmentClick = (clickedAttachmentId: string) => {
 		dispatch(setAnnouncementId(announcement?.id!))
 		setAttachmentId(clickedAttachmentId)
+		refetch()
 	}
 
+	const onDeleteAttachment = async (attachmentId: string) => {
+		try {
+			await deleteAttachment({
+				classRoomId: currClassroomId,
+				attachmentId,
+			}).unwrap()
+			toast.success('Attachment deleted successfully')
+		} catch (error) {
+			toast.error('Failed to delete attachment')
+			console.error('Delete attachment error:', error)
+		}
+	}
 	const onDelete = () => {
 		console.log('DELETE IS CLICKED')
 		dispatch(setAnnouncementId(announcement?.id!))
@@ -96,9 +118,13 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 							<EllipsisVertical className='h-4 w-4' />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
-							<DropdownMenuItem className='focus:bg-gray-300 cursor-pointer'>
+							<DropdownMenuItem
+								className='focus:bg-gray-300 cursor-pointer'
+								onClick={onEdit}
+							>
 								Edit
 							</DropdownMenuItem>
+
 							<DropdownMenuItem
 								className='focus:bg-gray-300 cursor-pointer'
 								onClick={() => onAttachFile()}
@@ -115,6 +141,7 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 					</DropdownMenu>
 				) : null}
 			</CardHeader>
+
 			<CardContent
 				ref={contentRef}
 				className={cn('text-sm', {
@@ -130,14 +157,28 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 					</Button>
 				)}
 				{announcement.attachments?.map((attachment, i) => (
-					<Button
-						variant='link'
-						key={i}
-						onClick={() => onAttachmentClick(attachment)}
-					>
-						<Paperclip className='h-4 w-4 mr-1' />
-						{`Attachment ${i + 1}`}
-					</Button>
+					<div key={i} className='relative group'>
+						<Button
+							variant='link'
+							onClick={() => onAttachmentClick(attachment.id)}
+							className='pr-6' // Add padding for the X button
+						>
+							<Paperclip className='h-4 w-4 mr-1' />
+							{`Attachment ${i + 1}`}
+						</Button>
+						{role === 'teacher' && (
+							<button
+								onClick={(e) => {
+									e.stopPropagation()
+									onDeleteAttachment(attachment.id)
+								}}
+								className='absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700'
+								aria-label='Remove attachment'
+							>
+								<X className='h-4 w-4' />
+							</button>
+						)}
+					</div>
 				))}
 			</CardFooter>
 		</Card>
