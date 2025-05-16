@@ -4,8 +4,13 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import {
 	clearNotifications,
+	markAsRead,
 	selectNotifications,
 } from '@/store/features/notificationSlice'
+import {
+	useMarkNotificationAsReadMutation,
+	useUnreadNotificationsQuery,
+} from '@/store/notification/notificationApi'
 import { SideBarItem } from '@/types/SideNavItems'
 import { Bell, LogOut, Menu, X } from 'lucide-react'
 import Link from 'next/link'
@@ -40,6 +45,8 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 	} else {
 		items = AdminSideBarItems
 	}
+	const { data: notifications } = useUnreadNotificationsQuery()
+	const [markNotificationAsRead] = useMarkNotificationAsReadMutation()
 
 	const [isOpen, setIsOpen] = useState(false)
 	const menuRef = useRef<HTMLDivElement>(null)
@@ -63,7 +70,7 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 		}
 	}, [])
 
-	const notifications = useSelector(selectNotifications) || []
+	// const notifications = useSelector(selectNotifications) || []
 	console.log('FETCHED NOTIFICATIONS', notifications)
 
 	const handleLogout = () => {
@@ -101,32 +108,49 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 						</div>
 					</div>
 					<div className='flex flex-col space-y-7 xl:space-y-10 justify-center md:px-6 ml-4 mb-6'>
-						<Popover
-							onOpenChange={(currState) => togglePopover(currState)}
-						>
+						<Popover onOpenChange={(currState) => togglePopover(currState)}>
 							<PopoverTrigger>
 								<div className='flex items-center  p-2 rounded-lg cursor-pointer hover:bg-primary hover:text-primary-foreground '>
 									<div className='relative'>
-										<Badge className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-primary-foreground border-2 border-primary-foreground rounded-full -top-3 start-3'>
-											{notifications.length}
-										</Badge>
+										{notifications?.data && notifications?.data.length > 0 && (
+											<Badge className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-primary-foreground border-2 border-primary-foreground rounded-full -top-3 start-3'>
+												{notifications?.data.length }
+											</Badge>
+										)}
+
 										<Bell size={24} className='mr-4' />
 									</div>
-									<span className='font-semibold text-md flex'>
+									<span className='font-semibold text-md flex bg-blue'>
 										Notifications
 									</span>
 								</div>
 							</PopoverTrigger>
-							<PopoverContent side='top'>
-								<div className='flex flex-col gap-y-2 rounded-lg overflow-auto'>
-									{notifications.map((notification, i) => (
-										<p
-											key={i}
-											className='hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm line-clamp-2'
-										>
-											{notification.description}
+							<PopoverContent
+								side='top'
+								className='max-h-60 w-64 overflow-y-auto'
+							>
+								<div className='flex flex-col gap-y-2'>
+									{notifications?.data && notifications.data.length > 0 ? (
+										notifications.data.map((notification, i) => (
+											<p
+												key={notification.id || i}
+												onClick={() => {
+													markNotificationAsRead({ notificationId: notification.id })
+														.then(() => dispatch(markAsRead(notification.id)))
+														.finally(() => router.push(notification?.url ?? '/'))
+												}}
+												className={cn(
+													'cursor-pointer text-sm p-2 rounded hover:bg-accent hover:text-accent-foreground',
+												)}
+											>
+												{notification.message}
+											</p>
+										))
+									) : (
+										<p className='text-sm text-muted-foreground p-2'>
+											No new notifications
 										</p>
-									))}
+									)}
 								</div>
 							</PopoverContent>
 						</Popover>
