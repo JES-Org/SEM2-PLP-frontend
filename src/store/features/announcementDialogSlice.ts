@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "..";
 
 interface DialogState {
-  activeDialog: 'create' | 'delete'| 'file' | null;
+  activeDialog: 'create' | 'delete'| 'file' | 'edit' | null;
 }
 
 const initialState: DialogState = {
@@ -13,7 +13,7 @@ const announcementDialogSlice = createSlice({
   name: 'dialog',
   initialState,
   reducers: {
-    openDialog: (state, action: PayloadAction<'create' | 'delete' | 'file'>) => {
+    openDialog: (state, action: PayloadAction<'create' | 'delete' | 'file' | 'edit' >) => {
       state.activeDialog = action.payload;
     },
     closeDialog: (state) => {
