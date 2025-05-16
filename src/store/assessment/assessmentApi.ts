@@ -45,7 +45,7 @@ export const assessmentApi = createApi({
     }),
     addQuestion: builder.mutation<any, {classroomId: string, question: Question}>({
       query: ({classroomId, question}) => ({
-        url: `/${classroomId}/assessment/add-question`,
+        url: `/${classroomId}/assessment/add-question/`,
         method: 'POST',
         body: question,
       }),
