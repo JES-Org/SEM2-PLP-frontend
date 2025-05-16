@@ -47,7 +47,7 @@ const AttachmentDialog = () => {
 
         const formData = new FormData()
         selectedFiles.forEach(file => {
-            formData.append('attachments', file) // Fixed typo from 'attachements' to 'attachments'
+            formData.append('attachments', file)
         })
 
         try {
