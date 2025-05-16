@@ -22,10 +22,15 @@ const notificationSlice = createSlice({
     clearNotifications: (state) => { 
       state.notifications = []
     },
+     markAsRead: (state, action) => {
+      state.notifications = state.notifications.map((notif) =>
+        notif.id === action.payload ? { ...notif, read: true } : notif
+      )
+    },
   }
 })
 
 export const selectNotifications = (state: RootState) => state.notification.notifications
 
-export const { setNotifications, clearNotifications } = notificationSlice.actions
+export const { setNotifications, clearNotifications,markAsRead} = notificationSlice.actions
 export default notificationSlice.reducer
