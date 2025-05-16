@@ -1,38 +1,37 @@
 import { UnreadNotificationResponse } from "@/types/notification/notification.type";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
+
+const baseQueryWithReauth = createBaseQueryWithReauth(
+  'http://localhost:8000/api/notifications',
+)
 
 export const notificationApi = createApi({
   reducerPath: "notificationApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/api/notifications",
-    prepareHeaders: (headers) => {
-      const token = JSON.parse(localStorage.getItem('currUser')!).token as string;
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    }
-  }),
+  baseQuery: baseQueryWithReauth,
+  tagTypes: ['Notifications'], // ✅ Define tag type
   endpoints: (builder) => ({
-    unreadNotifications: builder.query<UnreadNotificationResponse, string>({
-      query: (classRoomId) => ({
-        url: `/unread`,
-        method: 'GET',
-        params: {
-          classRoomId
-        },
+    // GET /notifications/unread/
+    unreadNotifications: builder.query<UnreadNotificationResponse, void>({
+      query: () => ({
+        url: `/unread/`,
+        method: "GET",
       }),
+      providesTags: ['Notifications'], // ✅ Provides the 'Notifications' tag
     }),
-    getNotifications: builder.query<any, {notificationId: string, classRoomId: string}>({
-      query: ({notificationId, classRoomId}) => ({
-        url: `/${notificationId}`,
-        method: 'GET',
-        params: {
-          classRoomId
-        },
+
+    // PATCH /notifications/{notificationId}/mark-read/
+    markNotificationAsRead: builder.mutation<any, { notificationId: number }>({
+      query: ({ notificationId }) => ({
+        url: `/${notificationId}/mark-read/`,
+        method: "POST",
       }),
-      })
+      invalidatesTags: ['Notifications'], // ✅ Invalidate the tag to refetch unread
+    }),
   }),
 });
 
-export const { useUnreadNotificationsQuery, useGetNotificationsQuery } = notificationApi;
+export const {
+  useUnreadNotificationsQuery,
+  useMarkNotificationAsReadMutation,
+} = notificationApi;
