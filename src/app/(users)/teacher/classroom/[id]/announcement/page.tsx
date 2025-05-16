@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Announcement from '@/components/Announcement'
 import AnnouncementCreatingDialog from '@/components/AnnouncementCreatingDialog'
 import AnnouncementDeleteDialog from '@/components/AnnouncementDeleteDialog'
+import AnnouncementEditingDialog from '@/components/AnnouncementEditingDialog'
 import AttachmentDialog from '@/components/AttachmentDialog'
 import { Button } from '@/components/ui/button'
 
@@ -73,7 +74,7 @@ const AnnouncementPage = () => {
 			.catch((err) => console.log('Error while establishing connection', err))
 	}, [])
 
-	const { data } = useUnreadNotificationsQuery(currClassroomId!)
+	const { data } = useUnreadNotificationsQuery()
 	dispatch(setNotifications(data?.data))
 
 	console.log(JSON.stringify(data))
@@ -83,6 +84,7 @@ const AnnouncementPage = () => {
 			<AnnouncementCreatingDialog />
 			<AttachmentDialog />
 			<AnnouncementDeleteDialog />
+			<AnnouncementEditingDialog />
 			<Button
 				className='self-end mb-3'
 				onClick={() => dispatch(openDialog('create'))}
