@@ -27,8 +27,7 @@ export const TeacherSideBarItems: SideBarItem[] = [
 		id: '3',
 		text: 'Messages',
 		icon: <MessagesSquare size={25} />,
-		path: '/',
-	},
+       path: '/teacher/classroom/messages',	},
 ]
 export const TeacherRightSideBarItems: SideBarItem[] = [
 	{
