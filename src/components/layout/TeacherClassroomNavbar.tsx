@@ -40,7 +40,7 @@ const TeacherClassroomNavbar = () => {
 		router.push(basePath.join('/'))
 	}
 	return (
-		<div className='pl-96 pt-10'>
+		<div className='pl-96 pt-10 h-20 z-10 top-0 '>
 			<NavigationMenu>
 				<NavigationMenuList>
 					{TeacherRightSideBarItems.map((item, i) => (
