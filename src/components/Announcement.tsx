@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
+
 import { Button } from '@/components/ui/button'
 import {
 	Card,
@@ -77,8 +78,13 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 	const onAttachmentClick = (clickedAttachmentId: string) => {
 		dispatch(setAnnouncementId(announcement?.id!))
 		setAttachmentId(clickedAttachmentId)
-		refetch()
 	}
+
+	useEffect(() => {
+		if (attachmentId) {
+			refetch()
+		}
+	}, [attachmentId])
 
 	const onDeleteAttachment = async (attachmentId: string) => {
 		try {
