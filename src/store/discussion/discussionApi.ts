@@ -7,24 +7,20 @@ import {
   DeleteMessageResponse,
   GetAllMessagesResponse
 } from "@/types/discussion/discussion.type";
+import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
+
+const baseQueryWithReauth = createBaseQueryWithReauth(
+  "http://localhost:8000/api/forum"
+);
 
 export const discussionApi = createApi({
   reducerPath: "discussionApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5082/api",
-    prepareHeaders: (headers) => {
-      const token = JSON.parse(localStorage.getItem('currUser')!).token as string;
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    }
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ['Messages'],
   endpoints: (builder) => ({
     createMessage: builder.mutation<CreateMessageResponse, CreateMessageRequest>({
       query: (body) => ({
-        url: `/${body.classroomId}/forum/create-message`,
+        url: `/${body.classroomId}/messages`,
         method: 'POST',
         body,
       }),
@@ -32,7 +28,7 @@ export const discussionApi = createApi({
     }),
     editMessage: builder.mutation<EditMessageResponse, EditMessageRequest>({
       query: (body) => ({
-        url: `/${body.classroomId}/forum/update-message`,
+        url: `/${body.classroomId}/update-message`,
         method: 'PUT',
         body,
       }),
@@ -40,7 +36,7 @@ export const discussionApi = createApi({
     }),
     deleteMessage: builder.mutation<DeleteMessageResponse, { classroomId: string, messageId: string }>({
       query: ({ classroomId, messageId }) => ({
-        url: `/${classroomId}/forum/delete-message`,
+        url: `/${classroomId}/delete-message`,
         method: 'DELETE',
         params: {
           messageId,
@@ -50,7 +46,7 @@ export const discussionApi = createApi({
     }),
     getAllMessages: builder.query<GetAllMessagesResponse, { classroomId: string, page: number, pageSize: number }>({
       query: ({ classroomId, page, pageSize }) => ({
-        url: `/${classroomId}/forum/all-messages`,
+        url: `/${classroomId}/messages`,
         method: 'GET',
         params: {
           page,
