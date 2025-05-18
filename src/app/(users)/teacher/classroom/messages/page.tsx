@@ -1,5 +1,9 @@
-import { TeacherMessageDashboard } from '@/components/messaging'
+import { MessageDashboard } from '@/components/messaging'
 
 export default function MessagesPage() {
-	return <TeacherMessageDashboard />
+	return (
+		<div className='ml-10'>
+			<MessageDashboard />
+		</div>
+	)
 }
