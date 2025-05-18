@@ -69,10 +69,10 @@ const Chat = ({ classRoomId, typing }: ChatProps) => {
 	}, [historicalMessagesData, classRoomId, dispatch, currUser?.id])
 
 	useEffect(() => {
-	if (classRoomId && currUser?.id) {
-		refetch()
-	}
-}, [classRoomId, currUser?.id])
+		if (classRoomId && currUser?.id) {
+			refetch()
+		}
+	}, [classRoomId, currUser?.id])
 
 	// Effect for WebSocket connection
 	useEffect(() => {
