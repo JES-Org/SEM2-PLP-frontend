@@ -49,11 +49,12 @@ const DiscussionMessage = ({ message }: Props) => {
 		})
 	}
 
+
 	return (
 		<div
 			className={cn('flex flex-col gap-2', {
-				'items-start': sender.id !== currUser.id,
-				'items-end': sender.id === currUser.id,
+				'items-start': String(sender.id) !== String(currUser.id),
+				'items-start ml-20': String(sender.id) === String(currUser.id),
 			})}
 		>
 			<ContextMenu>
@@ -63,7 +64,7 @@ const DiscussionMessage = ({ message }: Props) => {
 							'flex flex-col gap-2 p-4 rounded-lg bg-primary text-primary-foreground w-[400px]',
 							{
 								'bg-secondary text-secondary-foreground':
-									sender.id !== currUser.id,
+									String(sender.id) !== String(currUser.id),
 							},
 						)}
 					>
@@ -72,11 +73,11 @@ const DiscussionMessage = ({ message }: Props) => {
 							<div className='text-xs'>{extractTime(updatedAt)}</div>
 						</div>
 						<div>
-							<p className='text-sm break-words'>{content}</p>
+							<p className='text-sm break-words'>{content} </p>
 						</div>
 					</div>
 				</ContextMenuTrigger>
-				{sender.id === currUser.id && (
+				{String(sender.id) === String(currUser.id) && (
 					<ContextMenuContent>
 						<ContextMenuItem
 							className='flex cursor-pointer items-center justify-between px-3 py-2 text-sm focus:bg-accent focus:text-accent-foreground dark:focus:bg-blue-600'
