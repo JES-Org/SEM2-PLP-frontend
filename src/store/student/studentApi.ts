@@ -34,7 +34,7 @@ export const studentAuthApi = createApi({
       async queryFn({studentIds}, _queryApi, _extraOptions, fetchWithBQ) {
         const results = await Promise.all(studentIds.map(async (id, _) => {
           const response = await fetchWithBQ({
-            url: `/${id}`,
+            url: `student-id/${id}`,
             method: 'GET',
           });
           if (response.error) throw response.error;

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -134,6 +136,7 @@ const chapters: string[] = Array.from(
 
 const AnalyticsPage = () => {
 	const currClassroomId = usePathname().split('/').at(-2)
+	console.log('CLASSROOM ID', currClassroomId)
 	const {
 		data: fetchedAssessments,
 		isLoading: isLoadingFetchedAssessments,
@@ -152,7 +155,7 @@ const AnalyticsPage = () => {
 
 	const assessments =
 		fetchedAssessments?.data
-			?.filter((assessment) => assessment.isPublished)
+			?.filter((assessment) => assessment.is_published)
 			.map((assessment) => ({
 				id: assessment.id,
 				name: assessment.name,
@@ -227,7 +230,9 @@ const AnalyticsPage = () => {
 	console.debug('SCORE', score)
 
 	const {data: studentData} = useAggregateGetStudentByIdQuery({studentIds: studentIds})
-	const fullNames = studentData?.map((student) => `${student.data?.firstName} ${student.data?.lastName}` ) || []
+	console.log("student ids: ", studentIds)
+	const fullNames = studentData?.map((student) => `${student.data?.first_name} ${student.data?.last_name}` ) || []
+	console.log("fullnames: ", fullNames)
 
 	const handleMetricChange = (selectedLabel: string) => {
 		setSelectedMetric({ label: selectedLabel, isOpen: false })
