@@ -110,7 +110,7 @@ const TakeAssessment = () => {
 										{question.answers.map((answer, answerIndex) => (
 											<div key={answer.id} className='flex items-center mb-2'>
 												<RadioGroupItem
-													value={answer.id}
+													value={String(answer.id)}
 													id={`option${answer.id}`}
 													className='mr-2'
 												/>

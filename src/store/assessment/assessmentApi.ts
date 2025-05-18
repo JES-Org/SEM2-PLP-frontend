@@ -67,7 +67,7 @@ export const assessmentApi = createApi({
     }),
     submitAssessment: builder.mutation<PostSubmitAnswerResponse, {body: PostSubmitAnswerRequest, classroomId: string}>({
       query: ({body, classroomId}) => ({
-        url: `/${classroomId}/assessment/add-submission`,
+        url: `/${classroomId}/assessment/add-submission/`,
         method: 'POST',
         body,
       })
