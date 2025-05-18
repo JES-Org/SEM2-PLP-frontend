@@ -60,10 +60,5 @@ export const StudentRightSideBarItems: SideBarItem[] = [
 		icon: <User size={16} />,
 		path: '/students',
 	},
-		{
-		id: '5',
-		text: 'Messages',
-		icon: <User size={16} />,
-		path: '/messages',
-	},
+	
 ]
