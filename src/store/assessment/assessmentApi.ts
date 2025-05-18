@@ -86,7 +86,7 @@ export const assessmentApi = createApi({
     }),
     assessmentAnalyticsByTag: builder.query<CrossAssessmentResponse, {tags: string[], classroomId: string}>({
       query: ({tags, classroomId}) => ({
-        url: `/${classroomId}/analytics/assessment`,
+        url: `/${classroomId}/assessment/analytics/`,
         method: 'POST',
         body: tags,
       })

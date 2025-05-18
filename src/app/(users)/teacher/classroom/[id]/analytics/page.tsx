@@ -230,7 +230,9 @@ const AnalyticsPage = () => {
 	console.debug('SCORE', score)
 
 	const {data: studentData} = useAggregateGetStudentByIdQuery({studentIds: studentIds})
-	const fullNames = studentData?.map((student) => `${student.data?.firstName} ${student.data?.lastName}` ) || []
+	console.log("student ids: ", studentIds)
+	const fullNames = studentData?.map((student) => `${student.data?.first_name} ${student.data?.last_name}` ) || []
+	console.log("fullnames: ", fullNames)
 
 	const handleMetricChange = (selectedLabel: string) => {
 		setSelectedMetric({ label: selectedLabel, isOpen: false })
