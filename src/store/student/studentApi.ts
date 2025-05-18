@@ -1,10 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { StudentSignupResponse, StudentSignupRequest, StudentSigninResponse, StudentSigninRequest } from '@/types/auth/studentAuth.type'
 import { EditStudentProfileRequest, GetSingleStudentResponse } from '@/types/student/student.type'
+import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
 
+const baseQueryWithReauth = createBaseQueryWithReauth(
+'http://localhost:8000/api/user/'
+)
 export const studentAuthApi = createApi({
   reducerPath: 'studentAuthApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000/api/user/' }),
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     studentSignup: builder.mutation<StudentSignupResponse, StudentSignupRequest>({
       query: (body) => ({
