@@ -80,7 +80,7 @@ export const assessmentApi = createApi({
     }),
     crossAssessmentAnalytics: builder.query<CrossAssessmentResponse, string>({
       query: (classroomId) => ({
-        url: `/${classroomId}/analytics/cross-assessment`,
+        url: `/${classroomId}/assessment/analytics/cross-assessment`,
         method: 'GET',
       })
     }),
@@ -93,7 +93,7 @@ export const assessmentApi = createApi({
     }),
     assessmentAnalyticsById: builder.query<SingleAssessmentAnalyticsResponse, {assessmentId: string, classroomId: string}>({
       query: ({assessmentId, classroomId}) => ({
-        url: `/${classroomId}/analytics/assessment/${assessmentId}`,
+        url: `/${classroomId}/assessment/analytics/${assessmentId}`,
         method: 'GET',
       })
     }),
@@ -101,7 +101,7 @@ export const assessmentApi = createApi({
       async queryFn({classroomId, assessmentIds}, _queryApi, _extraOptions, fetchWithBQ) {
         const results = await Promise.all(assessmentIds.map(async (assessmentId, _) => {
           const response = await fetchWithBQ({
-            url: `/${classroomId}/analytics/assessment/${assessmentId}`,
+            url: `/${classroomId}/assessment/analytics/${assessmentId}`,
             method: 'GET',
           });
           if (response.error) throw response.error;
