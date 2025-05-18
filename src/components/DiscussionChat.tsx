@@ -59,6 +59,8 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 		if (allMessages?.data) {
 			dispatch(setMessages(allMessages.data))
 		}
+			console.log("all messages", allMessages?.data)
+
 	}, [allMessages, dispatch])
 
 	useEffect(() => {
@@ -77,7 +79,6 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 					content: inputValue,
 					senderId: currUser.id,
 					senderRole: currUser.role,
-					// threadParent: '',
 				}).unwrap()
 
 				dispatch(addMessage(newMessage.data))
@@ -110,7 +111,7 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 	}
 
 	return (
-		<div className='flex h-screen flex-col'>
+		<div className='flex h-[calc(100vh-5rem)] flex-col'>
 			<main className='flex-1 overflow-y-auto p-4'>
 				{isLoadingAllMesages || isFetchingAllMessages ? (
 					<div className='flex items-center justify-center h-full'>
@@ -146,10 +147,10 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 					</div>
 				)}
 			</main>
-			<div className='flex items-center gap-2 border-t bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950'>
+			<div className='flex items-center gap-2 border-t bg-white px-4 py-2 dark:border-gray-800 dark:bg-gray-950'>
 				<Input
 					ref={inputRef}
-					className='flex-1 rounded-md bg-gray-100 px-4 py-2 text-sm focus:outline-none dark:bg-gray-800'
+					className='flex-1 rounded-md bg-blue-100 px-4 py-6 text-sm focus:outline-none dark:bg-gray-800'
 					placeholder='Type your message...'
 					type='text'
 					disabled={isSending}
