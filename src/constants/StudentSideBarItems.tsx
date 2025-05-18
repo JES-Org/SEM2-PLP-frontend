@@ -6,6 +6,7 @@ import {
 	TabletSmartphone,
 	User,
 	Waypoints,
+	MessageCircle
 } from 'lucide-react'
 
 export const StudentSideBarItems: SideBarItem[] = [
@@ -21,8 +22,14 @@ export const StudentSideBarItems: SideBarItem[] = [
 		icon: <Waypoints size={25} />,
 		path: '/student/learning-path',
 	},
-	{
+		{
 		id: '3',
+		text: 'Messages',
+		icon: <MessageCircle size={25} />,
+		path: '/student/messages',
+	},
+	{
+		id: '4',
 		text: 'Profile',
 		icon: <User size={25} />,
 		path: '/student/profile',
@@ -52,5 +59,11 @@ export const StudentRightSideBarItems: SideBarItem[] = [
 		text: 'Students',
 		icon: <User size={16} />,
 		path: '/students',
+	},
+		{
+		id: '5',
+		text: 'Messages',
+		icon: <User size={16} />,
+		path: '/messages',
 	},
 ]
