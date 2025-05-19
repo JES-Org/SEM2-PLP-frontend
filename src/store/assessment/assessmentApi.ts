@@ -1,144 +1,223 @@
-import { 
-  CreateAssessementResponse, 
-  CreateAssessementRequest, 
-  GetAssessmentResponse, 
-  PublishAssessmentResponse, 
+import {
+  CreateAssessementResponse,
+  CreateAssessementRequest,
+  GetAssessmentResponse,
+  PublishAssessmentResponse,
   Question,
   GetQuestionsResponse,
   PostSubmitAnswerResponse,
   PostSubmitAnswerRequest,
   CrossAssessmentResponse,
   SingleAssessmentAnalyticsResponse,
-  CheckAnswerResponse
+  CheckAnswerResponse,
 } from "@/types/assessment/assessment.type";
-import { createApi} from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
 
+interface MinimalAssessment {
+  id: string | number;
+  is_published?: boolean;
+}
 
+const baseQueryWithReauth = createBaseQueryWithReauth(
+  "http://localhost:8000/api/classroom"
+);
 
-const baseQueryWithReauth= createBaseQueryWithReauth('http://localhost:8000/api/classroom');
 export const assessmentApi = createApi({
-  reducerPath: 'assessmentApi',
+  reducerPath: "assessmentApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Question', 'Assessment'],
+  tagTypes: ["Question", "Assessment"],
   endpoints: (builder) => ({
-    createAssessment: builder.mutation<CreateAssessementResponse, CreateAssessementRequest>({
+    createAssessment: builder.mutation<
+      CreateAssessementResponse,
+      CreateAssessementRequest
+    >({
       query: (body) => ({
         url: `/${body.classroomId}/assessment/`,
-        method: 'POST',
+        method: "POST",
         body,
-      })
+      }),
+      invalidatesTags: [{ type: "Assessment", id: "LIST" }],
     }),
-    getAssessments: builder.query<GetAssessmentResponse, any>({
+    getAssessments: builder.query<GetAssessmentResponse, string | undefined>({
       query: (classroomId) => ({
         url: `/${classroomId}/assessment`,
-        method: 'GET'
+        method: "GET",
       }),
-      providesTags: ['Assessment'],
+      providesTags: (result, error, arg) =>
+        result && Array.isArray(result.data)
+          ? [
+              ...result.data.map(({ id }: MinimalAssessment) => ({
+                type: "Assessment" as const,
+                id,
+              })),
+              { type: "Assessment" as const, id: "LIST" },
+            ]
+          : [{ type: "Assessment" as const, id: "LIST" }],
     }),
-    publishAssessment: builder.mutation<PublishAssessmentResponse, any>({
-      query: ({classroomId, assessmentId}) => ({
+    publishAssessment: builder.mutation<
+      PublishAssessmentResponse,
+      { classroomId: string; assessmentId: string }
+    >({
+      query: ({ classroomId, assessmentId }) => ({
         url: `/${classroomId}/assessment/publish/${assessmentId}/`,
-        method: 'PUT'
+        method: "PUT",
       }),
-      invalidatesTags: ['Assessment'],
+      invalidatesTags: (result, error, { assessmentId }) => [
+        { type: "Assessment", id: "LIST" },
+        { type: "Assessment", id: assessmentId },
+      ],
     }),
-    addQuestion: builder.mutation<any, {classroomId: string, question: Question}>({
-      query: ({classroomId, question}) => ({
+    addQuestion: builder.mutation<
+      any,
+      { classroomId: string; question: Question }
+    >({
+      query: ({ classroomId, question }) => ({
         url: `/${classroomId}/assessment/add-question/`,
-        method: 'POST',
+        method: "POST",
         body: question,
       }),
-      invalidatesTags: ['Question'],
+      invalidatesTags: (result, error, { question }) => [
+        { type: "Question", id: question.assessmentId },
+        { type: "Question", id: "LIST" },
+      ],
     }),
-    deleteQuestion: builder.mutation<any, {classroomId: string, questionId: string}>({
-      query: ({classroomId, questionId}) => ({
+    deleteQuestion: builder.mutation<
+      any,
+      { classroomId: string; questionId: string; assessmentId?: string }
+    >({
+      query: ({ classroomId, questionId }) => ({
         url: `/${classroomId}/assessment/question/${questionId}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Question'],
+      invalidatesTags: (result, error, { assessmentId }) => [
+        ...(assessmentId
+          ? [{ type: "Question" as const, id: assessmentId }]
+          : []),
+        { type: "Question", id: "LIST" },
+      ],
     }),
-    getQuestions: builder.query<GetQuestionsResponse, {classroomId: string, assessmentId: string}>({
+    getQuestions: builder.query<
+      GetQuestionsResponse,
+      { classroomId: string; assessmentId: string }
+    >({
       query: ({ classroomId, assessmentId }) => ({
         url: `/${classroomId}/assessment/${assessmentId}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['Question'],
+      providesTags: (result, error, { assessmentId }) => [
+        { type: "Question", id: assessmentId },
+        { type: "Question", id: "LIST" },
+      ],
     }),
-    submitAssessment: builder.mutation<PostSubmitAnswerResponse, {body: PostSubmitAnswerRequest, classroomId: string}>({
-      query: ({body, classroomId}) => ({
+    submitAssessment: builder.mutation<
+      PostSubmitAnswerResponse,
+      { body: PostSubmitAnswerRequest; classroomId: string }
+    >({
+      query: ({ body, classroomId }) => ({
         url: `/${classroomId}/assessment/add-submission/`,
-        method: 'POST',
+        method: "POST",
         body,
-      })
+      }),
     }),
-    checkAnswer: builder.query<any, {classroomId: string, submissionId: string}>({
-      query: ({classroomId, submissionId}) => ({
+    checkAnswer: builder.query<
+      any,
+      { classroomId: string; submissionId: string }
+    >({
+      query: ({ classroomId, submissionId }) => ({
         url: `/${classroomId}/assessment/submission/${submissionId}`,
-        method: 'GET',
-      })
+        method: "GET",
+      }),
     }),
     crossAssessmentAnalytics: builder.query<CrossAssessmentResponse, string>({
       query: (classroomId) => ({
         url: `/${classroomId}/assessment/analytics/cross-assessment`,
-        method: 'GET',
-      })
-    }),
-    assessmentAnalyticsByTag: builder.query<CrossAssessmentResponse, {tags: string[], classroomId: string}>({
-      query: ({tags, classroomId}) => ({
-        url: `/${classroomId}/assessment/analytics/`,
-        method: 'POST',
-        body: tags,
-      })
-    }),
-    assessmentAnalyticsById: builder.query<SingleAssessmentAnalyticsResponse, {assessmentId: string, classroomId: string}>({
-      query: ({assessmentId, classroomId}) => ({
-        url: `/${classroomId}/assessment/analytics/${assessmentId}`,
-        method: 'GET',
-      })
-    }),
-    aggregateAssessmentAnalytics: builder.query<SingleAssessmentAnalyticsResponse[], {classroomId: string, assessmentIds: string[]}>({
-      async queryFn({classroomId, assessmentIds}, _queryApi, _extraOptions, fetchWithBQ) {
-        const results = await Promise.all(assessmentIds.map(async (assessmentId, _) => {
-          const response = await fetchWithBQ({
-            url: `/${classroomId}/assessment/analytics/${assessmentId}`,
-            method: 'GET',
-          });
-          if (response.error) throw response.error;
-          return response.data as SingleAssessmentAnalyticsResponse;
-        }));
-        return { data: results };
-      }
-    }),
-    singleAssessmentScore: builder.query<CheckAnswerResponse, {classroomId: string, studentId: string, assessmentId: string}>({
-      query: ({classroomId, studentId, assessmentId}) => ({
-        url: `/${classroomId}/assessment/submission/student/${studentId}/assessment/${assessmentId}`,
-        method: 'GET',
+        method: "GET",
       }),
     }),
-    aggregateSingleAssessmentScore: builder.query<CheckAnswerResponse[], {classroomId: string, assessmentId: string, studentIds: any[]}>({
-      async queryFn({classroomId, assessmentId, studentIds}, _queryApi, _extraOptions, fetchWithBQ) {
-        const results = await Promise.all(studentIds.map(async (studentId, _) => {
-          const response = await fetchWithBQ({
-            url: `/${classroomId}/assessment/submission/student/${studentId}/assessment/${assessmentId}`,
-            method: 'GET',
-          });
-          if (response.error) throw response.error;
-          return response.data as CheckAnswerResponse;
-        }));
-        return { data: results };
-      }
+    assessmentAnalyticsByTag: builder.query<
+      CrossAssessmentResponse,
+      { tags: string[]; classroomId: string }
+    >({
+      query: ({ tags, classroomId }) => ({
+        url: `/${classroomId}/assessment/analytics/`,
+        method: "POST",
+        body: tags,
+      }),
     }),
-  })
-})
+    assessmentAnalyticsById: builder.query<
+      SingleAssessmentAnalyticsResponse,
+      { assessmentId: string; classroomId: string }
+    >({
+      query: ({ assessmentId, classroomId }) => ({
+        url: `/${classroomId}/assessment/analytics/${assessmentId}`,
+        method: "GET",
+      }),
+    }),
+    aggregateAssessmentAnalytics: builder.query<
+      SingleAssessmentAnalyticsResponse[],
+      { classroomId: string; assessmentIds: string[] }
+    >({
+      async queryFn(
+        { classroomId, assessmentIds },
+        _queryApi,
+        _extraOptions,
+        fetchWithBQ
+      ) {
+        const results = await Promise.all(
+          assessmentIds.map(async (assessmentId, _) => {
+            const response = await fetchWithBQ({
+              url: `/${classroomId}/assessment/analytics/${assessmentId}`,
+              method: "GET",
+            });
+            if (response.error) throw response.error;
+            return response.data as SingleAssessmentAnalyticsResponse;
+          })
+        );
+        return { data: results };
+      },
+    }),
+    singleAssessmentScore: builder.query<
+      CheckAnswerResponse,
+      { classroomId: string; studentId: string; assessmentId: string }
+    >({
+      query: ({ classroomId, studentId, assessmentId }) => ({
+        url: `/${classroomId}/assessment/submission/student/${studentId}/assessment/${assessmentId}`,
+        method: "GET",
+      }),
+    }),
+    aggregateSingleAssessmentScore: builder.query<
+      CheckAnswerResponse[],
+      { classroomId: string; assessmentId: string; studentIds: any[] }
+    >({
+      async queryFn(
+        { classroomId, assessmentId, studentIds },
+        _queryApi,
+        _extraOptions,
+        fetchWithBQ
+      ) {
+        const results = await Promise.all(
+          studentIds.map(async (studentId, _) => {
+            const response = await fetchWithBQ({
+              url: `/${classroomId}/assessment/submission/student/${studentId}/assessment/${assessmentId}`,
+              method: "GET",
+            });
+            if (response.error) throw response.error;
+            return response.data as CheckAnswerResponse;
+          })
+        );
+        return { data: results };
+      },
+    }),
+  }),
+});
 
-
-export const { 
+export const {
   useSingleAssessmentScoreQuery,
   useAggregateSingleAssessmentScoreQuery,
   useAggregateAssessmentAnalyticsQuery,
-  useCreateAssessmentMutation, 
-  useGetAssessmentsQuery, 
+  useCreateAssessmentMutation,
+  useGetAssessmentsQuery,
   usePublishAssessmentMutation,
   useAddQuestionMutation,
   useDeleteQuestionMutation,

@@ -21,16 +21,7 @@ const PrepareAssessment = () => {
 	const currClassroomId = currPath[3]
 	const currAssessmentId = currPath[5]
 
-	const [questions, setQuestions] = useState<Question[]>([
-		{
-			text: '',
-			weight: 1,
-			answers: [],
-			correctAnswerIndex: -1,
-			assessmentId: currAssessmentId as string,
-			tags: [],
-		},
-	])
+	const [questions, setQuestions] = useState<Question[]>([])
 
 	const addQuestion = () => {
 		setQuestions([
@@ -87,6 +78,11 @@ const PrepareAssessment = () => {
 	}
 
 	const handleSubmission = async () => {
+		if (questions.length === 0) {
+			toast.error('No questions to submit')
+			return
+		}
+	
 		const seenQuestions = new Set<string>()
 	
 		for (let i = 0; i < questions.length; i++) {
@@ -108,7 +104,7 @@ const PrepareAssessment = () => {
 				toast.error(`Question ${i + 1} has no correct answer`)
 				return
 			}
-
+	
 			for (let j = 0; j < question.answers.length; j++) {
 				if (question.answers[j].trim() === '') {
 					toast.error(`Option ${String.fromCharCode(65 + j)} of question ${i + 1} is empty`)
@@ -124,11 +120,23 @@ const PrepareAssessment = () => {
 					question,
 				}).unwrap()
 			}
-			toast.success('Questions added successfully')
+			toast.success('Questions added successfully');
+	
+			setQuestions([
+				{
+					text: '',
+					weight: 1,
+					answers: [],
+					correctAnswerIndex: -1,
+					assessmentId: currAssessmentId as string,
+					tags: [],
+				},
+			])
 		} catch (error) {
 			toast.error('Failed to add question')
+			console.error('Error in handleSubmission:', error)
 		}
-	}
+	}	
 	
 
 	return (
@@ -223,7 +231,9 @@ const PrepareAssessment = () => {
 					))}
 				</div>
 				<div className='fixed bottom-6 right-6 w-1/2 flex justify-between'>
-					<Button onClick={() => handleSubmission()}>Add questions</Button>
+					<Button onClick={() => handleSubmission()} disabled={questions.length === 0}>
+						Add questions
+					</Button>
 					<Button onClick={addQuestion}>
 						<Plus className='h-6 w-6 text-white' />
 					</Button>
