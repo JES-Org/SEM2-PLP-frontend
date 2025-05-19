@@ -48,7 +48,7 @@ export interface AssessmentAnswer {
   id: string;
   questionId: string;
   text: string;
-  isCorrect: boolean;
+  is_correct: boolean;
   createdAt: string; 
   updatedAt: string; 
 }
