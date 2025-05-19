@@ -87,23 +87,41 @@ const PrepareAssessment = () => {
 	}
 
 	const handleSubmission = async () => {
+		const seenQuestions = new Set<string>()
+	
 		for (let i = 0; i < questions.length; i++) {
 			const question = questions[i]
-			if (question.text === '') {
+			const trimmedText = question.text.trim()
+	
+			if (trimmedText === '') {
 				toast.error(`Question ${i + 1} is empty`)
 				return
 			}
+	
+			if (seenQuestions.has(trimmedText.toLowerCase())) {
+				toast.error(`Question ${i + 1} is a duplicate`)
+				return
+			}
+			seenQuestions.add(trimmedText.toLowerCase())
+	
 			if (question.correctAnswerIndex === -1) {
 				toast.error(`Question ${i + 1} has no correct answer`)
 				return
 			}
-		}
 
+			for (let j = 0; j < question.answers.length; j++) {
+				if (question.answers[j].trim() === '') {
+					toast.error(`Option ${String.fromCharCode(65 + j)} of question ${i + 1} is empty`)
+					return
+				}
+			}
+		}
+	
 		try {
 			for (const question of questions) {
 				await prepareAssessment({
 					classroomId: currClassroomId,
-					question: question,
+					question,
 				}).unwrap()
 			}
 			toast.success('Questions added successfully')
@@ -111,6 +129,7 @@ const PrepareAssessment = () => {
 			toast.error('Failed to add question')
 		}
 	}
+	
 
 	return (
 		<div className='ml-72 mr-24 mt-10'>
