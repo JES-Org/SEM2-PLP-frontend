@@ -21,7 +21,8 @@ const TakeAssessment = () => {
 	const currClassroomId = currPath[3]
 	const currAssessmentId = currPath[5]
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
-	const studentId = getCurrUser().id
+	const studentId = getCurrUser().student.id
+	console.log('studentId', studentId)
 
 	const { data, isLoading, isFetching, isError, error } = useGetQuestionsQuery({
 		classroomId: currClassroomId,
