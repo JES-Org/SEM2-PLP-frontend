@@ -191,14 +191,14 @@ const EditQuestions = () => {
 										<div
 											key={optionIndex}
 											className={`rounded-full px-4 py-2 flex items-center gap-2 ${
-												option.isCorrect ? 'bg-green-100' : 'bg-gray-100'
+												option.is_correct ? 'bg-green-100' : 'bg-gray-100'
 											}`}
 										>
 											<div className='text-gray-500 font-bold'>
 												{String.fromCharCode(65 + optionIndex)}.
 											</div>
 											<div className='flex-1'>{option.text}</div>
-											{option.isCorrect && (
+											{option.is_correct && (
 												<CheckCircle2 className='h-4 w-4 text-green-500' />
 											)}
 										</div>
