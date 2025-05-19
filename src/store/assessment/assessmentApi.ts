@@ -87,7 +87,7 @@ export const assessmentApi = createApi({
       { classroomId: string; questionId: string; assessmentId?: string }
     >({
       query: ({ classroomId, questionId }) => ({
-        url: `/${classroomId}/assessment/question/${questionId}`,
+        url: `/${classroomId}/assessment/question/${questionId}/`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, { assessmentId }) => [
