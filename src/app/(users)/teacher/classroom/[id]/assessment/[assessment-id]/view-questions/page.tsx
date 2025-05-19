@@ -107,31 +107,45 @@ const EditQuestions = () => {
 		}
 	}
 
-  const handleNewQuestions = async () => {
-    for (let i = 0; i < questions.length; i++) {
-			const question = questions[i]
-			if (question.text === '') {
-				toast.error(`Question ${i + 1} is empty`)
-				return
+	const handleNewQuestions = async () => {
+		if (questions.length === 0) { // Check for empty new questions list
+			toast.info('No new questions to add.'); // Or an error, depending on desired UX
+			return;
+		}
+	
+		// Existing validation for the new questions
+		for (let i = 0; i < questions.length; i++) {
+			const question = questions[i];
+			if (question.text.trim() === '') { // Added trim()
+				toast.error(`New Question ${i + 1} is empty`);
+				return;
 			}
 			if (question.correctAnswerIndex === -1) {
-				toast.error(`Question ${i + fetchedQuestions.length + 1} has no correct answer`)
-				return
+				toast.error(`New Question ${i + 1} has no correct answer`);
+				return;
+			}
+			// You might want to add validation for empty options here too for new questions
+			for (let j = 0; j < question.answers.length; j++) {
+				if (question.answers[j].trim() === '') {
+					toast.error(`Option ${String.fromCharCode(65 + j)} of new question ${i + 1} is empty`);
+					return;
+				}
 			}
 		}
-
+	
 		try {
 			for (const question of questions) {
 				await prepareAssessment({
 					classroomId: currClassroomId,
 					question: question,
-				}).unwrap()
+				}).unwrap();
 			}
-			toast.success('Questions added successfully')
+			toast.success('New questions added successfully');
+			setQuestions([]); // Clear the new questions form after successful submission
 		} catch (error) {
-			toast.error('Failed to add question')
+			toast.error('Failed to add new questions');
 		}
-  }
+	};	
 
 	if (isLoading || isFetching) {
 		return <div>Loading...</div>
@@ -279,7 +293,7 @@ const EditQuestions = () => {
 					))}
 				</div>
         <div className='fixed bottom-6 right-6 w-1/2 flex justify-between'>
-					<Button onClick={() => handleNewQuestions()}>Add questions</Button>
+					<Button onClick={() => handleNewQuestions()} disabled={questions.length === 0}>Add questions</Button>
 					<Button onClick={addQuestion}>
 						<Plus className='h-6 w-6 text-white' />
 					</Button>
