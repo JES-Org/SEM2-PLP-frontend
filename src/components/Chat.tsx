@@ -30,8 +30,6 @@ const Chat = ({ typing }: ChatProps) => {
 	const endOfMessagesRef = useRef<HTMLDivElement>(null)
 	const pathname = usePathname()
 
-
-
 	const sendHandler = () => {
 		const currMessage = inputRef.current?.value
 		if (currMessage?.trim() === '') return
@@ -62,7 +60,7 @@ const Chat = ({ typing }: ChatProps) => {
 									return (
 										<Message
 											key={i}
-											text={message}
+											text={message.message}
 											sender={cyclePosition % 2 === 0 ? 'other' : 'me'}
 											className='mb-4'
 										/>
