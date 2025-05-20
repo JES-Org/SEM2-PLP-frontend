@@ -1,11 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useStudentClassroomQuery } from '@/store/classroom/classroomApi'
 import { useGetStudentByIdQuery } from '@/store/student/studentApi'
-
 import { Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -17,6 +16,7 @@ const ListOfClassroomPage = () => {
 	const router = useRouter()
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
+	const [searchTerm, setSearchTerm] = useState('')
 	const { data: currUserData, isSuccess: isSuccessCurrUser } =
 		useGetStudentByIdQuery(currUser.id)
 	const {
@@ -26,13 +26,19 @@ const ListOfClassroomPage = () => {
 		isFetching: isFetchingClassrooms,
 		isError: isErrorClassrooms,
 		error: classroomsError,
-	} = useStudentClassroomQuery(currUser.student.id, { skip: !isSuccessCurrUser })
+	} = useStudentClassroomQuery(currUser.student.id, {
+		skip: !isSuccessCurrUser,
+	})
+
+	const filteredClassrooms = classrooms?.data.filter((classroom) =>
+		classroom.name.toLowerCase().includes(searchTerm.toLowerCase()),
+	)
 
 	return (
 		<div className='md:flex overflow-x-hidden md:w-11/12 md:ml-auto h-screen'>
 			<div className='flex-1 mt-20 md:pl-40'>
 				<div>
-					<SearchAndBell />
+					<SearchAndBell onSearchChange={setSearchTerm} />
 				</div>
 
 				<div className='md:grid  md:grid-cols-2 lg:grid-cols-3 gap-4  md:mx-7 left-0 mx-auto '>
@@ -44,8 +50,20 @@ const ListOfClassroomPage = () => {
 						<div className='flex flex-row justify-center items-center col-span-full'>
 							<p className='text-red-500'>Failed to load classrooms</p>
 						</div>
+					) : filteredClassrooms?.length === 0 ? (
+						<div className='flex justify-center items-center'>
+							{searchTerm ? (
+								<p className='text-2xl text-gray-400 font-bold'>
+									Search Result not found
+								</p>
+							) : (
+								<p className='text-2xl text-gray-400 font-bold'>
+									No classroom available
+								</p>
+							)}
+						</div>
 					) : (
-						classrooms?.data.map((classroom) => (
+						filteredClassrooms?.map((classroom) => (
 							<div
 								key={classroom.id}
 								className='w-full mb-2 md:mb-0 cursor-pointer hover:border hover:border-primary hover:rounded-xl'
