@@ -177,21 +177,27 @@ const AnalyticsPage = () => {
 		isError: isErrorAggregate,
 		isSuccess: isSuccessAggregate,
 		error: errorAggregate,
-	} = useAggregateAssessmentAnalyticsQuery({
-		classroomId: currClassroomId!,
-		assessmentIds: assessments.map((assessment) => assessment.id),
-	})
+	} = useAggregateAssessmentAnalyticsQuery(
+		currClassroomId)
 
 	// console.debug('ASSESSMENTS', JSON.stringify(assessments, null, 2))
 	// console.debug('ANALYSIS', JSON.stringify(aggregateData, null, 2))
 
-	const graphData = assessments.map((assessment, i) => {
-		const metricKey = getMetricKey(selectedMetric.label)
-		return {
-			name: assessment.name,
-			value: aggregateData?.[i]?.data[metricKey] ?? 0,
-		}
-	})
+const graphData = assessments.map((assessment) => {
+	const metricKey = getMetricKey(selectedMetric.label)
+	const assessmentId = assessment.id
+	return {
+		name: assessment.name,
+		value: aggregateData?.data?.[assessmentId]?.data?.[metricKey] ?? 0,
+	}
+})
+
+
+	
+
+	console.log('GRAPH DATA', graphData)
+	console.log('GRAPH aggregateData DATA', aggregateData)
+
 
 	// console.debug(assessments)
 	const [selectedAssessment, setSelectedAssessment] = useState({
