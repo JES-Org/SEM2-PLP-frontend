@@ -1,14 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ApiMessageType } from "@/types/Message";
-import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
 
-const baseQueryWithReauth = createBaseQueryWithReauth(
-  'http://localhost:8000/api/classroom',
-)
 export const chatbotApi = createApi({
   reducerPath: "chatbotApi",
-  baseQuery: baseQueryWithReauth,
-  tagTypes: ["LearningPath","Messages"],
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000" }),
+  tagTypes: ["LearningPath"],
   endpoints: (builder) => ({
     greet: builder.mutation({
       query: (body) => ({
@@ -75,16 +70,6 @@ export const chatbotApi = createApi({
         params: { studentId },
       }),
     }),
-
-    getMessagesByClassroom: builder.query<ApiMessageType[], string>({
-      query: (classRoomId) => ({
-        url: `/chat/${classRoomId}/messages/`, 
-        method: "GET",
-      }),
-      providesTags: (result, error, classRoomId) => [
-        { type: "Messages", id: classRoomId },
-      ],
-    }),
   }),
 });
 
@@ -98,5 +83,4 @@ export const {
   useDeleteLearningPathMutation, 
   useMarkAsCompletedMutation,
   useChatHistoryQuery,
-  useGetMessagesByClassroomQuery,
 } = chatbotApi;
