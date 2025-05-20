@@ -28,6 +28,8 @@ const ListOfClassroomPage = () => {
 	const router = useRouter()
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
+	const [searchTerm, setSearchTerm] = useState('')
+
 	const { data: currUserData, isSuccess: isSuccessCurrUser } =
 		useGetTeacherByIdQuery(currUser.id)
 	const {
@@ -38,8 +40,14 @@ const ListOfClassroomPage = () => {
 		isError: isErrorClassrooms,
 		error: classroomsError,
 		refetch: refetchClassrooms,
-	} = useTeacherClassroomQuery(currUser.teacher.id, { skip: !isSuccessCurrUser })
+	} = useTeacherClassroomQuery(currUser.teacher.id, {
+		skip: !isSuccessCurrUser,
+	})
 	const dispatch = useDispatch()
+
+	const filteredClassrooms = classrooms?.data.filter((classroom) =>
+		classroom.name.toLowerCase().includes(searchTerm.toLowerCase()),
+	)
 
 	const onDelete = (classroomid: string) => {
 		console.log('Classroom Delete is clicked')
@@ -57,23 +65,28 @@ const ListOfClassroomPage = () => {
 			<ClassroomDeleteDialog />
 			<div className='flex-1 mt-20 md:pl-40'>
 				<div>
-					<SearchAndBell />
+					<SearchAndBell onSearchChange={setSearchTerm} />
 				</div>
 
-				{
-					isLoadingClassrooms || isFetchingClassrooms ? (
+				{isLoadingClassrooms || isFetchingClassrooms ? (
 					<div className='flex justify-center items-center'>
 						<Spinner />
 					</div>
-				) : classrooms?.data.length === 0 ? (
+				) : filteredClassrooms?.length === 0 ? (
 					<div className='flex justify-center items-center'>
-						<p className='text-2xl text-gray-400 font-bold'>
-							No classroom available
-						</p>
+						{searchTerm ? (
+							<p className='text-2xl text-gray-400 font-bold'>
+								Search Result not found
+							</p>
+						) : (
+							<p className='text-2xl text-gray-400 font-bold'>
+								No classroom available
+							</p>
+						)}
 					</div>
 				) : (
 					<div className='md:grid  md:grid-cols-2 lg:grid-cols-3 gap-4  md:mx-7 left-0 mx-auto '>
-						{classrooms?.data.map((classroom) => (
+						{filteredClassrooms?.map((classroom) => (
 							<div
 								key={classroom.id}
 								className='w-full mb-2 md:mb-0 hover:border hover:border-primary hover:rounded-xl transition duration-300 cursor-pointer'
