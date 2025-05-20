@@ -1,8 +1,13 @@
+import { useUnpublishAssessmentMutation } from '@/store/assessment/assessmentApi'
+import { selectCurrClassroomId } from '@/store/features/classroomSlice'
 import { GetAssessmentResponseData } from '@/types/assessment/assessment.type'
 import { CalendarClock } from 'lucide-react'
+import { useSelector } from 'react-redux'
+import { toast } from 'sonner'
 
 import { makeDateReadable } from '@/lib/helpers'
 
+import { Button } from './ui/button'
 import {
 	Card,
 	CardContent,
@@ -17,6 +22,19 @@ interface Props {
 }
 
 const PublishedAssements = ({ assessments }: Props) => {
+	const [unpublish, {}] = useUnpublishAssessmentMutation()
+	const currClassroomId = useSelector(selectCurrClassroomId)
+	const handleUnPublish = (e: any, assessmentId: string) => {
+		e.stopPropagation()
+		unpublish({ classroomId: currClassroomId, assessmentId: assessmentId })
+			.then((res) => {
+				toast.success('Assessment unpublished successfully')
+			})
+			.catch((err) => {
+				toast.error('Failed to unpublish assessment')
+			})
+	}
+
 	return (
 		<>
 			{assessments?.length == 0 ? (
@@ -53,11 +71,20 @@ const PublishedAssements = ({ assessments }: Props) => {
 									))}
 								</div>
 							</CardContent>
-							<CardFooter className='flex flex-row'>
+							<CardFooter className='flex justify-between'>
+								<div className='flex'>
 								<CalendarClock className='w-4 h-4' />
 								<p className='ml-1 text-xs'>
 									{makeDateReadable(assessment.deadline)}
 								</p>
+								</div>
+								<Button
+									className='hover:cursor-pointer hover:underline z-10'
+									variant='link'
+									onClick={(e: any) => handleUnPublish(e, assessment.id)}
+								>
+									Unpublish{' '}
+								</Button>
 							</CardFooter>
 						</Card>
 					))}
