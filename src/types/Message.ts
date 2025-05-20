@@ -1,14 +1,7 @@
 export interface MessageType {
-	id: string;
   text: string;
-  sender: 'me' | 'other';
-  senderName?: string;
-  timestamp?: string;
-  isRead?: boolean;
-  readBy?: string[];
-
+  sender: 'other' | 'me'
 }
-
 
 export interface ApiMessageType {
   id: number | string; 
