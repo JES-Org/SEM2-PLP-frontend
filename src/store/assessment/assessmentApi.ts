@@ -75,7 +75,7 @@ export const assessmentApi = createApi({
 			{ classroomId: string; assessmentId: string }
 		>({
 			query: ({ classroomId, assessmentId }) => ({
-				url: `/${classroomId}/assessment/unpublish/${assessmentId}/`, 
+				url: `/${classroomId}/assessment/unpublish/${assessmentId}/`,
 				method: 'PUT',
 			}),
 			invalidatesTags: (result, error, { assessmentId }) => [
@@ -170,28 +170,38 @@ export const assessmentApi = createApi({
 				method: 'GET',
 			}),
 		}),
+		// aggregateAssessmentAnalytics: builder.query<
+		// 	SingleAssessmentAnalyticsResponse[],
+		// 	{ classroomId: string; assessmentIds: string[] }
+		// >({
+		// 	async queryFn(
+		// 		{ classroomId, assessmentIds },
+		// 		_queryApi,
+		// 		_extraOptions,
+		// 		fetchWithBQ,
+		// 	) {
+		// 		const results = await Promise.all(
+		// 			assessmentIds.map(async (assessmentId, _) => {
+		// 				const response = await fetchWithBQ({
+		// 					url: `/${classroomId}/assessment/analytics/${assessmentId}`,
+		// 					method: 'GET',
+		// 				})
+		// 				if (response.error) throw response.error
+		// 				return response.data as SingleAssessmentAnalyticsResponse
+		// 			}),
+		// 		)
+		// 		return { data: results }
+		// 	},
+		// }),
+
 		aggregateAssessmentAnalytics: builder.query<
 			SingleAssessmentAnalyticsResponse[],
-			{ classroomId: string; assessmentIds: string[] }
+			string
 		>({
-			async queryFn(
-				{ classroomId, assessmentIds },
-				_queryApi,
-				_extraOptions,
-				fetchWithBQ,
-			) {
-				const results = await Promise.all(
-					assessmentIds.map(async (assessmentId, _) => {
-						const response = await fetchWithBQ({
-							url: `/${classroomId}/assessment/analytics/${assessmentId}`,
-							method: 'GET',
-						})
-						if (response.error) throw response.error
-						return response.data as SingleAssessmentAnalyticsResponse
-					}),
-				)
-				return { data: results }
-			},
+			query: (classroomId) => ({
+				url: `/${classroomId}/assessment/analytics/agregate`,
+				method: 'GET',
+			}),
 		}),
 		singleAssessmentScore: builder.query<
 			CheckAnswerResponse,
@@ -234,8 +244,8 @@ export const {
 	useAggregateAssessmentAnalyticsQuery,
 	useCreateAssessmentMutation,
 	useGetAssessmentsQuery,
-  usePublishAssessmentMutation,
-  useUnpublishAssessmentMutation,
+	usePublishAssessmentMutation,
+	useUnpublishAssessmentMutation,
 	useAddQuestionMutation,
 	useDeleteQuestionMutation,
 	useGetQuestionsQuery,
