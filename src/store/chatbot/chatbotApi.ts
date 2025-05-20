@@ -1,34 +1,41 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
+
+
+const baseQueryWithReauth = createBaseQueryWithReauth(
+  'http://localhost:8000/api/learning-path',
+)
+
 
 export const chatbotApi = createApi({
   reducerPath: "chatbotApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000" }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["LearningPath"],
   endpoints: (builder) => ({
     greet: builder.mutation({
       query: (body) => ({
-        url: `/greet`,
+        url: `/greet/`,
         method: "POST",
         body,
       }),
     }),
     detail: builder.mutation({
       query: (body) => ({
-        url: `/detail`,
+        url: `/detail/`,
         method: "POST",
         body,
       }),
     }),
     generate: builder.mutation({
       query: (body) => ({
-        url: `/generate`,
+        url: `/generate/`,
         method: "POST",
         body,
       }),
     }),
     save: builder.mutation({
       query: (body) => ({
-        url: `/save`,
+        url: `/save/`,
         method: "POST",
         body,
       }),
@@ -43,7 +50,7 @@ export const chatbotApi = createApi({
     }),
     getAllLearningPaths: builder.query({
       query: (studentId: string) => ({
-        url: `/learning-paths`,
+        url: `/all-paths`,
         method: "GET",
         params: { studentId },
       }),
@@ -51,14 +58,14 @@ export const chatbotApi = createApi({
     }),
     getLearningPath: builder.query({
       query: ({ studentId, learningPathId }) => ({
-        url: `/learning-paths/${learningPathId}`,
+        url: `/${learningPathId}/get`,
         method: "GET",
         params: { studentId },
       }),
     }),
     deleteLearningPath: builder.mutation({
       query: ({ studentId, learningPathId }) => ({
-        url: `/learning-paths/${learningPathId}`,
+        url: `/${learningPathId}/delete`,
         method: "DELETE",
         body: JSON.stringify({ "studentId": studentId })
       }),
