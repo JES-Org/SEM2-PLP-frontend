@@ -5,7 +5,7 @@ import { CalendarX } from 'lucide-react'
 
 import { toMonthAndDay } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
-
+import { toast } from 'sonner'
 import MarkdownRenderer from './MarkdownRenderer'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
@@ -38,16 +38,18 @@ const LearningPathCard = ({
 	const [isExpanded, setIsExpanded] = useState(false)
 	const [showDialog, setShowDialog] = useState(false)
 
-	const [complete, { isLoading }] = useMarkAsCompletedMutation()
+	const [complete, { isLoading,isError}] = useMarkAsCompletedMutation()
 
 	const handleComplete = async (e: any) => {
 		e.stopPropagation()
 		try {
 			await complete({ studentId: userId, learningPathId: id })
+			toast.success('Marked as completed')
 		} catch (error) {
-			console.error(error)
+			toast.error('Error marking as completed')
 		}
 	}
+
 
 	return (
 		<>
