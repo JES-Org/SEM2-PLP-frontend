@@ -193,7 +193,9 @@ const TakeAssessment = () => {
                         </div>
                     )}
 
-					<div className='space-y-8'>
+					
+					{fetchedQuestions.length >0?( <div className='space-y-8'>
+
 						{fetchedQuestions.map((question, questionIndex) => {
                             const studentResponse = answers[question.id]; // This is now a string (optionId or text)
 
@@ -292,6 +294,8 @@ const TakeAssessment = () => {
 								</div>
 							)
 						})}
+
+
 						<div className='text-center pt-6'>
 							{hasSubmitted ? (
 								<Button size='lg' onClick={() => router.back()}>
@@ -307,7 +311,16 @@ const TakeAssessment = () => {
 								</Button>
 							)}
 						</div>
-					</div>
+					</div>) : (
+							<div className='flex flex-col gap-4 items-center justify-center h-full'>
+	                       <p className='text-xl text-gray-500'> No questions available for this assessment. </p>
+							<Button size='lg' onClick={() => router.back()}>
+									Back to Assessments
+								</Button>
+							</div>
+						
+					)
+					}
 				</div>
 			</div>
 		</div>

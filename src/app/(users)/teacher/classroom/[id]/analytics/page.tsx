@@ -227,12 +227,12 @@ const graphData = assessments.map((assessment) => {
 	const {data: classData} = useGetClassroomByIdQuery(currClassroomId)
 	const studentIds = classData?.data.members?.map((member) => member.id) || []
 
-	const { data: score } = useAggregateSingleAssessmentScoreQuery({
+	const { data: score} = useAggregateSingleAssessmentScoreQuery({
 		classroomId: currClassroomId!,
 		assessmentId: selectedAssessment.id,
 		studentIds,
 	})
-
+  
 	console.debug('SCORE', score)
 
 	const {data: studentData} = useAggregateGetStudentByIdQuery({studentIds: studentIds})
