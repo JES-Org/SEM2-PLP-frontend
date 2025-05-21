@@ -1,9 +1,7 @@
 import AllProviders from '@/providers/AllProviders'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-
 import './globals.css'
-
 import StudentOnboardingDialog from '@/components/StudentOnboardingDialog'
 import { Toaster } from '@/components/ui/sonner'
 import TeacherOnboardingDialog from '@/components/TeacherOnboardingDialog'

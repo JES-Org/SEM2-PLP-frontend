@@ -1,22 +1,21 @@
 'use client'
-
+import { useEffect } from 'react'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useGetAllLearningPathsQuery } from '@/store/chatbot/chatbotApi'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
+import { usePathname } from 'next/navigation'
 import LearningPathCard from '@/components/LearningPathCard'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
+ 
 
 const LearningPathPage = () => {
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
 	const router = useRouter()
 
-	const {data, isLoading, isFetching, isError} = useGetAllLearningPathsQuery(currUser?.id!)
-
+	const {data, isLoading, isFetching, isError,refetch} = useGetAllLearningPathsQuery(currUser?.id!)
 	return (
 		<div className='ml-72 h-screen'>
 			<Button
@@ -40,8 +39,8 @@ const LearningPathPage = () => {
 								<LearningPathCard
 									key={i}
 									userId={currUser?.id}
-									id={path.learningPathId}
-									title={path.learningPathTitle}
+									id={path.id}
+									title={path.title}
 									deadline={path.deadline}
 									isCompleted={path.isCompleted}
 									content={path.content}

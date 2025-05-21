@@ -18,7 +18,7 @@ export const StudentSideBarItems: SideBarItem[] = [
 	},
 	{
 		id: '2',
-		text: 'Learning Paths',
+		text: 'Learning-Path',
 		icon: <Waypoints size={25} />,
 		path: '/student/learning-path',
 	},

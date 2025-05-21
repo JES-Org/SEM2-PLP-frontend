@@ -8,7 +8,6 @@ import { usePathname } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { cn } from '@/lib/utils'
-
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -18,9 +17,11 @@ import Typing from './Typing'
 
 interface ChatProps {
 	typing: boolean
+	currState: string | null
+
 }
 
-const Chat = ({ typing }: ChatProps) => {
+const Chat = ({ typing ,currState}: ChatProps) => {
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
 	const { data, isLoading, isFetching, isError } = useChatHistoryQuery(currUser?.id!)
@@ -38,6 +39,11 @@ const Chat = ({ typing }: ChatProps) => {
 		endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' })
 	}
 
+	useEffect(() => {
+	if (endOfMessagesRef.current) {
+		endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
+	}
+}, [data?.chatHistory, messages, typing])
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter') {
 			sendHandler()
@@ -56,12 +62,11 @@ const Chat = ({ typing }: ChatProps) => {
 						{data?.chatHistory.length > 0 && (
 							<div className='flex flex-col'>
 								{data.chatHistory.map((message: any, i: number) => {
-									const cyclePosition = i % 5
 									return (
 										<Message
 											key={i}
 											text={message.message}
-											sender={cyclePosition % 2 === 0 ? 'other' : 'me'}
+											sender={message.is_ai_response ? 'other' : 'me'}
 											className='mb-4'
 										/>
 									)
@@ -92,14 +97,15 @@ const Chat = ({ typing }: ChatProps) => {
 					</>
 				)}
 			</main>
-
-			<div className='flex items-center gap-2 border-t bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950'>
+			{currState !== null && currState !== 'save' &&
+				(<div className='flex items-center gap-2 border-t bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950'>
 				<Input
 					ref={inputRef}
 					className='flex-1 rounded-md bg-gray-100 px-4 py-2 text-sm focus:outline-none dark:bg-gray-800'
 					placeholder='Type your message...'
 					type='text'
 					onKeyDown={(e) => handleKeyDown(e)}
+					disabled={typing || isLoading}
 				/>
 				<Button
 					className='rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-50'
@@ -110,6 +116,7 @@ const Chat = ({ typing }: ChatProps) => {
 					<span className='sr-only'>Send message</span>
 				</Button>
 			</div>
+			)}
 		</div>
 	)
 }

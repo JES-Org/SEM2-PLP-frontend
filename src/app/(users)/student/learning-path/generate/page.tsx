@@ -248,7 +248,7 @@ const GenerateLearningPathPage = () => {
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-			<Chat typing={typing} />
+			<Chat typing={typing} currState={ currState} />
 			{showGenerateButton && (
 				<Button
 					className='w-full mt-4'
@@ -257,7 +257,7 @@ const GenerateLearningPathPage = () => {
 						setShowGenerateButton(false)
 					}}
 				>
-					Generate
+				Generate Learning Path
 				</Button>
 			)}
 			{currState === 'save' && (

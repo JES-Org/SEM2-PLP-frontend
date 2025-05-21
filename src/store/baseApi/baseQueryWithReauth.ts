@@ -5,9 +5,6 @@ import { Mutex } from 'async-mutex';
 
 // Create a mutex instance to avoid overlapping refresh requests.
 const mutex = new Mutex();
-
-// This function creates a base query with re-auth logic.
-// You can customize the baseUrl, if needed, using an environment variable.
 const createBaseQueryWithReauth = (baseUrl: string): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> => {
   // Create our underlying base query
   const rawBaseQuery = fetchBaseQuery({
