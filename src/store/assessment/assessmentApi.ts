@@ -214,7 +214,7 @@ export const assessmentApi = createApi({
 		}),
 		aggregateSingleAssessmentScore: builder.query<
 			CheckAnswerResponse[],
-			{ classroomId: string; assessmentId: string; studentIds: any[] }
+			{ classroomId: string; assessmentId: string; studentIds: string[] }
 		>({
 			async queryFn(
 				{ classroomId, assessmentId, studentIds },
@@ -222,17 +222,53 @@ export const assessmentApi = createApi({
 				_extraOptions,
 				fetchWithBQ,
 			) {
-				const results = await Promise.all(
-					studentIds.map(async (studentId, _) => {
+				if (!studentIds || studentIds.length === 0) {
+					return { data: [] };
+				}
+				if (!assessmentId) {
+					return { data: [] };
+				}
+
+				try {
+					const promises = studentIds.map(async (studentId) => {
+						const endpointUrl = `/${classroomId}/assessment/submission/student/${studentId}/assessment/${assessmentId}`;
 						const response = await fetchWithBQ({
-							url: `/${classroomId}/assessment/submission/student/${studentId}/assessment/${assessmentId}`,
+							url: endpointUrl,
 							method: 'GET',
-						})
-						if (response.error) throw response.error
-						return response.data as CheckAnswerResponse
-					}),
-				)
-				return { data: results }
+						});
+
+						if (response.error) {
+							return {
+								isSuccess: false,
+								message: `No submission found or error for student ${studentId}. Error: ${response.error.status || 'Unknown'}`,
+								data: {
+									id: `no-submission-placeholder-${studentId}-${assessmentId}`,
+									studentId: studentId,
+									assessmentId: assessmentId,
+									answers: {},
+									score: 0,
+									createdAt: new Date().toISOString(),
+									updatedAt: new Date().toISOString(),
+								},
+								errors: (response.error.data && typeof response.error.data === 'object' && 'errors' in response.error.data)
+									? (response.error.data as any).errors
+									: [JSON.stringify(response.error.data) || 'Unknown error details'],
+							} as CheckAnswerResponse;
+						}
+						return response.data as CheckAnswerResponse;
+					});
+
+					const allAttemptedResults = await Promise.all(promises);
+
+					const successfulSubmissionsOnly = allAttemptedResults.filter(
+						(result) => result.isSuccess === true
+					);
+
+					return { data: successfulSubmissionsOnly };
+
+				} catch (e: any) {
+					return { error: { status: 'CUSTOM_ERROR', error: 'Aggregate scoring failed', data: { message: 'Failed to process aggregated scores due to an unexpected error.', details: e?.message } } };
+				}
 			},
 		}),
 	}),
