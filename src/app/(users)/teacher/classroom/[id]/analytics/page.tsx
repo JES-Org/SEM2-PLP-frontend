@@ -3,6 +3,8 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import Link from 'next/link'; // Import Link for navigation
+import { Eye } from 'lucide-react';
 
 import {
 	useAggregateAssessmentAnalyticsQuery,
@@ -466,12 +468,20 @@ const graphData = assessments.map((assessment) => {
 					{score?.map((record) => { // record is a CheckAnswerResponse
 						// The record.data.studentId is the ID of the student who made this submission
 						const studentName = studentNameMap.get(String(record.data.studentId)) || `Student ID: ${record.data.studentId}`; // Fallback
+						const reviewUrl = `/teacher/classroom/${currClassroomId}/assessment/${selectedAssessment.id}/submission/${record.data.id}/review/${record.data.studentId}`;
 						return (
 							<TableRow key={record.data.id} className='text-lg'>
 								<TableCell>{studentName}</TableCell>
 								<TableCell>{toMonthAndDay(record.data.updatedAt)}</TableCell>
 								<TableCell className='text-right'>
 									{record.data.score}
+								</TableCell>
+								<TableCell className='text-center'>
+									<Link href={reviewUrl} passHref>
+										<Button variant="outline" size="sm">
+											<Eye className="mr-2 h-4 w-4" /> Review
+										</Button>
+									</Link>
 								</TableCell>
 							</TableRow>
 						);
