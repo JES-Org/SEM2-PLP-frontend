@@ -103,43 +103,42 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 		if (messages.length > 0) {
 			endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' })
 		}
-	}, [messages]) 
+	}, [messages])
 	const sendHandler = () => {
-	if (!inputValue.trim()) return
+		if (!inputValue.trim()) return
 
-	if (isRightClicked.option === null) {
-		// Normal send
-		if (socket && socket.readyState === WebSocket.OPEN) {
-			socket.send(
-				JSON.stringify({
-					type: 'send',
-					message: inputValue,
-					sender_id: currUser.id,
-				})
-			)
-			setInputValue('')
-		} else {
-			toast.error('WebSocket not connected. Try again.')
-		}
-	} else if (isRightClicked.option === 'edit') {
-		// Edit existing message
-		if (socket && socket.readyState === WebSocket.OPEN) {
-			socket.send(
-				JSON.stringify({
-					type: 'edit',
-					message_id: isRightClicked.id,
-					message: inputValue,
-					sender_id: currUser.id,
-				})
-			)
-			setInputValue('')
-			dispatch(setRightClicked({ option: null, content: '', id: null }))
-		} else {
-			toast.error('WebSocket not connected. Try again.')
+		if (isRightClicked.option === null) {
+			// Normal send
+			if (socket && socket.readyState === WebSocket.OPEN) {
+				socket.send(
+					JSON.stringify({
+						type: 'send',
+						message: inputValue,
+						sender_id: currUser.id,
+					}),
+				)
+				setInputValue('')
+			} else {
+				toast.error('WebSocket not connected. Try again.')
+			}
+		} else if (isRightClicked.option === 'edit') {
+			// Edit existing message
+			if (socket && socket.readyState === WebSocket.OPEN) {
+				socket.send(
+					JSON.stringify({
+						type: 'edit',
+						message_id: isRightClicked.id,
+						message: inputValue,
+						sender_id: currUser.id,
+					}),
+				)
+				setInputValue('')
+				dispatch(setRightClicked({ option: null, content: '', id: null }))
+			} else {
+				toast.error('WebSocket not connected. Try again.')
+			}
 		}
 	}
-}
-
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter') {
@@ -160,7 +159,7 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 							Failed to load messages
 						</p>
 					</div>
-				) : (
+				) : messages.length > 0 ? (
 					<div className='flex flex-col gap-4'>
 						{messages.map((message, index) => {
 							const messageDate = toMonthAndDay(message.updatedAt)
@@ -182,6 +181,10 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 						})}
 						<div ref={endOfMessagesRef} />
 					</div>
+				) : (
+					<p className='flex items-center justify-center h-full text-2xl font-semibold text-gray-500'>
+						No messages yet
+					</p>
 				)}
 			</main>
 			<div className='flex items-center gap-2 border-t bg-white px-4 py-2 dark:border-gray-800 dark:bg-gray-950'>

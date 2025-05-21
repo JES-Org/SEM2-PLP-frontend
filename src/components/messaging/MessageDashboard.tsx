@@ -51,10 +51,13 @@ export const MessageDashboard = () => {
 				<MessageSidebar
 					isOpen={isSidebarOpen}
 				/>
-			{currClassroomId ? (
-				<DiscussionChat
+			      {currClassroomId ? (
+				<div className='w-full'>
+             	<DiscussionChat
 					typing={false}
 				/>
+				</div>
+			
 			) : (
 				<div className='flex-1 flex items-center justify-center'>
 					<p className='text-gray-500'>Select a classroom to start chatting</p>
