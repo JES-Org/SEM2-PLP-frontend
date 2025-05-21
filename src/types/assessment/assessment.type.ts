@@ -38,8 +38,12 @@ export interface AssessmentQuestion {
   id: string;
   text: string;
   answers: AssessmentAnswer[];
+  question_type: string;
+  model_answer?: string;
+  correct_answer_index?: number;
+  weight: number;
   assessmentId: string;
-  tags: string[];
+  tags?: string[];
   createdAt: string; 
   updatedAt: string; 
 }
@@ -81,7 +85,7 @@ export interface GetQuestionsResponse extends CreateAssessementResponse{}
 export interface PostSubmitAnswerRequest {
   studentId: string;
   assessmentId: string;
-  answers: string[];
+  answers: Record<string, string>;
 }
 
 export interface PostSubmitAnswerResponse {
