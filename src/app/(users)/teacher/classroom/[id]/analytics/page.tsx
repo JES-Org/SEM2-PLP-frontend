@@ -232,8 +232,8 @@ const graphData = assessments.map((assessment) => {
 		assessmentId: selectedAssessment.id,
 		studentIds,
 	})
-  
-	console.debug('SCORE', score)
+
+	console.log('SCORE', score)
 
 	const {data: studentData} = useAggregateGetStudentByIdQuery({studentIds: studentIds})
 	console.log("student ids: ", studentIds)

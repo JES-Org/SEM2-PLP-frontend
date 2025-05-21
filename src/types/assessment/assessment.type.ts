@@ -99,7 +99,7 @@ export interface PostSubmitAnswerResponseData {
   id: string;
   studentId: string;
   assessmentId: string;
-  answers: string[];
+  answers: Record<string, string>;
   score: number;
   createdAt: string;
   updatedAt: string;
@@ -116,7 +116,7 @@ export interface CheckAnswerResponseData {
   id: string;
   studentId: string;
   assessmentId: string;
-  answers: string[];
+  answers: Record<string, string>;
   score: number;
   createdAt: string;
   updatedAt: string;
