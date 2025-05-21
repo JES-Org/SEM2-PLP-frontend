@@ -26,7 +26,7 @@ export const notificationApi = createApi({
         url: `/${notificationId}/mark-read/`,
         method: "POST",
       }),
-      invalidatesTags: ['Notifications'], // ✅ Invalidate the tag to refetch unread
+      invalidatesTags: ['Notifications'], 
     }),
   }),
 });

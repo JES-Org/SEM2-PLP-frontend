@@ -45,7 +45,7 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 	} else {
 		items = AdminSideBarItems
 	}
-	const { data: notifications } = useUnreadNotificationsQuery()
+	const { data: notifications, refetch } = useUnreadNotificationsQuery()
 	const [markNotificationAsRead] = useMarkNotificationAsReadMutation()
 
 	const [isOpen, setIsOpen] = useState(false)
@@ -55,7 +55,9 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 	const toggle = () => {
 		setIsOpen(!isOpen)
 	}
-
+	useEffect(() => {
+		refetch()
+	}, [])
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -69,17 +71,11 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 			document.removeEventListener('mousedown', handleClickOutside)
 		}
 	}, [])
-
-	// const notifications = useSelector(selectNotifications) || []
-	console.log('FETCHED NOTIFICATIONS', notifications)
-
 	const handleLogout = () => {
 		console.log('logging out')
 		localStorage.removeItem('currUser')
 		router.replace('/')
 	}
-
-	// const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
 	const togglePopover = (changeTo: boolean) => {
 		if (!changeTo) {
@@ -112,11 +108,9 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 							<PopoverTrigger>
 								<div className='flex items-center  p-2 rounded-lg cursor-pointer hover:bg-primary hover:text-primary-foreground '>
 									<div className='relative'>
-										{notifications?.data && notifications?.data.length > 0 && (
-											<Badge className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-primary-foreground border-2 border-primary-foreground rounded-full -top-3 start-3'>
-												{notifications?.data.length }
-											</Badge>
-										)}
+										<Badge className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-primary-foreground border-2 border-primary-foreground rounded-full -top-3 start-3'>
+											{notifications?.data.length}
+										</Badge>
 
 										<Bell size={24} className='mr-4' />
 									</div>
@@ -135,9 +129,13 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 											<p
 												key={notification.id || i}
 												onClick={() => {
-													markNotificationAsRead({ notificationId: notification.id })
+													markNotificationAsRead({
+														notificationId: notification.id,
+													})
 														.then(() => dispatch(markAsRead(notification.id)))
-														.finally(() => router.push(notification?.url ?? '/'))
+														.finally(() =>
+															router.push(notification?.url ?? '/'),
+														)
 												}}
 												className={cn(
 													'cursor-pointer text-sm p-2 rounded hover:bg-accent hover:text-accent-foreground',
