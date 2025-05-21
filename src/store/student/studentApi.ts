@@ -30,6 +30,12 @@ export const studentAuthApi = createApi({
         method: 'GET'
       })
     }),
+    getStudentByStudentId: builder.query<GetSingleStudentResponse, string>({
+      query: (id) => ({
+        url: `student-id/${id}`,
+        method: 'GET'
+      })
+    }),
     aggregateGetStudentById: builder.query<GetSingleStudentResponse[], {studentIds: any[]}>({
       async queryFn({studentIds}, _queryApi, _extraOptions, fetchWithBQ) {
         const results = await Promise.all(studentIds.map(async (id, _) => {
@@ -82,6 +88,7 @@ export const {
   useStudentSignupMutation, 
   useStudentSigninMutation, 
   useGetStudentByIdQuery, 
+  useGetStudentByStudentIdQuery,
   useEditStudentProfileMutation,
   useAggregateGetStudentByIdQuery,
   useGetStudentProfileQuery,

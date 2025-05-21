@@ -2,7 +2,9 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import Link from 'next/link'; // Import Link for navigation
+import { Eye } from 'lucide-react';
 
 import {
 	useAggregateAssessmentAnalyticsQuery,
@@ -227,18 +229,33 @@ const graphData = assessments.map((assessment) => {
 	const {data: classData} = useGetClassroomByIdQuery(currClassroomId)
 	const studentIds = classData?.data.members?.map((member) => member.id) || []
 
-	const { data: score} = useAggregateSingleAssessmentScoreQuery({
+	const {data: studentData, isLoading: isLoadingStudentData } = useAggregateGetStudentByIdQuery({studentIds: studentIds})
+	console.log("student ids: ", studentData)
+	const fullNames = studentData?.map((student) => `${student.data?.first_name} ${student.data?.last_name}` ) || []
+	console.log("fullnames: ", fullNames)
+
+	const studentNameMap = useMemo(() => {
+		const map = new Map<string, string>();
+		if (studentData) {
+			studentData.forEach(response => { 
+				const studentDetail = response.data; 
+				if (studentDetail?.id && studentDetail.first_name && studentDetail.last_name) {
+					map.set(String(studentDetail.id), `${studentDetail.first_name} ${studentDetail.last_name}`);
+				} else if (studentDetail?.id) {
+					map.set(String(studentDetail.id), `Student ID: ${studentDetail.id}`);
+				}
+			});
+		}
+		return map;
+	}, [studentData]);
+
+	const { data: score, isLoading: isLoadingScores } = useAggregateSingleAssessmentScoreQuery({
 		classroomId: currClassroomId!,
 		assessmentId: selectedAssessment.id,
 		studentIds,
 	})
 
 	console.log('SCORE', score)
-
-	const {data: studentData} = useAggregateGetStudentByIdQuery({studentIds: studentIds})
-	console.log("student ids: ", studentIds)
-	const fullNames = studentData?.map((student) => `${student.data?.first_name} ${student.data?.last_name}` ) || []
-	console.log("fullnames: ", fullNames)
 
 	const handleMetricChange = (selectedLabel: string) => {
 		setSelectedMetric({ label: selectedLabel, isOpen: false })
@@ -437,15 +454,38 @@ const graphData = assessments.map((assessment) => {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{score?.map((record, i) => (
-						<TableRow key={record.data.id} className='text-lg'>
-							<TableCell>{fullNames[i]}</TableCell>
-							<TableCell>{toMonthAndDay(record.data.updatedAt)}</TableCell>
-							<TableCell className='text-right'>
-								{record.data.score}
-							</TableCell>
+					{/* Add loading/empty states for the table */}
+					{isLoadingScores && (
+						<TableRow>
+							<TableCell colSpan={3} className="text-center">Loading scores...</TableCell>
 						</TableRow>
-					))}
+					)}
+					{!isLoadingScores && (!score || score.length === 0) && (
+						<TableRow>
+							<TableCell colSpan={3} className="text-center">No submissions found for this assessment.</TableCell>
+						</TableRow>
+					)}
+					{score?.map((record) => { // record is a CheckAnswerResponse
+						// The record.data.studentId is the ID of the student who made this submission
+						const studentName = studentNameMap.get(String(record.data.studentId)) || `Student ID: ${record.data.studentId}`; // Fallback
+						const reviewUrl = `/teacher/classroom/${currClassroomId}/assessment/${selectedAssessment.id}/submission/${record.data.id}/review/${record.data.studentId}`;
+						return (
+							<TableRow key={record.data.id} className='text-lg'>
+								<TableCell>{studentName}</TableCell>
+								<TableCell>{toMonthAndDay(record.data.updatedAt)}</TableCell>
+								<TableCell className='text-right'>
+									{record.data.score}
+								</TableCell>
+								<TableCell className='text-center'>
+									<Link href={reviewUrl} passHref>
+										<Button variant="outline" size="sm">
+											<Eye className="mr-2 h-4 w-4" /> Review
+										</Button>
+									</Link>
+								</TableCell>
+							</TableRow>
+						);
+					})}
 				</TableBody>
 			</Table>
 		</div>

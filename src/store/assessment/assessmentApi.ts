@@ -193,6 +193,24 @@ export const assessmentApi = createApi({
 		// 		return { data: results }
 		// 	},
 		// }),
+		gradeShortAnswers: builder.mutation<
+			CheckAnswerResponse, // Assuming the response structure is similar (includes updated submission)
+			{
+				classroomId: string;
+				assessmentId: string;
+				submissionId: string;
+				question_scores: Record<string, number>; // { "questionId": score }
+			}
+		>({
+			query: ({ classroomId, assessmentId, submissionId, question_scores }) => ({
+				url: `${classroomId}/assessment/${assessmentId}/submission/${submissionId}/grade/`,
+				method: 'PATCH', // Or PUT
+				body: { question_scores },
+			}),
+			invalidatesTags: (result, error, { assessmentId }) => [
+				{ type: 'Assessment', id: assessmentId },
+			],
+		}),
 
 		aggregateAssessmentAnalytics: builder.query<
 			SingleAssessmentAnalyticsResponse[],
@@ -290,4 +308,5 @@ export const {
 	useCrossAssessmentAnalyticsQuery,
 	useAssessmentAnalyticsByTagQuery,
 	useAssessmentAnalyticsByIdQuery,
+	useGradeShortAnswersMutation,
 } = assessmentApi
