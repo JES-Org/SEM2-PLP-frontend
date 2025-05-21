@@ -1,93 +1,97 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
+import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
 
 const baseQueryWithReauth = createBaseQueryWithReauth(
-  'http://localhost:8000/api/learning-path',
+	'http://localhost:8000/api/learning-path',
 )
 
-
 export const chatbotApi = createApi({
-  reducerPath: "chatbotApi",
-  baseQuery: baseQueryWithReauth,
-  tagTypes: ["LearningPath"],
-  endpoints: (builder) => ({
-    greet: builder.mutation({
-      query: (body) => ({
-        url: `/greet/`,
-        method: "POST",
-        body,
-      }),
-    }),
-    detail: builder.mutation({
-      query: (body) => ({
-        url: `/detail/`,
-        method: "POST",
-        body,
-      }),
-    }),
-    generate: builder.mutation({
-      query: (body) => ({
-        url: `/generate/`,
-        method: "POST",
-        body,
-      }),
-    }),
-    save: builder.mutation({
-      query: (body) => ({
-        url: `/save/`,
-        method: "POST",
-        body,
-      }),
-    }),
-    markAsCompleted: builder.mutation({
-      query: ({ studentId, learningPathId }) => ({
-        url: `/learning-paths/${learningPathId}`,
-        method: "PUT",
-        body: JSON.stringify({ "studentId": studentId }),
-      }),
-      invalidatesTags: ["LearningPath"],
-    }),
-    getAllLearningPaths: builder.query({
-      query: (studentId: string) => ({
-        url: `/all-paths`,
-        method: "GET",
-        params: { studentId },
-      }),
-      providesTags: ["LearningPath"],
-    }),
-    getLearningPath: builder.query({
-      query: ({ studentId, learningPathId }) => ({
-        url: `/${learningPathId}/get`,
-        method: "GET",
-        params: { studentId },
-      }),
-    }),
-    deleteLearningPath: builder.mutation({
-      query: ({ studentId, learningPathId }) => ({
-        url: `/${learningPathId}/delete`,
-        method: "DELETE",
-        body: JSON.stringify({ "studentId": studentId })
-      }),
-    }),
-    chatHistory: builder.query({
-      query: (studentId) => ({
-        url: `/chat-history`,
-        method: "GET",
-        params: { studentId },
-      }),
-    }),
-  }),
-});
+	reducerPath: 'chatbotApi',
+	baseQuery: baseQueryWithReauth,
+	tagTypes: ['LearningPath'],
+	endpoints: (builder) => ({
+		greet: builder.mutation({
+			query: (body) => ({
+				url: `/greet/`,
+				method: 'POST',
+				body,
+			}),
+		}),
+		detail: builder.mutation({
+			query: (body) => ({
+				url: `/detail/`,
+				method: 'POST',
+				body,
+			}),
+		}),
+		generate: builder.mutation({
+			query: (body) => ({
+				url: `/generate/`,
+				method: 'POST',
+				body,
+			}),
+		}),
+		save: builder.mutation({
+			query: (body) => ({
+				url: `/save/`,
+				method: 'POST',
+				body,
+			}),
+			invalidatesTags: ['LearningPath'],
+		}),
+		markAsCompleted: builder.mutation({
+			query: ({ studentId, learningPathId }) => ({
+				url: `/mark-completed/${learningPathId}/`,
+				method: 'PUT',
+				body: { studentId },
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}),
+			invalidatesTags: ['LearningPath'],
+		}),
+		getAllLearningPaths: builder.query({
+			query: (studentId: string) => ({
+				url: `/all-paths`,
+				method: 'GET',
+				params: { studentId },
+			}),
+			providesTags: ['LearningPath'],
+		}),
+		getLearningPath: builder.query({
+			query: ({ studentId, learningPathId }) => ({
+				url: `/${learningPathId}/get`,
+				method: 'GET',
+				params: { studentId },
+			}),
+		}),
+		deleteLearningPath: builder.mutation({
+			query: ({ studentId, learningPathId }) => ({
+				url: `/${learningPathId}/delete`,
+				method: 'DELETE',
+				body: JSON.stringify({ studentId: studentId }),
+			}),
+			invalidatesTags: ['LearningPath'],
+		}),
+		chatHistory: builder.query({
+			query: (studentId) => ({
+				url: `/chat-history`,
+				method: 'GET',
+				params: { studentId },
+			}),
+		}),
+	}),
+})
 
 export const {
-  useGreetMutation, 
-  useDetailMutation, 
-  useGenerateMutation, 
-  useSaveMutation,
-  useGetAllLearningPathsQuery, 
-  useGetLearningPathQuery,
-  useDeleteLearningPathMutation, 
-  useMarkAsCompletedMutation,
-  useChatHistoryQuery,
-} = chatbotApi;
+	useGreetMutation,
+	useDetailMutation,
+	useGenerateMutation,
+	useSaveMutation,
+	useGetAllLearningPathsQuery,
+	useGetLearningPathQuery,
+	useDeleteLearningPathMutation,
+	useMarkAsCompletedMutation,
+	useChatHistoryQuery,
+} = chatbotApi
