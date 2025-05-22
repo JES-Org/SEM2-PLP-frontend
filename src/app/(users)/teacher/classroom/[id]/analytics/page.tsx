@@ -12,8 +12,10 @@ import {
 	useAssessmentAnalyticsByIdQuery,
 	useCrossAssessmentAnalyticsQuery,
 	useGetAssessmentsQuery,
+	useGetQuestionsQuery,
 } from '@/store/assessment/assessmentApi'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, CheckCheck } from 'lucide-react'
+import { AssessmentQuestion } from '@/types/assessment/assessment.type';
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
@@ -255,7 +257,14 @@ const graphData = assessments.map((assessment) => {
 		studentIds,
 	})
 
-	console.log('SCORE', score)
+	const { data: selectedAssessmentQuestionsData, isLoading: isLoadingSelectedAssessmentQuestions } = useGetQuestionsQuery(
+		{
+			classroomId: currClassroomId!,
+			assessmentId: selectedAssessment.id,
+		},
+		{ skip: !selectedAssessment.id || !currClassroomId }
+	);
+	const questionsForSelectedAssessment: AssessmentQuestion[] = selectedAssessmentQuestionsData?.data?.questions || [];
 
 	const handleMetricChange = (selectedLabel: string) => {
 		setSelectedMetric({ label: selectedLabel, isOpen: false })
@@ -273,6 +282,16 @@ const graphData = assessments.map((assessment) => {
 				?.id!,
 		})
 	}
+
+	useEffect(() => {
+		if (assessments.length > 0 && !selectedAssessment.id) {
+			setSelectedAssessment(prev => ({
+				...prev,
+				label: assessments[0].name,
+				id: assessments[0].id,
+			}));
+		}
+	}, [assessments, selectedAssessment.id]);
 
 	return (
 		<div className='ml-72 mr-10 mt-10 h-screen'>
@@ -471,10 +490,31 @@ const graphData = assessments.map((assessment) => {
 							<TableCell colSpan={3} className="text-center">No submissions found for this assessment.</TableCell>
 						</TableRow>
 					)}
-					{score?.map((record) => { // record is a CheckAnswerResponse
-						// The record.data.studentId is the ID of the student who made this submission
+					{score?.map((record) => {
 						const studentName = studentNameMap.get(String(record.data.studentId)) || `Student ID: ${record.data.studentId}`; // Fallback
 						const reviewUrl = `/teacher/classroom/${currClassroomId}/assessment/${selectedAssessment.id}/submission/${record.data.id}/review/${record.data.studentId}`;
+
+						let allShortAnswersGraded = true;
+						let hasShortAnswers = false;
+
+						if (questionsForSelectedAssessment.length > 0) {
+							for (const question of questionsForSelectedAssessment) {
+								if (question.question_type === 'short_answer') {
+									hasShortAnswers = true;
+									if (record.data.graded_details?.[question.id] === undefined || record.data.graded_details?.[question.id] === null) {
+										allShortAnswersGraded = false;
+										break;
+									}
+								}
+							}
+						} else {
+							allShortAnswersGraded = false;
+						}
+
+						if (questionsForSelectedAssessment.length > 0 && !hasShortAnswers) {
+							allShortAnswersGraded = true;
+						}
+						
 						return (
 							<TableRow key={record.data.id} className='text-lg'>
 								<TableCell>{studentName}</TableCell>
@@ -483,11 +523,19 @@ const graphData = assessments.map((assessment) => {
 									{record.data.score}
 								</TableCell>
 								<TableCell className='text-center'>
-									<Link href={reviewUrl} passHref>
-										<Button variant="outline" size="sm">
-											<Eye className="mr-2 h-4 w-4" /> Review
+									{allShortAnswersGraded ? (
+										<Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700 cursor-default" asChild>
+											<Link href={reviewUrl} passHref>
+												<CheckCheck className="mr-2 h-4 w-4" /> Reviewed
+											</Link>
 										</Button>
-									</Link>
+									) : (
+										<Link href={reviewUrl} passHref>
+											<Button variant="outline" size="sm">
+												<Eye className="mr-2 h-4 w-4" /> Review
+											</Button>
+										</Link>
+									)}
 								</TableCell>
 							</TableRow>
 						);
