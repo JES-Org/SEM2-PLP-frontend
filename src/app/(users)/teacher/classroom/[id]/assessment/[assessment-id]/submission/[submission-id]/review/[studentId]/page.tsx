@@ -61,7 +61,24 @@ const ReviewStudentSubmissionPage = () => {
     const studentAnswersMap: Record<string, string> = submissionData?.answers || {};
 
     const [manualScores, setManualScores] = useState<Record<string, number | null>>({});
-    const [initialMcqScore, setInitialMcqScore] = useState<number>(0);
+
+    const baseMcqScore = useMemo(() => {
+        if (!fetchedQuestions.length || Object.keys(studentAnswersMap).length === 0) {
+            return 0;
+        }
+        let score = 0;
+        fetchedQuestions.forEach(q => {
+            if (q.question_type === 'multiple_choice') {
+                const studentAnswerId = studentAnswersMap[q.id];
+                const correctAnswer = q.answers.find(opt => opt.is_correct);
+                if (correctAnswer && studentAnswerId === String(correctAnswer.id)) {
+                    score += q.weight || 0;
+                }
+            }
+        });
+        // console.log("Calculated baseMcqScore:", score);
+        return score;
+    }, [fetchedQuestions, studentAnswersMap]);
 
     useEffect(() => {
         if (submissionData) {
@@ -81,16 +98,6 @@ const ReviewStudentSubmissionPage = () => {
             });
             setManualScores(initialManual);
 
-            let baseMcqScore = submissionData.score || 0;
-            if (submissionData.graded_details) {
-                for (const qId in submissionData.graded_details) {
-                    const question = fetchedQuestions.find(fq => fq.id === qId);
-                    if (question && question.question_type === 'short_answer') {
-                        baseMcqScore -= (submissionData.graded_details[qId] || 0);
-                    }
-                }
-            }
-            setInitialMcqScore(Math.max(0, baseMcqScore));
         } else if (fetchedQuestions.length > 0) {
             const initialNullScores: Record<string, number | null> = {};
             fetchedQuestions.forEach(q => {
@@ -99,9 +106,8 @@ const ReviewStudentSubmissionPage = () => {
                 }
             });
             setManualScores(initialNullScores);
-            setInitialMcqScore(0);
         }
-    }, [submissionData, fetchedQuestions, studentAnswersMap]);
+    }, [submissionData, fetchedQuestions]);
 
 
     const handleManualScoreChange = (questionId: string, score: string, maxWeight: number) => {
@@ -114,14 +120,14 @@ const ReviewStudentSubmissionPage = () => {
     };
 
     const calculatedTotalScore = useMemo(() => {
-        let total = initialMcqScore;
+        let total = baseMcqScore;
         fetchedQuestions.forEach(q => {
             if (q.question_type === 'short_answer' && manualScores[q.id] !== null && manualScores[q.id] !== undefined) {
                 total += manualScores[q.id]!;
             }
         });
         return total;
-    }, [initialMcqScore, manualScores, fetchedQuestions]);
+    }, [baseMcqScore, manualScores]);
 
 
     const handleSaveGrades = async () => {
@@ -131,10 +137,7 @@ const ReviewStudentSubmissionPage = () => {
         fetchedQuestions.forEach(q => {
             if (q.question_type === 'short_answer') {
                 const score = manualScores[q.id];
-                if (score === null || score === undefined) { // Or some other validation
-                    // toast.error(`Please grade short answer question: "${q.text.substring(0,30)}..."`);
-                    // allShortAnswersGradedOrZero = false;
-                    // For now, let's assume null means 0 if not graded
+                if (score === null || score === undefined) { 
                     scoresToSubmit[q.id] = 0;
                 } else {
                     scoresToSubmit[q.id] = score;
@@ -148,9 +151,7 @@ const ReviewStudentSubmissionPage = () => {
                 classroomId: currClassroomId,
                 assessmentId: currAssessmentId,
                 studentId: studentId,
-                question_scores: scoresToSubmit, // Map of { questionId: score } for short answers
-                // currentMcqScore: initialMcqScore, // Send this if backend needs it to calculate total
-                // submissionData: submissionData // For mock
+                question_scores: scoresToSubmit,
             };
             // console.log("Payload for grading:", payload);
             const result = await gradeShortAnswers(payload).unwrap();
