@@ -3,132 +3,115 @@
 import React, { useEffect, useState } from 'react'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { useTeacherClassroomQuery } from '@/store/classroom/classroomApi'
+import {
+	useArchiveClassroomMutation,
+	useTeacherClassroomQuery,
+	useUnarchiveClassroomMutation,
+} from '@/store/classroom/classroomApi'
 import { openDialog } from '@/store/features/classroomDialogSlice'
 import { useGetTeacherByIdQuery } from '@/store/teacher/teacherApi'
-import { Users } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 
+import ClassroomCard from '@/components/ClassroomCard'
 import ClassroomDeleteDialog from '@/components/ClassroomDeleteDialog'
-import { EllipsisVertical } from '@/components/Icons'
 import SearchAndBell from '@/components/SearchAndBell'
 import Spinner from '@/components/Spinner'
 import { Button } from '@/components/ui/button'
-import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 const ListOfClassroomPage = () => {
 	const router = useRouter()
-	const { getItem: getCurrUser } = useLocalStorage('currUser')
-	const currUser = getCurrUser()
+	const dispatch = useDispatch()
+	const { getItem } = useLocalStorage('currUser')
+	const currUser = getItem()
+
 	const [searchTerm, setSearchTerm] = useState('')
 
 	const { data: currUserData, isSuccess: isSuccessCurrUser } =
-		useGetTeacherByIdQuery(currUser.id)
+		useGetTeacherByIdQuery(currUser?.id)
 	const {
 		data: classrooms,
 		isSuccess: isSuccessClassrooms,
-		isLoading: isLoadingClassrooms,
-		isFetching: isFetchingClassrooms,
-		isError: isErrorClassrooms,
-		error: classroomsError,
-		refetch: refetchClassrooms,
-	} = useTeacherClassroomQuery(currUser.teacher.id, {
+		isLoading,
+		refetch,
+	} = useTeacherClassroomQuery(currUser?.teacher?.id, {
 		skip: !isSuccessCurrUser,
 	})
-	const dispatch = useDispatch()
 
-	const filteredClassrooms = classrooms?.data.filter((classroom) =>
-		classroom.name.toLowerCase().includes(searchTerm.toLowerCase()),
+	const [archiveClassroom] = useArchiveClassroomMutation()
+	const [unarchiveClassroom] = useUnarchiveClassroomMutation()
+
+	const filteredClassrooms = classrooms?.data?.filter((c) =>
+		c.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	)
+	const unarchivedClassrooms =
+		filteredClassrooms?.filter((c) => !c.is_archived) || []
+	const archivedClassrooms =
+		filteredClassrooms?.filter((c) => c.is_archived) || []
+	const handleDelete = (id: string) => {
+		dispatch(openDialog({ activeDialog: 'delete', classroomIdTobeDeleted: id }))
+		refetch()
+	}
 
-	const onDelete = (classroomid: string) => {
-		console.log('Classroom Delete is clicked')
-		dispatch(
-			openDialog({
-				activeDialog: 'delete',
-				classroomIdTobeDeleted: classroomid,
-			}),
-		)
-		refetchClassrooms()
+	const handleArchiveToggle = async (id: string, is_archived: boolean) => {
+		if (is_archived) await unarchiveClassroom(id)
+		else await archiveClassroom(id)
+		refetch()
 	}
 
 	return (
 		<div className='md:flex overflow-x-hidden md:w-11/12 md:ml-auto h-screen'>
 			<ClassroomDeleteDialog />
 			<div className='flex-1 mt-20 md:pl-40'>
-				<div>
-					<SearchAndBell onSearchChange={setSearchTerm} />
-				</div>
+				<SearchAndBell onSearchChange={setSearchTerm} />
 
-				{isLoadingClassrooms || isFetchingClassrooms ? (
+				{isLoading ? (
 					<div className='flex justify-center items-center'>
 						<Spinner />
 					</div>
-				) : filteredClassrooms?.length === 0 ? (
-					<div className='flex justify-center items-center'>
-						{searchTerm ? (
-							<p className='text-2xl text-gray-400 font-bold'>
-								Search Result not found
-							</p>
+				) : (
+					<div className='md:mx-7'>
+						{/* Active Classrooms */}
+						<h2 className='text-xl font-bold my-4'>Active Classrooms</h2>
+						{unarchivedClassrooms.length === 0 ? (
+							<p className='text-gray-400 mb-4'>No active classrooms found.</p>
 						) : (
-							<p className='text-2xl text-gray-400 font-bold'>
-								No classroom available
-							</p>
+							<div className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10'>
+								{unarchivedClassrooms.map((classroom) => (
+									<ClassroomCard
+										key={classroom.id}
+										classroom={classroom}
+										router={router}
+										onArchiveToggle={handleArchiveToggle}
+										onDelete={handleDelete}
+									/>
+								))}
+							</div>
+						)}
+
+						{/* Archived Classrooms */}
+						{archivedClassrooms.length > 0 && (
+							<div>
+								<h2 className='text-xl font-bold my-4'>Archived Classrooms</h2>
+
+								<div className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-4'>
+									{archivedClassrooms.map((classroom) => (
+										<ClassroomCard
+											key={classroom.id}
+											classroom={classroom}
+											router={router}
+											onArchiveToggle={handleArchiveToggle}
+											onDelete={handleDelete}
+										/>
+									))}
+								</div>
+							</div>
 						)}
 					</div>
-				) : (
-					<div className='md:grid  md:grid-cols-2 lg:grid-cols-3 gap-4  md:mx-7 left-0 mx-auto '>
-						{filteredClassrooms?.map((classroom) => (
-							<div
-								key={classroom.id}
-								className='w-full mb-2 md:mb-0 hover:border hover:border-primary hover:rounded-xl transition duration-300 cursor-pointer'
-								onClick={() =>
-									router.push(`/teacher/classroom/${classroom.id}/announcement`)
-								}
-							>
-								<Card>
-									<CardHeader className='flex flex-row justify-between'>
-										<CardTitle>{classroom.name}</CardTitle>
-										<DropdownMenu>
-											<DropdownMenuTrigger>
-												<EllipsisVertical className='h-4 w-4' />
-											</DropdownMenuTrigger>
-											<DropdownMenuContent>
-												<DropdownMenuItem
-													className='hover:bg-destructive hover:text-destructive-foreground cursor-pointer'
-													onClick={(e) => {
-														e.stopPropagation()
-														onDelete(classroom.id)
-													}}
-												>
-													Delete
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</CardHeader>
-
-									<CardFooter>
-										<div className='flex items-center w-full justify-between'>
-											<div className='flex items-center'>
-												<Users size={20} className='mr-2' />
-												<p>{classroom.members?.length}</p>
-											</div>
-											<p>{classroom.courseNo}</p>
-										</div>
-									</CardFooter>
-								</Card>
-							</div>
-						))}
-					</div>
 				)}
+
+				{/* Create Button */}
 				<div className='ml-8 mt-10 block'>
 					<Button>
 						<Link href='/teacher/classroom/create-classroom'>
