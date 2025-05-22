@@ -22,10 +22,8 @@ import {
 const ClassroomDeleteDialog = () => {
 	const dialogType = useSelector(selectClassroomDialogType)
 	const classroomIdTobeDeleted = useSelector(selectClassroomIdTobeDeleted)
-	console.log(`DIALOG_TYPE ${dialogType}`)
 	const dispatch = useDispatch()
 	const currClassroomId = useSelector(selectCurrClassroomId)
-	console.log(`CURR_CLASSROOM_ID ${currClassroomId}`)
 	const [deleteClassroom, { isLoading, isSuccess, isError, error }] =
 		useDeleteClassroomMutation()
 

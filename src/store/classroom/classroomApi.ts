@@ -98,7 +98,22 @@ export const classroomApi = createApi({
         params: { studentId, classroomId }
       }),
       invalidatesTags: (result, error, { classroomId }) => [{ type: 'Classroom', id: classroomId }],
-    })
+    }),
+     archiveClassroom: builder.mutation({
+      query: (id ) => ({
+        url: `/${id}/archive/`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Classroom', id }],
+    }),
+
+    unarchiveClassroom: builder.mutation({
+      query: (id ) => ({
+        url: `/${id}/unarchive/`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Classroom', id }],
+    }),
   })
 })
 
@@ -113,4 +128,6 @@ export const {
   useSearchClassroomQuery, 
   useAddStudentMutation, 
   useRemoveStudentMutation,
+  useArchiveClassroomMutation,
+  useUnarchiveClassroomMutation,
 } = classroomApi
