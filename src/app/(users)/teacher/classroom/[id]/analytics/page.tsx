@@ -417,7 +417,9 @@ const graphData = assessments.map((assessment) => {
 					<CardContent className='flex flex-col items-center justify-center gap-2 mt-4'>
 						<div className='flex items-center justify-center w-20 h-20 rounded-full bg-accent'>
 							<span className='text-4xl text-accent-foreground font-bold'>
-								{singleAssessmentAnalytics?.data?.meanScore || 'N/A'}
+								{singleAssessmentAnalytics?.data?.meanScore !== undefined
+									? Number(singleAssessmentAnalytics.data.meanScore).toFixed(2)
+									: 'N/A'}
 							</span>
 						</div>
 						<div className='text-primary'>Mean Grade</div>
@@ -427,7 +429,9 @@ const graphData = assessments.map((assessment) => {
 					<CardContent className='flex flex-col items-center justify-center gap-2 mt-4'>
 						<div className='flex items-center justify-center w-20 h-20 rounded-full bg-accent'>
 							<span className='text-4xl text-accent-foreground font-bold'>
-								{singleAssessmentAnalytics?.data?.medianScore || 'N/A'}
+								{singleAssessmentAnalytics?.data?.medianScore !== undefined
+									? Number(singleAssessmentAnalytics.data.medianScore).toFixed(2)
+									: 'N/A'}
 							</span>
 						</div>
 						<div className='text-primary'>Median Grade</div>
@@ -437,7 +441,9 @@ const graphData = assessments.map((assessment) => {
 					<CardContent className='flex flex-col items-center justify-center gap-2 mt-4'>
 						<div className='flex items-center justify-center w-20 h-20 rounded-full bg-accent'>
 							<span className='text-4xl text-accent-foreground font-bold'>
-								{singleAssessmentAnalytics?.data?.totalSubmissions || 'N/A'}
+								{singleAssessmentAnalytics?.data?.totalSubmissions !== undefined
+									? singleAssessmentAnalytics.data.totalSubmissions
+									: 'N/A'}
 							</span>
 						</div>
 						<div className='text-primary'>Total Submissions</div>
