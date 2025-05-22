@@ -4,7 +4,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { CheckCircle, XCircle, Edit3, Save, MessageSquareText } from 'lucide-react'
+import { CheckCircle, XCircle, Edit3, Save, MessageSquareText, ArrowLeft } from 'lucide-react'
 
 import {
     useGetQuestionsQuery, // To get all assessment questions, types, model answers
@@ -27,13 +27,9 @@ import { Label } from '@/components/ui/label'
 const ReviewStudentSubmissionPage = () => {
     const router = useRouter()
     const pathSegments = usePathname().split('/')
-    // Assuming URL like /classroom/{cid}/assessments/{aid}/submissions/{sid}/review
-    // Or /classroom/{cid}/analytics/assessment/{aid}/student/{studentId}/review
-    // Adjust indices based on your actual URL structure
     const currClassroomId = pathSegments[pathSegments.indexOf('classroom') + 1]
-    const currAssessmentId = pathSegments[pathSegments.indexOf('assessment') + 1] // or 'assessments'
-    const studentId = pathSegments[pathSegments.indexOf('review') + 1] // or 'students'
-    // // If you have submissionId in URL:
+    const currAssessmentId = pathSegments[pathSegments.indexOf('assessment') + 1]
+    const studentId = pathSegments[pathSegments.indexOf('review') + 1]
     const submissionId = pathSegments[pathSegments.indexOf('submission') + 1];
 
 
@@ -64,8 +60,6 @@ const ReviewStudentSubmissionPage = () => {
     const submissionData = submissionQueryData?.data; // This is CheckAnswerResponseData
     const studentAnswersMap: Record<string, string> = submissionData?.answers || {};
 
-    // State for manually entered scores for short answer questions
-    // Key: question.id, Value: score (number)
     const [manualScores, setManualScores] = useState<Record<string, number | null>>({});
     const [initialMcqScore, setInitialMcqScore] = useState<number>(0);
 
@@ -76,9 +70,7 @@ const ReviewStudentSubmissionPage = () => {
 
             fetchedQuestions.forEach(q => {
                 if (q.question_type === 'short_answer') {
-                    // If your backend stores partial scores for short answers, prefill here
-                    // For now, assume they start un-graded or at 0 for manual input
-                    initialManual[q.id] = submissionData.partial_scores?.[q.id] || null; // Assuming partial_scores if available
+                    initialManual[q.id] = submissionData.graded_details?.[q.id] ?? null;
                 } else if (q.question_type === 'multiple_choice') {
                     const studentAnswerId = studentAnswersMap[q.id];
                     const correctAnswer = q.answers.find(opt => opt.is_correct);
@@ -88,10 +80,26 @@ const ReviewStudentSubmissionPage = () => {
                 }
             });
             setManualScores(initialManual);
-            // If submissionData.score is ONLY MCQ score, use it.
-            // If it's a total score already including some manual grades, you might need to adjust.
-            // For simplicity, let's assume submissionData.score is the initial auto-score (MCQs).
-            setInitialMcqScore(submissionData.score || 0);
+
+            let baseMcqScore = submissionData.score || 0;
+            if (submissionData.graded_details) {
+                for (const qId in submissionData.graded_details) {
+                    const question = fetchedQuestions.find(fq => fq.id === qId);
+                    if (question && question.question_type === 'short_answer') {
+                        baseMcqScore -= (submissionData.graded_details[qId] || 0);
+                    }
+                }
+            }
+            setInitialMcqScore(Math.max(0, baseMcqScore));
+        } else if (fetchedQuestions.length > 0) {
+            const initialNullScores: Record<string, number | null> = {};
+            fetchedQuestions.forEach(q => {
+                if (q.question_type === 'short_answer') {
+                    initialNullScores[q.id] = null;
+                }
+            });
+            setManualScores(initialNullScores);
+            setInitialMcqScore(0);
         }
     }, [submissionData, fetchedQuestions, studentAnswersMap]);
 
@@ -134,8 +142,6 @@ const ReviewStudentSubmissionPage = () => {
             }
         });
 
-        // if (!allShortAnswersGradedOrZero) return; // Uncomment if grading all is mandatory
-
         try {
             const payload = {
                 submissionId: submissionData?.id, // You need the submission ID
@@ -159,6 +165,10 @@ const ReviewStudentSubmissionPage = () => {
         }
     };
 
+    const handleBackToAnalytics = () => {
+        router.push(`/teacher/classroom/${currClassroomId}/analytics`);
+    };
+
 
     if (isLoadingAssessment || isLoadingSubmission || isLoadingStudent || !assessmentData || !submissionData || !studentInfo) {
         return <div className="flex justify-center items-center h-screen"><Spinner /></div>;
@@ -171,6 +181,12 @@ const ReviewStudentSubmissionPage = () => {
 
     return (
         <div className="ml-72 mr-10 mt-10 pb-20">
+            <div className="mb-6">
+                <Button variant="outline" onClick={handleBackToAnalytics}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Assessment Analytics
+                </Button>
+            </div>
             <Card className="mb-6">
                 <CardHeader>
                     <div className="flex justify-between items-center">
