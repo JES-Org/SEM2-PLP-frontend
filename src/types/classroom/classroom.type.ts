@@ -11,6 +11,7 @@ export interface Classroom {
   id: string;
   createdAt: Date;
   updatedAt: Date;
+  is_archived: boolean;
 }
 
 export interface CreateClassroomRequest {
