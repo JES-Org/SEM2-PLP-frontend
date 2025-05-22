@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import {
@@ -62,6 +62,13 @@ const TakeAssessment = () => {
 	const [hasSubmitted, setHasSubmitted] = useState(false)
 	const [isReviewMode, setIsReviewMode] = useState(false)
     const [submissionGradedDetails, setSubmissionGradedDetails] = useState<Record<string, number> | undefined>(undefined);
+
+	const totalPossibleAssessmentWeight = useMemo(() => {
+		if (!fetchedQuestions || fetchedQuestions.length === 0) {
+			return 0;
+		}
+		return fetchedQuestions.reduce((sum, question) => sum + (question.weight || 0), 0);
+	}, [fetchedQuestions]);
 
 
 	useEffect(() => {
@@ -154,7 +161,9 @@ const TakeAssessment = () => {
                             </span>
 							<div className='flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary text-primary-foreground'>
 								<span className='text-3xl md:text-4xl font-bold'>
-									{hasSubmitted && currentDisplayScore !== undefined ? currentDisplayScore : '-'}
+									{hasSubmitted && currentDisplayScore !== undefined
+                                        ? `${currentDisplayScore} / ${totalPossibleAssessmentWeight}`
+                                        : '-'}
 								</span>
 							</div>
 						</div>
@@ -273,10 +282,12 @@ const TakeAssessment = () => {
 											<div>
                                                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Your Answer:</p>
                                                 <Textarea
-                                                    value={studentResponse || "You did not provide an answer."}
-                                                    readOnly
-                                                    className="min-h-[80px] p-3 bg-gray-100 dark:bg-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 rounded-md"
-                                                />
+													placeholder="Type your answer here..."
+													value={studentResponse || ''}
+													onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+													disabled={isReviewMode || hasSubmitted}
+													className="min-h-[100px] p-3 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-md"
+												/>
                                             </div>
                                             {isReviewMode && question.model_answer && (
                                                 <div>
