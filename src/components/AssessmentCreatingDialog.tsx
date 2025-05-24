@@ -7,7 +7,7 @@ import {
 } from '@/store/features/assessmentDialogSlice'
 import { selectCurrClassroomId } from '@/store/features/classroomSlice'
 import { DropdownMenuCheckboxItemProps } from '@radix-ui/react-dropdown-menu'
-import { format } from 'date-fns'
+import { format, isBefore, startOfToday } from 'date-fns'
 import { CalendarClock } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
@@ -147,6 +147,9 @@ const AssessmentCreatingDialog = () => {
 									onSelect={(date) => {
 										SetFormState((prev) => ({ ...prev, deadline: date }))
 									}}
+
+								disabled={(date) => isBefore(date, startOfToday())}
+									
 								/>
 							</PopoverContent>
 						</Popover>

@@ -94,7 +94,7 @@ export const announcementApi = createApi({
 		}),
 		deleteAnnouncement: builder.mutation<void, DeleteAnnouncementParams>({
 			query: ({ classRoomId, announcementId }) => ({
-				url: `/${classRoomId}/announcements/${announcementId}`,
+				url: `/${classRoomId}/announcements/${announcementId}/`,
 				method: 'DELETE',
 			}),
 			invalidatesTags: (result, error, { classRoomId }) => [
