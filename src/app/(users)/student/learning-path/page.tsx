@@ -1,23 +1,33 @@
 'use client'
+
 import { useEffect } from 'react'
+
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useGetAllLearningPathsQuery } from '@/store/chatbot/chatbotApi'
 import { Plus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+
 import LearningPathCard from '@/components/LearningPathCard'
+import LearningPathDeleteDialog from '@/components/LearningPathDeleteDialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
- 
 
 const LearningPathPage = () => {
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
 	const router = useRouter()
 
-	const {data, isLoading, isFetching, isError,refetch} = useGetAllLearningPathsQuery(currUser?.id!)
+	const { data, isLoading, isFetching, isError, refetch } =
+		useGetAllLearningPathsQuery(currUser?.id!)
+	const completedPaths =
+		data?.learningPaths.filter((path) => path.completion_percentage === 100) ||
+		[]
+	const ongoingPaths =
+		data?.learningPaths.filter((path) => path.completion_percentage < 100) || []
+	console.log('paths data ', data)
 	return (
 		<div className='ml-72 h-screen'>
+			<LearningPathDeleteDialog />
 			<Button
 				className='fixed bottom-6 right-6 rounded-full p-0 h-12 w-12 flex items-center justify-center bg-primary text-primary-foreground animate-bounce'
 				onClick={() => router.push('/student/learning-path/generate')}
@@ -26,47 +36,52 @@ const LearningPathPage = () => {
 			</Button>
 			<Tabs defaultValue='Ongoing' className='mx-4 my-4'>
 				<TabsList className='grid w-full grid-cols-2'>
-					<TabsTrigger value='Ongoing'>Ongoing</TabsTrigger>
-					<TabsTrigger value='Completed'>Completed</TabsTrigger>
+					<TabsTrigger value='Ongoing'>
+						Ongoing ({ongoingPaths.length})
+					</TabsTrigger>
+					<TabsTrigger value='Completed'>
+						Completed ({completedPaths.length})
+					</TabsTrigger>
 				</TabsList>
 				<TabsContent
 					value='Ongoing'
 					className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
 				>
-					{data?.learningPaths.map(
-						(path: any, i: number) =>
-							!path.isCompleted && (
-								<LearningPathCard
-									key={i}
-									userId={currUser?.id}
-									id={path.id}
-									title={path.title}
-									deadline={path.deadline}
-									isCompleted={path.isCompleted}
-									content={path.content}
-								/>
-							),
-					)}
+					{ongoingPaths.length > 0 ? (
+						ongoingPaths.map((path) => (
+							<LearningPathCard
+								key={path.id}
+								path={path}
+								userId={currUser?.id}
+							/>
+						))
+					) : (
+						<div className='flex items-center  my-40  mx-60 text-muted-foreground italic'>
+							No Learning path yet !!
+						</div>
+					)
+					}
 				</TabsContent>
-				<TabsContent
-					value='Completed'
-					className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-				>
-					{data?.learningPaths.map(
-						(path: any, i: number) =>
-							path.isCompleted && (
-								<LearningPathCard
-									key={i}
-									userId={currUser?.id}
-									id={path.learningPathId}
-									title={path.learningPathTitle}
-									deadline={path.deadline}
-									isCompleted={path.isCompleted}
-									content={path.content}
-								/>
-							),
-					)}
-				</TabsContent>
+					<TabsContent
+						value='Completed'
+						className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
+					>
+						{completedPaths.length > 0 ? (
+							completedPaths.map((path) => (
+							<LearningPathCard
+								key={path.id}
+								path={path}
+								userId={currUser?.id}
+							/>
+							))
+							) : (
+					<div className='flex items-center my-40  mx-60 w-full text-muted-foreground italic'>
+						No completed learning paths yet.
+					</div>
+				)
+					}
+					</TabsContent>
+				
 			</Tabs>
 		</div>
 	)
