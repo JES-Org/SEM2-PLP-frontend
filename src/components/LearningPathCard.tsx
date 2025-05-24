@@ -1,11 +1,17 @@
 import { useState } from 'react'
 
-import { useMarkAsCompletedMutation } from '@/store/chatbot/chatbotApi'
+import {
+	useMarkAsCompletedMutation,
+	useToggleTaskCompletionMutation,
+} from '@/store/chatbot/chatbotApi'
+import { LearningPath, Task } from '@/types/learningPath/pathType'
 import { CalendarX } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { toMonthAndDay } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
+import { useDispatch } from 'react-redux'
+import { EllipsisVertical } from './Icons'
 import MarkdownRenderer from './MarkdownRenderer'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
@@ -17,96 +23,176 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from './ui/dialog'
-
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from './ui/dropdown-menu'
+import { openDialog } from '@/store/features/learningPathDialogSlice'
 interface LearningPathCardProps {
-	id: string
+	path: LearningPath
 	userId: string
-	title: string
-	deadline: string
-	isCompleted: boolean
-	content: string
 }
-
-const LearningPathCard = ({
-	id,
-	userId,
-	title,
-	deadline,
-	isCompleted,
-	content,
-}: LearningPathCardProps) => {
+const LearningPathCard = ({ userId, path }: LearningPathCardProps) => {
 	const [isExpanded, setIsExpanded] = useState(false)
 	const [showDialog, setShowDialog] = useState(false)
-
-	const [complete, { isLoading,isError}] = useMarkAsCompletedMutation()
-
-	const handleComplete = async (e: any) => {
-		e.stopPropagation()
+    const dispatch = useDispatch()
+	
+	const [complete, { isLoading, isError }] = useMarkAsCompletedMutation()
+	const [toggleTask] = useToggleTaskCompletionMutation()
+	const handleToggleTask = async (taskId: string, e: React.SyntheticEvent) => {
+		e.stopPropagation?.()
 		try {
-			await complete({ studentId: userId, learningPathId: id })
-			toast.success('Marked as completed')
+			await toggleTask({ taskId }).unwrap()
+			toast.success('Task status updated')
 		} catch (error) {
-			toast.error('Error marking as completed')
+			toast.error('Failed to update task status')
 		}
 	}
-
-
+	const handleDelete = (id: string) => {
+      dispatch(openDialog({ activeDialog: 'delete', learningPathId:id }));
+	}
 	return (
 		<>
 			<Card className='cursor-pointer' onClick={() => setShowDialog(true)}>
-				<CardHeader className='px-6 pt-6 pb-4'>
-					<CardTitle className='text-2xl font-bold'>{title}</CardTitle>
-					<div className='flex items-center gap-2 mt-2'>
-						<Badge
-							variant='outline'
-							className={cn('rounded-full', {
-								'bg-green-100 dark:bg-green-900 text-green-500 dark:text-green-400':
-									isCompleted,
-								'bg-blue-100 dark:bg-blue-900 text-blue-500 dark:text-blue-400':
-									!isCompleted,
-							})}
-						>
-							{isCompleted ? 'Completed' : 'Ongoing'}
-						</Badge>
-						{!isCompleted && (
-							<Button
-								variant='outline'
-								size='sm'
-								className='ml-auto'
-								onClick={(e) => handleComplete(e)}
+				<CardHeader className='flex flex-row justify-between'>
+					<CardTitle className='text-2xl font-bold'>{path.title}</CardTitle>
+
+					<DropdownMenu>
+						<DropdownMenuTrigger>
+							<EllipsisVertical className='h-4 w-4' />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem
+								className='hover:bg-destructive hover:text-destructive-foreground cursor-pointer'
+								onClick={(e) => {
+									e.stopPropagation()
+									handleDelete(path.id)
+								}}
 							>
-								Complete
-							</Button>
-						)}
-					</div>
+								Delete
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</CardHeader>
-				<CardContent className='relative max-h-32 overflow-hidden'>
-					<div className='line-clamp-5'>
-						<MarkdownRenderer content={content} />
+				<CardContent className='flex flex-row justify-between'>
+					<div className='flex items-center gap-2 mt-2'>
+						<span className='text-md text-muted-foreground'>
+							progress:  {Math.round(path.completion_percentage)}% 
+						</span>
 					</div>
+					<div className='line-clamp-3'>{path.tasks.length} tasks</div>
 				</CardContent>
-				<CardFooter className='mt-4 flex flex-row gap-x-2'>
-					<CalendarX size={16} />
-					<p>{toMonthAndDay(deadline)}</p>
-				</CardFooter>
+				{path.deadline && (
+					<CardFooter className='mt-4 flex flex-row gap-x-2'>
+						<CalendarX size={16} />
+						<p>{toMonthAndDay(path.deadline)}</p>
+					</CardFooter>
+				)}
 			</Card>
 
 			<Dialog open={showDialog} onOpenChange={setShowDialog}>
 				<DialogContent className='w-full max-w-4xl max-h-[80vh] overflow-auto'>
 					<DialogHeader>
-						<DialogTitle>{title}</DialogTitle>
-						<DialogDescription>
-							Deadline: {toMonthAndDay(deadline)}
-						</DialogDescription>
+						<DialogTitle>{path.title}</DialogTitle>
+						{path.deadline && (
+							<DialogDescription>
+								Deadline: {toMonthAndDay(path.deadline)}
+							</DialogDescription>
+						)}
 					</DialogHeader>
-					<div className='overflow-auto max-h-[60vh]'>
-						<MarkdownRenderer content={content} />
+
+					<div className='space-y-6'>
+						{/* Prerequisites Section */}
+						{path.tasks.find((task) => task.category === 'PREREQUISITE') && (
+							<TaskSection
+								title='Prerequisites'
+								tasks={path.tasks.filter(
+									(task) => task.category === 'PREREQUISITE',
+								)}
+								onToggle={handleToggleTask}
+							/>
+						)}
+
+						{/* Weekly Tasks Section */}
+						{path.tasks.some((task) => task.category === 'WEEK') && (
+							<div className='space-y-4'>
+								<h3 className='font-semibold text-lg'>Weekly Tasks</h3>
+								{Array.from(
+									new Set(
+										path.tasks
+											.filter((task) => task.category === 'WEEK')
+											.map((task) => task.week_number),
+									),
+								).map((weekNum) => (
+									<TaskSection
+										key={weekNum}
+										title={`Week ${weekNum}`}
+										tasks={path.tasks.filter(
+											(task) =>
+												task.category === 'WEEK' &&
+												task.week_number === weekNum,
+										)}
+										onToggle={handleToggleTask}
+									/>
+								))}
+							</div>
+						)}
+
+						{/* Resources Section */}
+						{path.tasks.find((task) => task.category === 'RESOURCE') && (
+							<TaskSection
+								title='Additional Resources'
+								tasks={path.tasks.filter(
+									(task) => task.category === 'RESOURCE',
+								)}
+								onToggle={handleToggleTask}
+							/>
+						)}
 					</div>
-					<div className='mt-4'></div>
 				</DialogContent>
 			</Dialog>
 		</>
 	)
 }
+interface TaskSectionProps {
+	title: string
+	tasks: Task[]
+	onToggle: (taskId: string, e: React.SyntheticEvent) => Promise<void>
+}
 
+const TaskSection = ({ title, tasks, onToggle }: TaskSectionProps) => (
+	<div className='space-y-2'>
+		{tasks.map((task) => (
+			<div key={task.id} className='flex flex-col'>
+				<div className='flex justify-between items-center w-full'>
+					<h4
+						className={cn('font-medium', {
+							'line-through text-muted-foreground': task.is_completed,
+						})}
+					>
+						{task.title}
+						{task.day_range && (
+							<span className='text-sm text-muted-foreground ml-2'>
+								(Days {task.day_range})
+							</span>
+						)}
+					</h4>
+
+					<input
+						type='checkbox'
+						checked={task.is_completed}
+						onChange={(e) => onToggle(task.id, e)}
+						className='ml-4 w-5 h-5 accent-green-500 rounded focus:ring-2 focus:ring-offset-1 focus:ring-green-500'
+					/>
+				</div>
+
+				<div className='text-sm text-muted-foreground mt-2'>
+					<MarkdownRenderer content={task.description} />
+				</div>
+			</div>
+		))}
+	</div>
+)
 export default LearningPathCard
