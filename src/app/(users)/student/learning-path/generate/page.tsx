@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { RootState } from '@/store'
@@ -12,7 +12,7 @@ import {
 } from '@/store/chatbot/chatbotApi'
 import { addMessage } from '@/store/features/chatbotSlice'
 import { CalendarIcon } from '@radix-ui/react-icons'
-import { format } from 'date-fns'
+import { format, isBefore, startOfToday } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
@@ -48,9 +48,9 @@ const GenerateLearningPathPage = () => {
 	const [typing, setTyping] = useState(false)
 	const [showGenerateButton, setShowGenerateButton] = useState(true)
 	const [showTitleDialog, setShowTitleDialog] = useState(false)
-	const [learningPathTitle, setLearningPathTitle] = useState('')
 	const [date, setDate] = useState<Date>()
 	const router = useRouter()
+	const pathTitleinputRef = useRef<HTMLInputElement>(null)
 
 	const currUserId = getCurrUser().id
 	const [
@@ -151,18 +151,18 @@ const GenerateLearningPathPage = () => {
 	}
 
 	const runSaveMutation = async () => {
+		const pathTitle = pathTitleinputRef.current?.value 
+		if (!pathTitle?.trim()) return
 		try {
 			const saveResponse = await save({
 				studentId: currUserId,
-				learningPathTitle: learningPathTitle,
+				learningPathTitle: pathTitle,
 				deadline: date,
 			}).unwrap()
-			console.log('Learning path saved successfully')
 			toast.success('Learning path saved successfully')
 		} catch (error) {
 			toast.error('CustomEd bot is currently unavailable')
 			router.back()
-			console.error('Error in save mutation:', error)
 		}
 	}
 
@@ -203,7 +203,10 @@ const GenerateLearningPathPage = () => {
 
 	return (
 		<div className='ml-72'>
-			<Dialog open={showTitleDialog} onOpenChange={() => setShowTitleDialog(false)}>
+			<Dialog
+				open={showTitleDialog}
+				onOpenChange={() => setShowTitleDialog(false)}
+			>
 				<DialogContent className='sm:max-w-[425px]'>
 					<DialogHeader>
 						<DialogTitle>Learning path title</DialogTitle>
@@ -214,9 +217,9 @@ const GenerateLearningPathPage = () => {
 					<div className='flex flex-col gap-y-2 my-2'>
 						<Label htmlFor='name'>Title</Label>
 						<Input
+							ref={pathTitleinputRef}
+							type='text'
 							id='name'
-							value={learningPathTitle}
-							onChange={(e) => setLearningPathTitle(e.target.value)}
 							className='col-span-3'
 						/>
 						<Label htmlFor='date'>Deadline</Label>
@@ -239,6 +242,7 @@ const GenerateLearningPathPage = () => {
 									selected={date}
 									onSelect={setDate}
 									initialFocus
+									disabled={(date) => isBefore(date, startOfToday())}
 								/>
 							</PopoverContent>
 						</Popover>
@@ -248,7 +252,7 @@ const GenerateLearningPathPage = () => {
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-			<Chat typing={typing} currState={ currState} />
+			<Chat typing={typing} currState={currState} />
 			{showGenerateButton && (
 				<Button
 					className='w-full mt-4'
@@ -257,7 +261,7 @@ const GenerateLearningPathPage = () => {
 						setShowGenerateButton(false)
 					}}
 				>
-				Generate Learning Path
+					Generate Learning Path
 				</Button>
 			)}
 			{currState === 'save' && (
