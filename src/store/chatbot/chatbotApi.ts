@@ -1,10 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
-
+import { LearningPath ,Task} from '@/types/learningPath/pathType';
 const baseQueryWithReauth = createBaseQueryWithReauth(
 	'http://localhost:8000/api/learning-path',
 )
+
+
 
 export const chatbotApi = createApi({
 	reducerPath: 'chatbotApi',
@@ -51,14 +53,37 @@ export const chatbotApi = createApi({
 			}),
 			invalidatesTags: ['LearningPath'],
 		}),
-		getAllLearningPaths: builder.query({
-			query: (studentId: string) => ({
-				url: `/all-paths`,
-				method: 'GET',
-				params: { studentId },
+		// getAllLearningPaths: builder.query({
+		// 	query: (studentId: string) => ({
+		// 		url: `/all-paths`,
+		// 		method: 'GET',
+		// 		params: { studentId },
+		// 	}),
+		// 	providesTags: ['LearningPath'],
+		// }),
+
+	getAllLearningPaths: builder.query<{ learningPaths: LearningPath[] }, string>({
+		query: (studentId) =>
+			
+			 ({
+			url: `/all-paths`,
+			method: 'GET',
+			params: { studentId },
 			}),
-			providesTags: ['LearningPath'],
-		}),
+      providesTags: ['LearningPath']
+	}),
+	
+    toggleTaskCompletion: builder.mutation<
+      { isSuccess: boolean; task: Task },
+      { taskId: string }
+    >({
+      query: (body) => ({
+        url: '/learning-path/toggle-task/',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['LearningPath'],
+    }),	
 		getLearningPath: builder.query({
 			query: ({ studentId, learningPathId }) => ({
 				url: `/${learningPathId}/get`,
@@ -67,10 +92,9 @@ export const chatbotApi = createApi({
 			}),
 		}),
 		deleteLearningPath: builder.mutation({
-			query: ({ studentId, learningPathId }) => ({
-				url: `/${learningPathId}/delete`,
+			query: ( learningPathId) => ({
+				url: `/${learningPathId}/delete/`,
 				method: 'DELETE',
-				body: JSON.stringify({ studentId: studentId }),
 			}),
 			invalidatesTags: ['LearningPath'],
 		}),
@@ -94,4 +118,5 @@ export const {
 	useDeleteLearningPathMutation,
 	useMarkAsCompletedMutation,
 	useChatHistoryQuery,
+	useToggleTaskCompletionMutation,
 } = chatbotApi
