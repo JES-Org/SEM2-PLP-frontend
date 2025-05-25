@@ -147,7 +147,7 @@ const TakeAssessment = () => {
     const currentDisplayScore = scoreQueryData?.data?.score; // Directly from submission data
 
 	return (
-		<div className='ml-72 mr-10 mt-10 pb-20'>
+		<div className='ml-0 mr-0 md:ml-80 md:mr-24 mt-10 pb-20'>
 			<div className='flex flex-col'>
 				<div className='w-full p-4 md:p-8 overflow-auto'> {/* Adjusted padding */}
                     {/* Header with Title and Score */}

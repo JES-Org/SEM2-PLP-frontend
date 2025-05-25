@@ -46,7 +46,7 @@ const ListOfClassroomPage = () => {
 						<div className='flex flex-row justify-center items-center col-span-full'>
 							<Spinner />
 						</div>
-					) : isErrorClassrooms || classrooms === undefined ? (
+					) : isErrorClassrooms ? (
 						<div className='flex flex-row justify-center items-center col-span-full'>
 							<p className='text-red-500'>Failed to load classrooms</p>
 						</div>

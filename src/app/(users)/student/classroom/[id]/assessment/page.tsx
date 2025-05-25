@@ -19,7 +19,7 @@ const AssessmentPage = () => {
 	} = useGetAssessmentsQuery(currClassroomId)
 
 	return (
-		<div className='ml-80 mr-24 mt-10 h-screen'>
+		<div className=' ml-0 mr-0 md:ml-80 md:mr-24 mt-10 h-screen'>
 			{isLoadingAssessments || isFetchingAssessments ? (
 				<div className='flex justify-center items-center'>
 					<Spinner />

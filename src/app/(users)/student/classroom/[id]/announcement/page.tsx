@@ -74,7 +74,7 @@ const StudentAnnouncementPage = () => {
 	console.log(JSON.stringify(data))
 
 	return (
-		<div className='ml-80 mr-24 mt-10 flex flex-col h-screen'>
+		<div className='mt-10 h-screen flex flex-col overflow-hidden ml-0 mr-0 md:ml-80 md:mr-24'>
 			<div className='flex-1 overflow-y-auto no-scrollbar'>
 				{announcements?.data
 					?.slice(0)
