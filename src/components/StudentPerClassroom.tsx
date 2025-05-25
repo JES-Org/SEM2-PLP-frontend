@@ -9,9 +9,7 @@ import {
 import { Mail, PhoneIcon } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { toast } from 'sonner'
-
 import { makeDateReadable } from '@/lib/helpers'
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -25,11 +23,9 @@ import { EllipsisVertical } from './Icons'
 
 const StudentPerClassroom = () => {
   const mediaBaseUrl = 'http://localhost:8000/media/'
-
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser=getCurrUser()
 	const isCurrUserTeacher = currUser.role === 1
-	console.log('current user', getCurrUser())
 	const classroomId = usePathname().split('/').at(-2)
 	const {
 		data: classroomData,
@@ -38,9 +34,7 @@ const StudentPerClassroom = () => {
 		error: classroomError,
 		isLoading: isLoadingClassroom,
 	} = useGetClassroomByIdQuery(classroomId)
-	console.log('classroomData', classroomData)
 
-	console.log('classroom members', classroomData?.data.members)
 	const [
 		removeStudent,
 		{
@@ -65,7 +59,6 @@ const StudentPerClassroom = () => {
 		}
 	}
    const students =isCurrUserTeacher ?classroomData?.data.members : classroomData?.data.members?.filter((student) => student.id !== currUser.student?.id)
-
 
 	return (
 		<div className='ml-80 mr-12 my-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6'>
