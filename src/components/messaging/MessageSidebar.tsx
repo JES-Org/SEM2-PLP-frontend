@@ -16,9 +16,13 @@ import { cn } from '@/lib/utils'
 
 interface MessageSidebarProps {
 	isOpen: boolean
+	setIsSidebarOpen: (open: boolean) => void
 }
 
-export const MessageSidebar = ({ isOpen }: MessageSidebarProps) => {
+export const MessageSidebar = ({
+	isOpen,
+	setIsSidebarOpen,
+}: MessageSidebarProps) => {
 	const dispatch = useDispatch()
 	const [selectedClassroomId, setSelectedClassroomId] = useState('')
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
@@ -27,20 +31,15 @@ export const MessageSidebar = ({ isOpen }: MessageSidebarProps) => {
 
 	const router = useRouter()
 	const searchParams = useSearchParams()
-	let classrooms;
-	if (role === 'student') {
-		const { data: responseData, isLoading } = useStudentClassroomQuery(
-			currUser.student?.id,
-			{ skip: !currUser?.student },
-		)
-		 classrooms = responseData?.data 
-	} else if (role === 'teacher') {
-		const { data: responseData, isLoading } = useTeacherClassroomQuery(
-			currUser.teacher?.id,
-			{ skip: !currUser?.teacher },
-		)
-		 classrooms = responseData?.data
-	}
+	const { data: studentData } = useStudentClassroomQuery(currUser.student?.id, {
+		skip: currUser.role !== 0 || !currUser?.student,
+	})
+
+	const { data: teacherData } = useTeacherClassroomQuery(currUser.teacher?.id, {
+		skip: currUser.role !== 1 || !currUser?.teacher,
+	})
+
+	const classrooms = role === 'student' ? studentData?.data : teacherData?.data
 
 	// Update selected from query param on mount
 	useEffect(() => {
@@ -59,19 +58,17 @@ export const MessageSidebar = ({ isOpen }: MessageSidebarProps) => {
 			router.push(`/teacher/classroom/messages?classroom=${className}`)
 		}
 		if (typeof window !== 'undefined' && window.innerWidth < 768) {
-			// You might need to close sidebar here depending on UX
+			setIsSidebarOpen(false)
 		}
 	}
 
 	return (
 		<aside
 			className={cn(
-				'w-64 border-r bg-gray-50 dark:bg-gray-800 z-20 md:static fixed left-0 mt-4 transform transition-transform duration-300 ease-in-out',
+				'transition-transform duration-300 ease-in-out md:translate-x-0 fixed md:static z-20 bg-gray-50 dark:bg-gray-800 border-r h-full w-4/5 max-w-xs',
 				{
-					'-translate-x-full':
-						!isOpen && typeof window !== 'undefined' && window.innerWidth < 768,
-					'translate-x-0':
-						isOpen || typeof window === 'undefined' || window.innerWidth >= 768,
+					'-translate-x-full': !isOpen,
+					'translate-x-0': isOpen,
 				},
 			)}
 		>

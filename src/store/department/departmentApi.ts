@@ -1,27 +1,20 @@
 // src/store/department/departmentApi.ts
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
 
-// Define your Department type
 export interface Department {
   id: number;
   name: string;
 }
 
-// Create the API slice
+const baseQueryWithReauth = createBaseQueryWithReauth(
+  'http://localhost:8000/api/classroom',
+)
+
 export const departmentApi = createApi({
   reducerPath: "departmentApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8000/api/classroom', 
-    prepareHeaders: (headers) => {
-      // If you use authentication, add your token here
-      const token = JSON.parse(localStorage.getItem("currUser") || "null")?.token;
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["Department"],
   endpoints: (builder) => ({
     getDepartments: builder.query<Department[], void>({

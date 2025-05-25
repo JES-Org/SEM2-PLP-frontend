@@ -41,7 +41,7 @@ export const MessageDashboard = () => {
 	}
 
 	return (
-		<div className='flex md:ml-64 h-screen'>
+		<div className='flex md:w-11/12 md:ml-autoh-screen'>
 			<MessageMobileHeader
 				title={currClassroomId ? 'Chat' : 'Messages'}
 				onMenuToggle={toggleSidebar}
@@ -49,7 +49,8 @@ export const MessageDashboard = () => {
 				onBack={handleBackToClassrooms}
 			/>
 				<MessageSidebar
-					isOpen={isSidebarOpen}
+				isOpen={isSidebarOpen}
+				 setIsSidebarOpen={setIsSidebarOpen}
 				/>
 			      {currClassroomId ? (
 				<div className='w-full'>
