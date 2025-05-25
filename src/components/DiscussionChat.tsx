@@ -30,7 +30,7 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 	const messages = useSelector(selectMessages)
 	const isRightClicked = useSelector(selectIsRightClicked)
 	const dispatch = useDispatch()
-	const inputRef = useRef<HTMLInputElement>(null)
+	const inputRef = useRef<HTMLTextAreaElement>(null)
 	const endOfMessagesRef = useRef<HTMLDivElement>(null)
 	const currClassroomId = useSelector(selectCurrClassroomId)
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
@@ -140,7 +140,7 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 		}
 	}
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === 'Enter') {
 			sendHandler()
 		}
@@ -188,11 +188,10 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 				)}
 			</main>
 			<div className='flex items-center gap-2 border-t bg-white px-4 py-2 dark:border-gray-800 dark:bg-gray-950'>
-				<Input
+				<textarea
 					ref={inputRef}
-					className='flex-1 rounded-md bg-blue-100 px-4 py-6 text-sm focus:outline-none dark:bg-gray-800'
+					className='flex-1 rounded-md bg-blue-100 px-4 py-3 text-sm focus:outline-none dark:bg-gray-800 resize-none overflow-y-auto h-15'
 					placeholder='Type your message...'
-					type='text'
 					value={inputValue}
 					onChange={(e) => setInputValue(e.target.value)}
 					onKeyDown={handleKeyDown}

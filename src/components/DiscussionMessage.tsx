@@ -2,11 +2,12 @@ import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useDeleteMessageMutation } from '@/store/discussion/discussionApi'
 import { setRightClicked } from '@/store/features/discussionSlice'
 import { CreateMessageResponseData } from '@/types/discussion/discussion.type'
+import { usePathname } from 'next/navigation'
 import { useDispatch } from 'react-redux'
+import { toast } from 'sonner'
 
 import { extractTime } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
 
 import {
 	ContextMenu,
@@ -14,7 +15,6 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { usePathname } from 'next/navigation'
 
 interface Props {
 	message: CreateMessageResponseData
@@ -34,21 +34,20 @@ const DiscussionMessage = ({ message }: Props) => {
 	}
 
 	const handleDelete = (id: string) => {
-		deleteMessage({classroomId: currClassroomId, messageId: id})
-		.unwrap()
-		.then((res) => {
-			if(res.isSuccess) {
-				toast.success('Message deleted successfully')
-			} else {
+		deleteMessage({ classroomId: currClassroomId, messageId: id })
+			.unwrap()
+			.then((res) => {
+				if (res.isSuccess) {
+					toast.success('Message deleted successfully')
+				} else {
+					toast.error('Failed to delete message')
+				}
+				dispatch(setRightClicked({ id: null, content: '', option: null }))
+			})
+			.catch((err) => {
 				toast.error('Failed to delete message')
-			}
-		dispatch(setRightClicked({id: null, content: '', option: null}))
-		})
-		.catch((err) => {
-			toast.error('Failed to delete message')
-		})
+			})
 	}
-
 
 	return (
 		<div
@@ -61,19 +60,23 @@ const DiscussionMessage = ({ message }: Props) => {
 				<ContextMenuTrigger asChild>
 					<div
 						className={cn(
-							'flex flex-col gap-2 p-4 rounded-lg bg-primary text-primary-foreground w-[400px]',
+							'flex flex-col gap-2 p-4 rounded-lg bg-primary text-primary-foreground min-w-[100px] max-w-[90%] w-fit break-words',
 							{
 								'bg-secondary text-secondary-foreground':
 									String(sender.id) !== String(currUser.id),
 							},
 						)}
 					>
-						<div className='flex items-center justify-between'>
-							<div className='text-xs font-medium'>{`${sender.firstName} ${sender.lastName}`}</div>
-							<div className='text-xs'>{extractTime(updatedAt)}</div>
+						<div className='text-xs font-medium'>
+							{String(sender.id) !== String(currUser.id)
+								? `${sender.firstName} ${sender.lastName}`
+								: 'you'}
 						</div>
 						<div>
 							<p className='text-sm break-words'>{content} </p>
+						</div>
+						<div className='text-xs text-right self-end mt-1'>
+							{extractTime(updatedAt)}
 						</div>
 					</div>
 				</ContextMenuTrigger>

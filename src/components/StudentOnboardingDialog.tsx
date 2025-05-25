@@ -82,17 +82,13 @@ export default function StudentOnboardingDialog() {
 			...profileData,
 			id: currUser.id as string,
 			department: profileData.department,
-			joinDate: '2024-05-19',
-			dateOfBirth: '2001-10-04',
 			year: parseInt(profileData.year),
 		}
 		const transformedData = {
 			student_id: profile.studentId,
 			first_name: profile.firstName,
 			last_name: profile.lastName,
-			dob: profile.dateOfBirth,
 			phone: profile.phoneNumber,
-			join_date: profile.joinDate,
 			year: profile.year,
 			section: profile.section,
 			department: profile.department,
@@ -197,7 +193,12 @@ export default function StudentOnboardingDialog() {
 												</SelectTrigger>
 												<SelectContent>
 													{departments.map((dept) => (
-														<SelectItem key={dept.id} value={dept.id.toString()}>															{dept.name}
+														<SelectItem
+															key={dept.id}
+															value={dept.id.toString()}
+														>
+															{' '}
+															{dept.name}
 														</SelectItem>
 													))}
 												</SelectContent>
