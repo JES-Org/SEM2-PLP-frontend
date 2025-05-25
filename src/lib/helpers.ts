@@ -1,4 +1,4 @@
-import { format, isValid } from 'date-fns'
+import { format, isValid,formatDistanceToNow } from 'date-fns'
 
 export const makeDateReadable = (dateStr: string) => {
   const date = new Date(Date.parse(dateStr))
@@ -38,4 +38,33 @@ export const toMonthAndDay = (dateString: string) => {
   }
 
   return format(date, 'MMMM dd')
+}
+
+export const toLocalDateTime = (dateStr: string) => {
+  const date = new Date(Date.parse(dateStr));
+
+  if (!isValid(date)) {
+    console.warn("Invalid date in toLocalDateTime:", dateStr);
+    return "Invalid date/time";
+  }
+
+  return date.toLocaleString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  });
+};
+
+
+export const timeAgo = (dateStr: string) => {
+  const date = new Date(dateStr)
+
+  if (!isValid(date)) {
+    console.warn("Invalid date in timeAgo:", dateStr)
+    return "Invalid time"
+  }
+
+  return formatDistanceToNow(date, { addSuffix: true }) // e.g. "5 minutes ago"
 }

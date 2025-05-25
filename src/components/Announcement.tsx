@@ -17,6 +17,7 @@ import { Paperclip, X } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'sonner'
 
+import { timeAgo, toLocalDateTime } from '@/lib/helpers'
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
@@ -116,8 +117,17 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 
 	return (
 		<Card {...props}>
-			<CardHeader className='flex flex-row justify-between'>
-				<CardTitle className='text-xl'>{announcement.title}</CardTitle>
+			<CardHeader className='flex flex-row justify-between py-2 '>
+				<CardTitle className='text-xl'>
+					{announcement.title}{' '}
+					<span className='text-sm text-gray-500 italic'>
+						{timeAgo(
+							announcement?.created_at
+								? announcement.created_at.toString()
+								: '',
+						)}
+					</span>
+				</CardTitle>
 				{role === 'teacher' ? (
 					<DropdownMenu>
 						<DropdownMenuTrigger>
@@ -145,47 +155,69 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-				) : null}
+				) : (
+					<span className='text-sm text-gray-600'>
+						{toLocalDateTime(
+							typeof announcement?.created_at === 'string'
+								? announcement?.created_at
+								: announcement?.created_at?.toString() ?? '',
+						)}
+					</span>
+				)}
 			</CardHeader>
 
 			<CardContent
 				ref={contentRef}
-				className={cn('text-sm', {
+				className={cn('text-sm ', {
 					'max-h-32 overflow-hidden': !isExpanded,
 				})}
 			>
 				{announcement.content}
 			</CardContent>
-			<CardFooter>
+			<CardFooter className='flex flex-col gap-2'>
 				{isOverflowing && (
 					<Button variant='link' onClick={toggleExpanded}>
 						{isExpanded ? 'Show less' : 'Show more'}
 					</Button>
 				)}
-				{announcement.attachments?.map((attachment, i) => (
-					<div key={i} className='relative group'>
-						<Button
-							variant='link'
-							onClick={() => onAttachmentClick(attachment.id)}
-							className='pr-6' // Add padding for the X button
-						>
-							<Paperclip className='h-4 w-4 mr-1' />
-							{`Attachment ${i + 1}`}
-						</Button>
-						{role === 'teacher' && (
-							<button
-								onClick={(e) => {
-									e.stopPropagation()
-									onDeleteAttachment(attachment.id)
-								}}
-								className='absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700'
-								aria-label='Remove attachment'
+
+				<div className='flex flex-wrap justify-between w-full gap-2'>
+					{announcement.attachments?.map((attachment, i) => (
+						<div key={i} className='relative group'>
+							<Button
+								variant='link'
+								onClick={() => onAttachmentClick(attachment.id)}
+								className='pr-6'
 							>
-								<X className='h-4 w-4' />
-							</button>
-						)}
-					</div>
-				))}
+								<Paperclip className='h-4 w-4 mr-1' />
+								{`Attachment ${i + 1}`}
+							</Button>
+
+							{role === 'teacher' && (
+								<button
+									onClick={(e) => {
+										e.stopPropagation()
+										onDeleteAttachment(attachment.id)
+									}}
+									className='absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700'
+									aria-label='Remove attachment'
+								>
+									<X className='h-4 w-4' />
+								</button>
+							)}
+						</div>
+					))}
+
+					{role === 'teacher' && (
+						<span className='text-sm text-gray-500 ml-auto'>
+							{toLocalDateTime(
+								typeof announcement?.created_at === 'string'
+									? announcement.created_at
+									: announcement?.created_at?.toString() ?? '',
+							)}
+						</span>
+					)}
+				</div>
 			</CardFooter>
 		</Card>
 	)

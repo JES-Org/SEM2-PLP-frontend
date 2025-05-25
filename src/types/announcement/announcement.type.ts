@@ -11,8 +11,8 @@ export interface Annoucement {
   dateTime?:    Date;
   attachments?: any[];
   classRoom?:   AnnouncementTempClassroom;
-  createdAt?:   Date;
-  updatedAt?:   Date;
+  created_at?:   Date;
+  updated_at?:   Date;
 }
 
 export interface AnnouncementTempClassroom {

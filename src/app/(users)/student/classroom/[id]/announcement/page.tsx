@@ -71,7 +71,8 @@ const StudentAnnouncementPage = () => {
 	const { data } = useUnreadNotificationsQuery(currClassroomId!)
 	dispatch(setNotifications(data?.data))
 
-	console.log(JSON.stringify(data))
+	console.log("announcements cjnc",announcements)
+
 
 	return (
 		<div className='mt-10 h-screen flex flex-col overflow-hidden ml-0 mr-0 md:ml-80 md:mr-24'>
@@ -83,7 +84,7 @@ const StudentAnnouncementPage = () => {
 						<Announcement
 							key={announcement.id}
 							announcement={announcement}
-							className='mb-4'
+							className='mb-2'
 						/>
 					))}
 			</div>
