@@ -73,9 +73,15 @@ const ListOfClassroomPage = () => {
 				) : (
 					<div className='md:mx-7'>
 						{/* Active Classrooms */}
-						<h2 className='text-xl font-bold my-4'>Active Classrooms</h2>
+						<h2 className='text-2xl font-bold text-primary mb-6 border-b pb-2'>
+							Active Classrooms
+						</h2>
 						{unarchivedClassrooms.length === 0 ? (
-							<p className='text-gray-400 mb-4'>No active classrooms found.</p>
+							<div className='flex items-center justify-center text-gray-500 bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 p-6 rounded-lg shadow-sm'>
+								<p className='text-center text-base italic'>
+									No active classrooms found.
+								</p>
+							</div>
 						) : (
 							<div className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10'>
 								{unarchivedClassrooms.map((classroom) => (
@@ -93,7 +99,7 @@ const ListOfClassroomPage = () => {
 						{/* Archived Classrooms */}
 						{archivedClassrooms.length > 0 && (
 							<div>
-								<h2 className='text-xl font-bold my-4'>Archived Classrooms</h2>
+							<h2 className='text-2xl font-bold text-primary mb-6 border-b pb-2'>Archived Classrooms</h2>
 
 								<div className='md:grid md:grid-cols-2 lg:grid-cols-3 gap-4'>
 									{archivedClassrooms.map((classroom) => (

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { RootState } from '@/store'
 import { useChatHistoryQuery } from '@/store/chatbot/chatbotApi'
@@ -8,6 +9,7 @@ import { usePathname } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { cn } from '@/lib/utils'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -18,16 +20,17 @@ import Typing from './Typing'
 interface ChatProps {
 	typing: boolean
 	currState: string | null
-
 }
 
-const Chat = ({ typing ,currState}: ChatProps) => {
+const Chat = ({ typing, currState }: ChatProps) => {
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
-	const { data, isLoading, isFetching, isError } = useChatHistoryQuery(currUser?.id!)
+	const { data, isLoading, isFetching, isError } = useChatHistoryQuery(
+		currUser?.id!,
+	)
 	const messages = useSelector((state: RootState) => state.chat.messages)
 	const dispatch = useDispatch()
-	const inputRef = useRef<HTMLInputElement>(null)
+	const inputRef = useRef<HTMLTextAreaElement>(null)
 	const endOfMessagesRef = useRef<HTMLDivElement>(null)
 	const pathname = usePathname()
 
@@ -40,11 +43,11 @@ const Chat = ({ typing ,currState}: ChatProps) => {
 	}
 
 	useEffect(() => {
-	if (endOfMessagesRef.current) {
-		endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' });
-	}
-}, [data?.chatHistory, messages, typing])
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (endOfMessagesRef.current) {
+			endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' })
+		}
+	}, [data?.chatHistory, messages, typing])
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === 'Enter') {
 			sendHandler()
 		}
@@ -97,25 +100,27 @@ const Chat = ({ typing ,currState}: ChatProps) => {
 					</>
 				)}
 			</main>
-			{currState !== null && currState !== 'save' &&
-				(<div className='flex items-center gap-2 border-t bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950'>
-				<Input
-					ref={inputRef}
-					className='flex-1 rounded-md bg-gray-100 px-4 py-2 text-sm focus:outline-none dark:bg-gray-800'
-					placeholder='Type your message...'
-					type='text'
-					onKeyDown={(e) => handleKeyDown(e)}
-					disabled={typing || isLoading}
-				/>
-				<Button
-					className='rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-50'
-					size='icon'
-					variant='ghost'
-				>
-					<SendHorizonal onClick={() => sendHandler()} />
-					<span className='sr-only'>Send message</span>
-				</Button>
-			</div>
+			{currState !== null && currState !== 'save' && (
+				<div className='flex items-center gap-2 border-t bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-950'>
+					<textarea
+						ref={inputRef}
+						className='flex-1 rounded-md bg-blue-100 px-4 py-3 text-sm focus:outline-none dark:bg-gray-800 resize-none overflow-y-auto h-15'
+						placeholder='Type your message...'
+						onKeyDown={handleKeyDown}
+						disabled={typing || isLoading}
+					/>
+
+					<Button
+						className='rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-50'
+						size='icon'
+						variant='ghost'
+					>
+						<SendHorizonal size="40" onClick={() => sendHandler()}
+
+						/>
+						<span className='sr-only'>Send message</span>
+					</Button>
+				</div>
 			)}
 		</div>
 	)

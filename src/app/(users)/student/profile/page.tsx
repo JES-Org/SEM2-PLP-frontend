@@ -32,7 +32,7 @@ const Page = () => {
 
 	if (isLoading) return <div className='text-center mt-20'>Loading profile...</div>
 	if (isError || !profile) return <div className='text-center mt-20 text-red-500'>Failed to load profile.</div>
-
+    console.log("student profile update",profile)
 	return (
 		<div>
 			<div className='flex justify-center pt-20 md:pl-40'>
@@ -60,7 +60,7 @@ const Page = () => {
 							ProfileFieldItems={{
 								icon: <Library />,
 								text: 'Department',
-								value: profile.department || 'N/A',
+								value: profile.batch_details?.department_details?.name || 'N/A',
 							}}
 						/>
 						<NonEditableProfileFields
@@ -75,8 +75,9 @@ const Page = () => {
 						<NonEditableProfileFields
 							ProfileFieldItems={{
 								icon: <Calendar />,
-								text: 'Date of Birth',
-								value: profile.dob,
+								text: 'Email',
+								value: profile.email
+,
 							}}
 						/>
 						<NonEditableProfileFields
