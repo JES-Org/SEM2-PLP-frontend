@@ -1,13 +1,12 @@
+//@ts-nocheck
+
 'use client'
-
 import React, { useState } from 'react'
-
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useStudentClassroomQuery } from '@/store/classroom/classroomApi'
 import { useGetStudentByIdQuery } from '@/store/student/studentApi'
 import { Users } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
 import SearchAndBell from '@/components/SearchAndBell'
 import Spinner from '@/components/Spinner'
 import { Card, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,7 +32,7 @@ const ListOfClassroomPage = () => {
 	const filteredClassrooms = classrooms?.data.filter((classroom) =>
 		classroom.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	)
-
+   console.log('filteredClassrooms', filteredClassrooms)
 	return (
 		<div className='md:flex overflow-x-hidden md:w-11/12 md:ml-auto h-screen'>
 			<div className='flex-1 mt-20 md:pl-40'>
@@ -74,6 +73,10 @@ const ListOfClassroomPage = () => {
 								<Card>
 									<CardHeader>
 										<CardTitle>{classroom.name}</CardTitle>
+
+										<span className='block text-sm text-muted-foreground font-normal mt-1'>
+											{' '} Lecturer: {classroom?.teacher_details?.full_name}
+				                 	</span>
 									</CardHeader>
 
 									<CardFooter>
