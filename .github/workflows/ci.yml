@@ -1,0 +1,32 @@
+name: Pull Request Check
+
+on:
+    pull_request:
+     branches: [main]
+
+jobs:
+  pr-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+
+      - name: setup node.js
+        uses: actions/checkout@v3
+        with:
+          node-version: '18' 
+          
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Project
+        run: npm run build
+
+      - name: check for merge conflicts
+        run: |
+          git fetch origin main
+          git merge --no-commit --no-ff origin/main || (
+          echo "❌ Merge Conflict detected!" && exit 1
+          )
+        shell: bash
