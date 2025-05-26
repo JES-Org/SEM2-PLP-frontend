@@ -35,7 +35,7 @@ const AssessmentPage = () => {
 	)
 
 	return (
-		<div className='ml-72 mr-24 mt-10 h-screen'>
+		<div className='md:ml-72 pl-3 mr-24 mt-10 h-screen'>
 			<CreateAssessmentDialog />
 			<Tabs defaultValue='draft'>
 				<div className='flex flex-row justify-between'>

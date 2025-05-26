@@ -294,7 +294,7 @@ const graphData = assessments.map((assessment) => {
 	}, [assessments, selectedAssessment.id]);
 
 	return (
-		<div className='ml-72 mr-10 mt-10 h-screen'>
+		<div className='md:ml-72 mr-10 mt-10 h-screen'>
 			<div className='flex flex-row justify-between'>
 				<DropdownMenu
 					open={selectedMetric.isOpen}
