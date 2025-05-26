@@ -23,6 +23,5 @@ const assessmentDialogSlice = createSlice({
 })
 
 export const selectAssessmentDialog = (state: RootState) => state.assessmentDialog.activeDialog;
-
 export const { openDialog, closeDialog } = assessmentDialogSlice.actions;
 export default assessmentDialogSlice.reducer;
