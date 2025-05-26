@@ -42,7 +42,7 @@ export const MessageDashboard = () => {
 	}
 
 	return (
-		<div className='flex h-screen overflow-hidden w-full'>
+		<div className='flex h-screen pt-8 overflow-hidden w-full'>
 			<MessageMobileHeader
 				title={currClassroomId ? 'Chat' : 'Messages'}
 				onMenuToggle={toggleSidebar}
