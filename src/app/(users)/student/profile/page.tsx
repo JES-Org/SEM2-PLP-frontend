@@ -116,11 +116,7 @@ const Page = () => {
 						/>
 					</div>
 				</div>
-				<div className='flex flex-col md:flex-row justify-center items-center gap-4 mt-10 w-full'>
-					<Button className='w-full md:w-2/12' onClick={handleSubmit}>
-						Edit
-					</Button>
-
+				<div className='flex justify-center mt-6 w-full md:ml-0'>
 					<Button
 						variant='destructive'
 						className='w-full md:w-2/12'
