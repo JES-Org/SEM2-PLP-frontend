@@ -79,6 +79,8 @@ const SigninPage = () => {
 	const [teacherId, setTeacherId] = useState('')
 	const [emailError, setEmailError] = useState('')
 	const [emailverfication, Setemailverfication] = useState('')
+	const [showResendOtpLink, setShowResendOtpLink] = useState(false);
+    const [emailForResend, setEmailForResend] = useState('');
 
 	const validateEmail = (value) => {
 		// Basic email regex
@@ -212,6 +214,9 @@ const SigninPage = () => {
 
 	const onSubmit = (credentials: FormType) => {
 		console.log(`credentials ${JSON.stringify(credentials)}`)
+		setShowResendOtpLink(false);
+        setEmailForResend(credentials.email);
+
 		if (credentials.role.toLowerCase() === 'student') {
 			studentSignin(credentials)
 				.unwrap()
@@ -225,8 +230,13 @@ const SigninPage = () => {
 					}
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`error ${JSON.stringify(err)}`)
-					toast.error('Invalid credentials')
+					if (err.data?.message?.includes('Account not verified')) {
+                        toast.error("Your account is not verified. Please check your email for an OTP.");
+                        setEmailForResend(credentials.email)
+                        setShowResendOtpLink(true);
+                    } else {
+                        toast.error(err.data?.message || err.data?.errors?.[0] || 'Invalid credentials or login failed.');
+                    }
 				})
 		} else if (credentials.role.toLowerCase() === 'teacher') {
 			teacherSignin(credentials)
@@ -240,11 +250,31 @@ const SigninPage = () => {
 					}
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`error ${JSON.stringify(err)}`)
-					toast.error('Invalid credentials')
+					if (err.data?.message?.includes('Account not verified')) {
+                        toast.error("Your account is not verified. Please check your email for an OTP.");
+                        setEmailForResend(credentials.email)
+                        setShowResendOtpLink(true);
+                    } else {
+                        toast.error(err.data?.message || err.data?.errors?.[0] || 'Invalid credentials or login failed.');
+                    }
 				})
 		}
 	}
+
+	const handleResendVerificationOtp = async () => {
+        if (!emailForResend) {
+            toast.error("Email not available for resending OTP.");
+            return;
+        }
+        try {
+            await sendOtp({ email: emailForResend }).unwrap();
+            toast.success("A new verification OTP has been sent to your email. Please check and verify.");
+
+            router.push('/auth/verify-email');
+        } catch (err) {
+            toast.error("Failed to resend OTP. Please try again.");
+        }
+    };
 
 	return (
 		<main className='flex h-screen w-screen justify-center items-center bg-[url(/signup-bg.jpg)]'>
@@ -440,6 +470,16 @@ const SigninPage = () => {
 									) : null}
 									Signin
 								</Button>
+								{showResendOtpLink && (
+                                    <Button
+                                        type="button"
+                                        variant="link"
+                                        onClick={handleResendVerificationOtp}
+                                        className="text-blue-600 hover:underline self-center p-0 h-auto"
+                                    >
+                                        Resend Verification OTP
+                                    </Button>
+                                )}
 								<span className='md:hidden text-primary text-center text-sm'>
 									Don't have an account ?
 									<Link
