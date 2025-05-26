@@ -1,3 +1,4 @@
+'use client'
 import AdminStudentList from '@/components/AdminStudentList'
 import React from 'react'
 import { UserRoundPlus, Users } from 'lucide-react'
