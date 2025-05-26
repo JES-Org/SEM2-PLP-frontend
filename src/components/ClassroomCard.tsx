@@ -1,18 +1,33 @@
-
 // @ts-nocheck
 import { Users } from 'lucide-react'
+
 import { EllipsisVertical } from './Icons'
 import { Card, CardFooter, CardHeader, CardTitle } from './ui/card'
-import {  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger  } from './ui/dropdown-menu'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from './ui/dropdown-menu'
 
 const ClassroomCard = ({ classroom, router, onArchiveToggle, onDelete }) => (
 	<div
 		className='w-full mb-2 hover:border hover:border-primary hover:rounded-xl transition duration-300 cursor-pointer'
-		onClick={() => router.push(`/teacher/classroom/${classroom.id}/announcement`)}
+		onClick={() =>
+			router.push(`/teacher/classroom/${classroom.id}/announcement`)
+		}
 	>
 		<Card>
 			<CardHeader className='flex flex-row justify-between'>
-				<CardTitle>{classroom.name}</CardTitle>
+				<CardTitle>
+					{classroom.name}
+					<span className='block text-sm text-muted-foreground font-normal mt-1'>
+						{classroom?.batch_details?.[0]?.department_details?.name}{'-'}
+						{classroom?.batch_details?.[0]?.year}{'-'}
+						{classroom?.batch_details?.[0]?.section}
+					</span>
+				</CardTitle>
+
 				<DropdownMenu>
 					<DropdownMenuTrigger>
 						<EllipsisVertical className='h-4 w-4' />
@@ -39,7 +54,7 @@ const ClassroomCard = ({ classroom, router, onArchiveToggle, onDelete }) => (
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</CardHeader>
-
+           
 			<CardFooter>
 				<div className='flex items-center w-full justify-between'>
 					<div className='flex items-center'>
@@ -53,4 +68,4 @@ const ClassroomCard = ({ classroom, router, onArchiveToggle, onDelete }) => (
 	</div>
 )
 
-export default ClassroomCard;
+export default ClassroomCard
