@@ -3,20 +3,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { RootState } from '@/store'
 import { closeDialog, openDialog } from '@/store/features/dialogSlice'
 import { useSendOtpMutation } from '@/store/otp/otpApi'
 import {
 	useGetStudentByIdQuery,
-	useStudentSigninMutation,
+	useUserSigninMutation,
 } from '@/store/student/studentApi'
 import {
 	useGetTeacherByIdQuery,
-	useTeacherSigninMutation,
 } from '@/store/teacher/teacherApi'
-import { StudentSigninResponse } from '@/types/auth/studentAuth.type'
+import { UserSigninResponse } from '@/types/auth/studentAuth.type'
 import { ExtendedError } from '@/types/Error.type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ReloadIcon } from '@radix-ui/react-icons'
@@ -65,7 +63,6 @@ const formSchema = z.object({
 	password: z
 		.string({ required_error: 'Password is required' })
 		.min(8, { message: 'Password must contain at least 8 characters' }),
-	role: z.string({ required_error: 'Role is required' }),
 })
 
 type FormType = z.infer<typeof formSchema>
@@ -89,26 +86,15 @@ const SigninPage = () => {
 	}
 
 	const [
-		studentSignin,
+		userSignin,
 		{
-			data: studentSigninData,
-			isLoading: isLoadingStudentSignin,
-			isSuccess: isSuccessStudentSignin,
-			isError: isErrorStudentSignin,
-			error: studentSigninError,
+			data: userSigninData,
+			isLoading: isLoadingUserSignin,
+			isSuccess: isSuccessUserSignin,
+			isError: isErrorUserSignin,
+			error: userSigninError,
 		},
-	] = useStudentSigninMutation()
-
-	const [
-		teacherSignin,
-		{
-			data: teacherSigninData,
-			isLoading: isLoadingTeacherSignin,
-			isSuccess: isSuccessTeacherSignin,
-			isError: isErrorTeacherSignin,
-			error: teacherSigninError,
-		},
-	] = useTeacherSigninMutation()
+	] = useUserSigninMutation()
 
 	const {
 		data: singleStudentData,
@@ -132,7 +118,6 @@ const SigninPage = () => {
 		useLocalStorage('currUser')
 	const router = useRouter()
 	const [otpSent, setOtpSent] = useState(false)
-
 	const isOpen = useSelector((state: RootState) => state.dialog.isOpen)
 	const dispatch = useDispatch()
 
@@ -150,7 +135,6 @@ const SigninPage = () => {
 
 	useEffect(() => {
 		if (singleStudentData) {
-			console.log(`singleStudentData ${JSON.stringify(singleStudentData)}`)
 			if (singleStudentData!.data!.year === null) {
 				dispatch(openDialog('student'))
 			} else {
@@ -162,7 +146,6 @@ const SigninPage = () => {
 
 	useEffect(() => {
 		if (singleTeacherData) {
-			console.log(`singleTeacherData ${JSON.stringify(singleTeacherData)}`)
 			if (singleTeacherData!.data!.first_name === '') {
 				dispatch(openDialog('teacher'))
 			} else {
@@ -220,13 +203,20 @@ const SigninPage = () => {
 		if (credentials.role.toLowerCase() === 'student') {
 			studentSignin(credentials)
 				.unwrap()
-				.then((res: StudentSigninResponse) => {
-					console.log(`response ${JSON.stringify(res)}`)
-					console.log('res.data', res.data)
+				.then((res: UserSigninResponse) => {
+
 					setCurrUser(res.data)
-					setStudentId(res.data?.id!)
-					if (res.data?.student === null) {
-						dispatch(openDialog('student'))
+					if (res.data?.role === 0) {
+						setStudentId(res.data?.id!)
+						if (res.data?.student === null) {
+							dispatch(openDialog('student'))
+						}
+					}
+					else if (res.data?.role === 1) {
+						setTeacherId(res.data?.id!)
+						if (res.data?.teacher === null) {
+							dispatch(openDialog('teacher'))
+						}
 					}
 				})
 				.catch((err: ExtendedError) => {
@@ -342,45 +332,7 @@ const SigninPage = () => {
 									</FormItem>
 								)}
 							/>
-							<FormField
-								control={form.control}
-								name='role'
-								render={({ field }) => (
-									<FormItem>
-										<FormControl>
-											<Select onValueChange={field.onChange}>
-												<FormControl>
-													<SelectTrigger
-														className={cn(
-															'font-semibold text-muted-foreground',
-															{
-																'text-primary': field.value !== undefined,
-															},
-														)}
-													>
-														<SelectValue placeholder='Role' />
-													</SelectTrigger>
-												</FormControl>
-												<SelectContent>
-													<SelectItem
-														className='font-semibold text-primary'
-														value='teacher'
-													>
-														Teacher
-													</SelectItem>
-													<SelectItem
-														className='font-semibold text-primary'
-														value='student'
-													>
-														Student
-													</SelectItem>
-												</SelectContent>
-											</Select>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
+							
 							{otpSent ? (
 								<Dialog>
 									<DialogTrigger asChild>
@@ -460,12 +412,12 @@ const SigninPage = () => {
 								<Button
 									className={cn('w-full', {
 										'bg-primary/90':
-											isLoadingStudentSignin || isLoadingTeacherSignin,
+											isLoadingUserSignin,
 									})}
-									disabled={isLoadingStudentSignin || isLoadingTeacherSignin}
+									disabled={isLoadingUserSignin }
 									type='submit'
 								>
-									{isLoadingStudentSignin || isLoadingTeacherSignin ? (
+									{isLoadingUserSignin  ? (
 										<ReloadIcon className='mr-2 h-4 w-4 animate-spin' />
 									) : null}
 									Signin

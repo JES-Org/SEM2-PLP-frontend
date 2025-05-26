@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { StudentSignupResponse, StudentSignupRequest, StudentSigninResponse, StudentSigninRequest } from '@/types/auth/studentAuth.type'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { StudentSignupResponse, StudentSignupRequest, UserSigninResponse, UserSigninRequest } from '@/types/auth/studentAuth.type'
 import { EditStudentProfileRequest, GetSingleStudentResponse } from '@/types/student/student.type'
 import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
 
@@ -17,7 +17,7 @@ export const studentAuthApi = createApi({
         body,
       }),
     }),
-    studentSignin: builder.mutation<StudentSigninResponse, StudentSigninRequest>({
+    userSignin: builder.mutation<UserSigninResponse, UserSigninRequest>({
       query: (body) => ({
         url: '/login/',
         method: 'POST',
@@ -86,7 +86,7 @@ export const studentAuthApi = createApi({
 
 export const { 
   useStudentSignupMutation, 
-  useStudentSigninMutation, 
+  useUserSigninMutation, 
   useGetStudentByIdQuery, 
   useGetStudentByStudentIdQuery,
   useEditStudentProfileMutation,

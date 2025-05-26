@@ -1,4 +1,4 @@
-import { format, isValid,formatDistanceToNow } from 'date-fns'
+import { format, isValid,formatDistanceToNowStrict } from 'date-fns'
 
 export const makeDateReadable = (dateStr: string) => {
   const date = new Date(Date.parse(dateStr))
@@ -57,7 +57,6 @@ export const toLocalDateTime = (dateStr: string) => {
   });
 };
 
-
 export const timeAgo = (dateStr: string) => {
   const date = new Date(dateStr)
 
@@ -66,5 +65,14 @@ export const timeAgo = (dateStr: string) => {
     return "Invalid time"
   }
 
-  return formatDistanceToNow(date, { addSuffix: true }) // e.g. "5 minutes ago"
+  const diff = formatDistanceToNowStrict(date, {
+    addSuffix: true,
+    roundingMethod: 'floor',
+  })
+
+  if (diff.startsWith('0 seconds ') || diff === 'less than a minute ago') {
+    return 'just now'
+  }
+
+  return diff
 }
