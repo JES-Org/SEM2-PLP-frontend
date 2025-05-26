@@ -1,6 +1,9 @@
+// @ts-nocheck
+
 'use client'
 
 import React from 'react'
+import { useMemo } from 'react'
 
 import { Hash } from 'lucide-react'
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar'
@@ -9,27 +12,101 @@ import { useInView } from 'react-intersection-observer'
 
 import 'react-circular-progressbar/dist/styles.css'
 
+import {
+	useAggregateAssessmentAnalyticsQuery,
+	useAggregateSingleAssessmentScoreQuery,
+	useAssessmentAnalyticsByIdQuery,
+} from '@/store/assessment/assessmentApi'
+
+import { useAggregateGetStudentByIdQuery } from '@/store/student/studentApi'
+import { useGetClassroomByIdQuery } from '@/store/classroom/classroomApi'
+
+import { usePathname } from 'next/navigation'
+
 import LineChartComponent from '@/components/LineChartComponent'
 import ScoreProfile from '@/components/ScoreProfile'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const percentage = 66
 
+interface scoreData {
+	studentName: string
+	result: number
+}
+
 export default function Page() {
 	const { ref, inView } = useInView({ threshold: 0.5 })
+
+	const currClassroomId = usePathname().split('/').at(-4)
+	const assessmentId = usePathname().split('/').at(-2)
+
+	const {
+		data: singleAssessmentAnalytics,
+		isLoading: isLoadingSingleAssessmentAnaytics,
+		isFetching: isFetchingSinlgeAssessmentAnalytics,
+		isError: isErrorSingleAssessmentAnalytics,
+		error: errorSingleAssessmentAnalytics,
+	} = useAssessmentAnalyticsByIdQuery(
+		{
+			classroomId: currClassroomId!,
+			assessmentId: assessmentId!,
+		},
+		{ skip: assessmentId === '' },
+	)
+
+	const {data: classData} = useGetClassroomByIdQuery(currClassroomId)
+	const studentIds = classData?.data.members?.map((member) => member.id) || []
+	
+		const {data: studentData, isLoading: isLoadingStudentData } = useAggregateGetStudentByIdQuery({studentIds: studentIds})
+		console.log("student ids: ", studentData)
+		const fullNames = studentData?.map((student) => `${student.data?.first_name} ${student.data?.last_name}` ) || []
+		console.log("fullnames: ", fullNames)
+	
+		const studentNameMap = useMemo(() => {
+			const map = new Map<string, string>();
+			if (studentData) {
+				studentData.forEach(response => { 
+					const studentDetail = response.data; 
+					if (studentDetail?.id && studentDetail.first_name && studentDetail.last_name) {
+						map.set(String(studentDetail.id), `${studentDetail.first_name} ${studentDetail.last_name}`);
+					} else if (studentDetail?.id) {
+						map.set(String(studentDetail.id), `Student ID: ${studentDetail.id}`);
+					}
+				});
+			}
+			return map;
+		}, [studentData]);
+
+	const { data: score, isLoading: isLoadingScores } =
+		useAggregateSingleAssessmentScoreQuery({
+			classroomId: currClassroomId!,
+			assessmentId: assessmentId!,
+			studentIds,
+		})
+
+	const scoreDataList: scoreData[] = useMemo(() => {
+		if (!score || !Array.isArray(score)) return [];
+		return score.map((item: any) => ({
+			studentName: studentNameMap.get(String(item.data.studentId)) || `Student ID: ${item.data.studentId}`,
+			result: item.data.score,
+		}));
+	}, [score, studentNameMap]);
+
+	console.log('singleAssessmentAnalytics', singleAssessmentAnalytics)
+
 	return (
 		<div>
 			<div className='flex md:ml-40 lg:ml-0 lg:w-11/12 xl:w-full text-3xl justify-center'>
 				<div className='flex items-center space-x-2 font-bold my-20'>
 					<Hash />
-					<span>Stack and Queue</span>
+					<span>{singleAssessmentAnalytics?.data.title}</span>
 				</div>
 			</div>
 			<div className='mb-6 md:ml-64 md:mr-3'>
 				<Card className='py-10  lg:mx-auto'>
 					<CardContent>
 						<div className='w-full z-50'>
-							<LineChartComponent />
+							<LineChartComponent data={scoreDataList} />
 						</div>
 					</CardContent>
 				</Card>
@@ -54,7 +131,7 @@ export default function Page() {
 								</strong>{' '}
 								<br />
 								<span style={{ fontSize: 60, marginTop: -5, color: '#E30E0E' }}>
-									22
+									{singleAssessmentAnalytics?.data.lowestScore}
 								</span>
 							</CircularProgressbarWithChildren>
 						</div>
@@ -75,7 +152,7 @@ export default function Page() {
 								</strong>{' '}
 								<br />
 								<span style={{ fontSize: 60, marginTop: -5, color: '#3385BA' }}>
-									50
+									{singleAssessmentAnalytics?.data.meanScore?.toFixed(2)}
 								</span>
 							</CircularProgressbarWithChildren>
 						</div>
@@ -98,7 +175,7 @@ export default function Page() {
 								</strong>{' '}
 								<br />
 								<span style={{ fontSize: 60, marginTop: -5, color: '#069425' }}>
-									92
+									{singleAssessmentAnalytics?.data.highestScore}
 								</span>
 							</CircularProgressbarWithChildren>
 						</div>
@@ -114,7 +191,9 @@ export default function Page() {
 							>
 								<strong style={{ fontSize: 25, marginTop: -5 }}>Mode</strong>{' '}
 								<br />
-								<span style={{ fontSize: 60, marginTop: -5 }}>50</span>
+								<span style={{ fontSize: 60, marginTop: -5 }}>
+									{singleAssessmentAnalytics?.data.modeScore}
+								</span>
 							</CircularProgressbarWithChildren>
 						</div>
 					</div>
@@ -126,7 +205,14 @@ export default function Page() {
 						Number of Students attended
 					</div>
 					<div className='flex justify-center text-4xl' ref={ref}>
-						{inView && <CountUp start={0} end={100} duration={2} delay={0} />}
+						{inView && (
+							<CountUp
+								start={0}
+								end={singleAssessmentAnalytics?.data.totalSubmissions}
+								duration={2}
+								delay={0}
+							/>
+						)}
 					</div>
 				</Card>
 			</div>
