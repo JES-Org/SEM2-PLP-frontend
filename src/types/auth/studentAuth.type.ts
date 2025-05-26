@@ -39,12 +39,12 @@ interface MainSignupResponse {
   updatedAt?:   Date
 } 
 
-export interface StudentSigninRequest {
+export interface UserSigninRequest {
   email:      string
   password:   string
 }
 
-export interface StudentSigninResponse {
+export interface UserSigninResponse {
   isSuccess?: boolean
   message?:   string
   data?:      MainSigninResponse
