@@ -2,8 +2,6 @@
 
 CustomEd is a personalized learning path generator built with Next.js. It helps students to get tailored learning paths and includes features for teachers to prepare assessments, track student progress, and facilitate communication through discussion groups and announcements.
 
-[Backend codebase](https://github.com/Amanuel94/CustomEd): .NET application following Microservice architecture</br>
-[Chatbot codebase](https://github.com/Son-OfAnton/Learning-path-generator-chatbot): FastAPI application with Langchain and Google's Gemini API
 
 ## Features
 
@@ -29,7 +27,7 @@ Ensure you have the following installed:
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/Son-OfAnton/custom-ed.git
+    git clone https://github.com/JES-Org/SEM2-PLP-frontend.git
     cd custom-ed
     ```
 
