@@ -1,60 +1,46 @@
 // @ts-nocheck
 
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { RootState } from '@/store'
-import { closeDialog, openDialog } from '@/store/features/dialogSlice'
-import { useSendOtpMutation } from '@/store/otp/otpApi'
-import {
-	useGetStudentByIdQuery,
-	useUserSigninMutation,
-} from '@/store/student/studentApi'
-import {
-	useGetTeacherByIdQuery,
-} from '@/store/teacher/teacherApi'
-import { UserSigninResponse } from '@/types/auth/studentAuth.type'
-import { ExtendedError } from '@/types/Error.type'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ReloadIcon } from '@radix-ui/react-icons'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import { toast } from 'sonner'
-import { z } from 'zod'
+import { useEffect, useState } from 'react';
 
-import { cn } from '@/lib/utils'
 
-import { PasswordInput } from '@/components/PasswordInput'
-import { Button } from '@/components/ui/button'
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog'
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
+
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { RootState } from '@/store';
+import { closeDialog, openDialog } from '@/store/features/dialogSlice';
+import { useSendOtpMutation } from '@/store/otp/otpApi';
+import { useGetStudentByIdQuery, useUserSigninMutation } from '@/store/student/studentApi';
+import { useGetTeacherByIdQuery } from '@/store/teacher/teacherApi';
+import { UserSigninResponse } from '@/types/auth/studentAuth.type';
+import { ExtendedError } from '@/types/Error.type';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ReloadIcon } from '@radix-ui/react-icons';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+
+
+import { cn } from '@/lib/utils';
+
+
+
+import { PasswordInput } from '@/components/PasswordInput';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+
+
+
 
 const formSchema = z.object({
 	email: z
@@ -76,6 +62,8 @@ const SigninPage = () => {
 	const [teacherId, setTeacherId] = useState('')
 	const [emailError, setEmailError] = useState('')
 	const [emailverfication, Setemailverfication] = useState('')
+	const [showResendOtpLink, setShowResendOtpLink] = useState(false);
+    const [emailForResend, setEmailForResend] = useState('');
 
 	const validateEmail = (value) => {
 		// Basic email regex
@@ -194,29 +182,57 @@ const SigninPage = () => {
 	}
 
 	const onSubmit = (credentials: FormType) => {
-			userSignin(credentials)
-				.unwrap()
-				.then((res: UserSigninResponse) => {
+		console.log(`credentials ${JSON.stringify(credentials)}`)
+		setShowResendOtpLink(false)
+		setEmailForResend(credentials.email)
 
-					setCurrUser(res.data)
-					if (res.data?.role === 0) {
-						setStudentId(res.data?.id!)
-						if (res.data?.student === null) {
-							dispatch(openDialog('student'))
-						}
+		userSignin(credentials)
+			.unwrap()
+			.then((res: UserSigninResponse) => {
+				setCurrUser(res.data)
+				if (res.data?.role === 0) {
+					setStudentId(res.data?.id!)
+					if (res.data?.student === null) {
+						dispatch(openDialog('student'))
 					}
-					else if (res.data?.role === 1) {
-						setTeacherId(res.data?.id!)
-						if (res.data?.teacher === null) {
-							dispatch(openDialog('teacher'))
-						}
+				} else if (res.data?.role === 1) {
+					setTeacherId(res.data?.id!)
+					if (res.data?.teacher === null) {
+						dispatch(openDialog('teacher'))
 					}
-				})
-				.catch((err: ExtendedError) => {
-					toast.error('Invalid credentials')
-				})
-		
+				}
+			})
+			.catch((err: ExtendedError) => {
+				if (err.data?.message?.includes('Account not verified')) {
+					toast.error(
+						'Your account is not verified. Please check your email for an OTP.',
+					)
+					setEmailForResend(credentials.email)
+					setShowResendOtpLink(true)
+				} else {
+					toast.error(
+						err.data?.message ||
+							err.data?.errors?.[0] ||
+							'Invalid credentials.',
+					)
+				}
+			})
 	}
+
+	const handleResendVerificationOtp = async () => {
+        if (!emailForResend) {
+            toast.error("Email not available for resending OTP.");
+            return;
+        }
+        try {
+            await sendOtp({ email: emailForResend }).unwrap();
+            toast.success("A new verification OTP has been sent to your email. Please check and verify.");
+
+            router.push('/auth/verify-email');
+        } catch (err) {
+            toast.error("Failed to resend OTP. Please try again.");
+        }
+    };
 
 	return (
 		<main className='flex h-screen w-screen justify-center items-center bg-[url(/signup-bg.jpg)]'>
@@ -374,7 +390,17 @@ const SigninPage = () => {
 									) : null}
 									Signin
 								</Button>
-								<span className='md:hidden text-primary text-center text-sm'>
+								{showResendOtpLink && (
+                                    <Button
+                                        type="button"
+                                        variant="link"
+                                        onClick={handleResendVerificationOtp}
+                                        className="text-blue-600 hover:underline self-center p-0 h-auto"
+                                    >
+                                        Resend Verification OTP
+                                    </Button>
+                                )}
+								<span className='text-primary text-center text-sm'>
 									Don't have an account ?
 									<Link
 										href='/auth/signup'

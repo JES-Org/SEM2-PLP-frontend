@@ -132,6 +132,7 @@ export interface CrossAssessmentResponse {
 export interface CrossAssessmentResponseData {
   [key: string]: any;
   id: string
+  title: string
   desription: string
   assessment: CreateAssessementResponseData
   totalScore?:              string;

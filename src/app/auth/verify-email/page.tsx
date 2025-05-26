@@ -158,7 +158,7 @@ const VerifyEmailPage = () => {
 								) : null}
 								Verify
 							</Button>
-							<span className='md:hidden text-primary text-center text-sm'>
+							<span className='text-primary text-center text-sm'>
 								Didn't get the code ?
 								<Button
 									variant='link'

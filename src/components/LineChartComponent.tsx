@@ -2,6 +2,8 @@
 
 import React from 'react'
 
+import { CheckAnswerResponse } from '@/types/assessment/assessment.type'
+
 import {
 	CartesianGrid,
 	Legend,
@@ -28,11 +30,13 @@ const mockData = [
 	{ name: 'Emily', result: 94 },
 ]
 
-const LineChartComponent = () => {
+type ScoreData = { name: string; result: number }[];
+
+const LineChartComponent = ({ data }: { data: ScoreData }) => {
 	return (
 		<div>
 			<ResponsiveContainer width='100%' height={400}>
-				<LineChart data={mockData}>
+				<LineChart data={data}>
 					<CartesianGrid strokeDasharray='3 3' />
 					<XAxis hide={true} dataKey='name' />
 					<YAxis />
