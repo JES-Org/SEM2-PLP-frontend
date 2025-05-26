@@ -400,7 +400,7 @@ const SigninPage = () => {
                                         Resend Verification OTP
                                     </Button>
                                 )}
-								<span className='md:hidden text-primary text-center text-sm'>
+								<span className='text-primary text-center text-sm'>
 									Don't have an account ?
 									<Link
 										href='/auth/signup'
