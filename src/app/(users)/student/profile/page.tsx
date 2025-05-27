@@ -5,7 +5,7 @@ import React, { useEffect } from 'react'
 
 import { openDialog } from '@/store/features/studentDialogSlice'
 import { useGetStudentProfileQuery } from '@/store/student/studentApi'
-import { Calendar, CircleUser, Library, Phone } from 'lucide-react'
+import {  Calendar, CircleUser, GraduationCap, Landmark, Library, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDispatch } from 'react-redux'
 
@@ -13,6 +13,7 @@ import NonEditableProfileFields from '@/components/NonEditableProfileFields'
 import StudentDeleteDialog from '@/components/StudentDeleteDialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { IdCardIcon } from '@radix-ui/react-icons'
 
 const Page = () => {
 	const router = useRouter()
@@ -78,14 +79,14 @@ const Page = () => {
 						/>
 						<NonEditableProfileFields
 							ProfileFieldItems={{
-								icon: <Library />,
+								icon: <Landmark />,
 								text: 'Department',
 								value: profile.batch_details?.department_details?.name || 'N/A',
 							}}
 						/>
 						<NonEditableProfileFields
 							ProfileFieldItems={{
-								icon: <Library />,
+								icon: <IdCardIcon />,
 								text: 'Student ID',
 								value: profile.student_id,
 							}}
@@ -108,18 +109,14 @@ const Page = () => {
 						/>
 						<NonEditableProfileFields
 							ProfileFieldItems={{
-								icon: <Library />,
+								icon: <GraduationCap />,
 								text: 'Year & Section',
 								value: `Year ${profile.year}, Section ${profile.section}`,
 							}}
 						/>
 					</div>
 				</div>
-				<div className='flex flex-col md:flex-row justify-center items-center gap-4 mt-10 w-full'>
-					<Button className='w-full md:w-2/12' onClick={handleSubmit}>
-						Edit
-					</Button>
-
+				<div className='flex justify-center mt-6 w-full md:ml-0'>
 					<Button
 						variant='destructive'
 						className='w-full md:w-2/12'

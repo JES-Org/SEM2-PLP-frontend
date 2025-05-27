@@ -10,7 +10,7 @@ interface LayoutProps {
 	children: React.ReactNode
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout= ({ children }:LayoutProps) => {
 	const router = useRouter()
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	console.log('Layout currUser', getCurrUser())
