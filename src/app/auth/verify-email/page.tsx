@@ -98,7 +98,6 @@ const VerifyEmailPage = () => {
 			inputRefs[index - 1].current!.focus()
 		}
 	}
-
 	const handleSubmit = async () => {
 		console.log('OTP: ', otp.join(''))
 		const otpValue = otp.join('')

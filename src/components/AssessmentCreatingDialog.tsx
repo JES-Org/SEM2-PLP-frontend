@@ -147,9 +147,7 @@ const AssessmentCreatingDialog = () => {
 									onSelect={(date) => {
 										SetFormState((prev) => ({ ...prev, deadline: date }))
 									}}
-
-								disabled={(date) => isBefore(date, startOfToday())}
-									
+									disabled={(date) => isBefore(date, startOfToday())}
 								/>
 							</PopoverContent>
 						</Popover>
@@ -158,12 +156,19 @@ const AssessmentCreatingDialog = () => {
 						<Label>Tags</Label>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant='outline' className='w-1/4'>
-									Select portion
+								<Button variant='outline' className='w-1/4 truncate'>
+									{formState.tag.some(Boolean)
+										? formState.tag
+												.map((selected, i) =>
+													selected ? `Chapter ${i + 1}` : null,
+												)
+												.filter(Boolean)
+												.join(', ')
+										: 'Select portion'}
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className='w-56'>
-								{Array.from({ length: 5 }).map((_, i) => (
+								{Array.from({ length: 10 }).map((_, i) => (
 									<DropdownMenuCheckboxItem
 										key={i}
 										checked={formState.tag[i] as Checked}

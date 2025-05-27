@@ -60,7 +60,7 @@ const DiscussionMessage = ({ message }: Props) => {
 				<ContextMenuTrigger asChild>
 					<div
 						className={cn(
-							'flex flex-col gap-2 p-4 rounded-lg bg-primary text-primary-foreground min-w-[100px] max-w-[90%] w-fit break-words',
+							'flex flex-col gap-2 p-4 rounded-lg bg-slate-600 text-primary-foreground min-w-[100px] max-w-[90%] w-fit break-words',
 							{
 								'bg-secondary text-secondary-foreground':
 									String(sender.id) !== String(currUser.id),
