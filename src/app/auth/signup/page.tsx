@@ -1,9 +1,9 @@
 'use client'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
-import { useTeacherSignupMutation } from '@/store/teacher/teacherApi'
 import { useSendOtpMutation } from '@/store/otp/otpApi'
 import { useStudentSignupMutation } from '@/store/student/studentApi'
+import { useTeacherSignupMutation } from '@/store/teacher/teacherApi'
 import { ExtendedError } from '@/types/Error.type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ReloadIcon } from '@radix-ui/react-icons'
@@ -33,28 +33,27 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
-const formSchema = z
-  .object({
-    email: z
-      .string({ required_error: 'Email is required' })
-      .email({ message: 'Please enter a valid email format' })
-      .refine(
-        (email) => email.endsWith('@bdu.edu.et'),
-        { message: 'Email must be a valid @bdu.edu.et address' }
-      ),
-    password: z
-      .string({ required_error: 'Password is required' })
-      .min(8, { message: 'Password must contain at least 8 characters' }),
-    confirmPassword: z
-      .string({ required_error: 'Password is required' })
-      .min(8, { message: 'Password must contain at least 8 characters' }),
-    role: z.string({ required_error: 'Role is required' }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ['confirmPassword'],
-    message: 'Passwords do not match',
-  });
 
+const formSchema = z
+	.object({
+		email: z
+			.string({ required_error: 'Email is required' })
+			.email({ message: 'Please enter a valid email format' })
+			.refine((email) => email.endsWith('@bdu.edu.et'), {
+				message: 'Email must be a valid @bdu.edu.et address',
+			}),
+		password: z
+			.string({ required_error: 'Password is required' })
+			.min(8, { message: 'Password must contain at least 8 characters' }),
+		confirmPassword: z
+			.string({ required_error: 'Password is required' })
+			.min(8, { message: 'Password must contain at least 8 characters' }),
+		role: z.string({ required_error: 'Role is required' }),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		path: ['confirmPassword'],
+		message: 'Passwords do not match',
+	})
 
 type FormType = z.infer<typeof formSchema>
 
@@ -94,6 +93,10 @@ const SignupPage = () => {
 	const form = useForm<FormType>({
 		resolver: zodResolver(formSchema),
 	})
+	const { setItem: setforWhatVerification } = useLocalStorage(
+		'forWhatVerification',
+	)
+
 
 	const onSubmit = async (credentials: FormType) => {
 		if (credentials.role.toLowerCase() === 'student') {
@@ -104,32 +107,31 @@ const SignupPage = () => {
 					setEmailForVerification(res.data?.email!)
 					setIdForVerification(res.data?.id!)
 					setRoleForVerification(res.data?.role!)
+					setforWhatVerification('signin')
+
 					sendOtp({
 						email: res.data?.email!,
-						
 					})
 					toast.success('Please check your email for verification.')
 					router.push('/auth/verify-email')
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`signup error ${JSON.stringify(err)}`);
-					const errorList = err?.data?.errors;
-				  
-					let errorMessage = 'Signup failed';
+					console.log(`signup error ${JSON.stringify(err)}`)
+					const errorList = err?.data?.errors
+
+					let errorMessage = 'Signup failed'
 					if (Array.isArray(errorList) && errorList.length > 0) {
-					  const rawError = errorList[0];
-				  
-					  // Try to extract the message from the string using regex
-					  const match = rawError.match(/ErrorDetail\(string='(.*?)'/);
-					  if (match && match[1]) {
-						errorMessage += `: ${match[1]}`;
-					  }
+						const rawError = errorList[0]
+
+						// Try to extract the message from the string using regex
+						const match = rawError.match(/ErrorDetail\(string='(.*?)'/)
+						if (match && match[1]) {
+							errorMessage += `: ${match[1]}`
+						}
 					}
-				  
-					toast.error(errorMessage);
-				  });
-				  
-				  
+
+					toast.error(errorMessage)
+				})
 		} else if (credentials.role.toLowerCase() === 'teacher') {
 			teacherSignup(credentials)
 				.unwrap()
@@ -138,32 +140,32 @@ const SignupPage = () => {
 					setEmailForVerification(res.data?.email!)
 					setIdForVerification(res.data?.id!)
 					setRoleForVerification(res.data?.role!)
+					setforWhatVerification('signin')
+
 					sendOtp({
 						email: res.data?.email!,
-						
 					})
+
 					toast.success('Please check your email for verification.')
 					router.push('/auth/verify-email')
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`signup error ${JSON.stringify(err)}`);
-					const errorList = err?.data?.errors;
-				  
-					let errorMessage = 'Signup failed';
+					console.log(`signup error ${JSON.stringify(err)}`)
+					const errorList = err?.data?.errors
+
+					let errorMessage = 'Signup failed'
 					if (Array.isArray(errorList) && errorList.length > 0) {
-					  const rawError = errorList[0];
-				  
-					  // Try to extract the message from the string using regex
-					  const match = rawError.match(/ErrorDetail\(string='(.*?)'/);
-					  if (match && match[1]) {
-						errorMessage += `: ${match[1]}`;
-					  }
+						const rawError = errorList[0]
+
+						// Try to extract the message from the string using regex
+						const match = rawError.match(/ErrorDetail\(string='(.*?)'/)
+						if (match && match[1]) {
+							errorMessage += `: ${match[1]}`
+						}
 					}
-				  
-					toast.error(errorMessage);
-				  });
-				  
-				  
+
+					toast.error(errorMessage)
+				})
 		}
 	}
 
