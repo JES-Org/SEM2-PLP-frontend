@@ -57,7 +57,7 @@ const ListOfClassroomPage = () => {
 		<div className='md:flex overflow-x-hidden md:w-11/12 md:ml-auto h-screen'>
 			<div className='flex-1 mt-20 md:pl-40'>
 				<div>
-					<SearchAndBell />
+					<SearchAndBell onSearchChange={(value: string) => { }} />
 				</div>
 
 				<div className='md:grid  md:grid-cols-2 lg:grid-cols-3 gap-4  md:mx-7 left-0 mx-auto '>
