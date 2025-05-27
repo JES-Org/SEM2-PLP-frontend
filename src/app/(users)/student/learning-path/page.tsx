@@ -29,7 +29,7 @@ const LearningPathPage = () => {
 		<div className='md:ml-72 pl-2 h-screen'>
 			<LearningPathDeleteDialog />
 			<Button
-				className='fixed bottom-6 right-6 rounded-full p-0 h-12 w-12 flex items-center justify-center bg-primary text-primary-foreground animate-bounce'
+				className='fixed bottom-6 right-6 rounded-full p-0 h-12 w-12 flex items-center justify-center bg-primary text-primary-foreground'
 				onClick={() => router.push('/student/learning-path/generate')}
 			>
 				<Plus className='text-primary-foreground' />
@@ -56,7 +56,7 @@ const LearningPathPage = () => {
 							/>
 						))
 					) : (
-						<div className='flex items-center  my-40  mx-60 text-muted-foreground italic'>
+						<div className='flex items-center my-40 mx-60 text-muted-foreground italic'>
 							No Learning path yet !!
 						</div>
 					)
