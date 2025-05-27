@@ -8,6 +8,7 @@ import { Hash } from 'lucide-react'
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar'
 import CountUp from 'react-countup'
 import { useInView } from 'react-intersection-observer'
+import { Button } from '@/components/ui/button'
 
 import 'react-circular-progressbar/dist/styles.css'
 
@@ -18,7 +19,7 @@ import {
 } from '@/store/assessment/assessmentApi'
 import { useGetClassroomByIdQuery } from '@/store/classroom/classroomApi'
 import { useAggregateGetStudentByIdQuery } from '@/store/student/studentApi'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 import LineChartComponent from '@/components/LineChartComponent'
 import ScoreProfile from '@/components/ScoreProfile'
@@ -32,6 +33,7 @@ interface scoreData {
 }
 
 export default function Page() {
+	const router = useRouter()
 	const { ref, inView } = useInView({ threshold: 0.5 })
 
 	const currClassroomId = usePathname().split('/').at(-4)
@@ -329,6 +331,18 @@ export default function Page() {
 						</Card>
 					</div>
 				</div>
+			</div>
+			<div className='flex justify-center mt-10 mb-16 md:ml-64 md:mr-3'>
+			<Button 
+				onClick={() => router.back()} 
+				className="px-8 py-6 rounded-lg shadow-md transition-all hover:shadow-lg flex items-center gap-2 bg-primary text-primary-foreground"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+				<path d="m12 19-7-7 7-7"/>
+				<path d="M19 12H5"/>
+				</svg>
+				Back to Assessments
+			</Button>
 			</div>
 		</div>
 	)
