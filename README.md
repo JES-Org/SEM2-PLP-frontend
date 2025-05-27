@@ -6,7 +6,7 @@
 
 ## ✨ Features
 
-* **🎯 Personalized Learning Paths**
+* **🎯 Personalized Learning**
   Generate customized learning journeys for each student, adapting dynamically based on their progress and goals.
 
 * **📝 Teacher Assessments**
