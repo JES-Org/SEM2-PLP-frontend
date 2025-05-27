@@ -65,7 +65,7 @@ export const MessageSidebar = ({
 	return (
 		<aside
 			className={cn(
-				'transition-transform duration-300 ease-in-out md:translate-x-0 fixed md:static z-20 bg-gray-50 dark:bg-gray-800 border-r h-full w-4/5 max-w-xs',
+				'transition-transform duration-300 ease-in-out md:translate-x-0 fixed md:static z-20 bg-gray-50 dark:bg-gray-800 border-r h-full max-w-xs',
 				{
 					'-translate-x-full': !isOpen,
 					'translate-x-0': isOpen,

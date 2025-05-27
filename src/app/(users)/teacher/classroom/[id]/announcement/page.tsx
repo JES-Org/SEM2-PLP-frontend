@@ -80,7 +80,7 @@ const AnnouncementPage = () => {
 	console.log(JSON.stringify(data))
 
 	return (
-		<div className='ml-72 mr-24 mt-10 flex flex-col h-screen'>
+		<div className='md:ml-72  mr-24 mt-10 flex flex-col h-screen'>
 			<AnnouncementCreatingDialog />
 			<AttachmentDialog />
 			<AnnouncementDeleteDialog />

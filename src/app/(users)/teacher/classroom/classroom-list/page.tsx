@@ -59,7 +59,7 @@ const ListOfClassroomPage = () => {
 		else await archiveClassroom(id)
 		refetch()
 	}
-
+ console.log('classrooms', classrooms)
 	return (
 		<div className='md:flex overflow-x-hidden md:w-11/12 md:ml-auto h-screen'>
 			<ClassroomDeleteDialog />

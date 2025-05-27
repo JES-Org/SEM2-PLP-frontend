@@ -2,7 +2,7 @@ import { MessageDashboard } from '@/components/messaging'
 
 export default function MessagesPage() {
     return (
-        <div className='ml-10'>
+        <div className='overflow-x-hidden md:ml-72'>
             <MessageDashboard />
         </div>
     )

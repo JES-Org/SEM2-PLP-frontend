@@ -7,7 +7,7 @@ import DiscussionChat from '@/components/DiscussionChat'
 const Forum = () => {
 	const [typing, setTyping] = useState(false)
 	return (
-		<div className='pl-72 h-[calc(100vh-5rem)]'>
+		<div className='md:pl-72 pl-3 h-[calc(100vh-5rem)]'>
 			<DiscussionChat typing={typing} />
 		</div>
 	)

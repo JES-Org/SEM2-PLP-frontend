@@ -1,5 +1,6 @@
 //@ts-nocheck
 'use client'
+
 import { useEffect, useState } from 'react'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
@@ -71,23 +72,26 @@ const StudentAnnouncementPage = () => {
 	const { data } = useUnreadNotificationsQuery(currClassroomId!)
 	dispatch(setNotifications(data?.data))
 
-	console.log("announcements cjnc",announcements)
-
-
 	return (
 		<div className='mt-10 h-screen flex flex-col overflow-hidden ml-0 mr-0 md:ml-80 md:mr-24'>
-			<div className='flex-1 overflow-y-auto no-scrollbar'>
-				{announcements?.data
-					?.slice(0)
-					.reverse()
-					.map((announcement) => (
-						<Announcement
-							key={announcement.id}
-							announcement={announcement}
-							className='mb-2'
-						/>
-					))}
-			</div>
+			{announcements?.data.length > 0 ? (
+				<div className='flex-1 overflow-y-auto no-scrollbar'>
+					{announcements?.data
+						?.slice(0)
+						.reverse()
+						.map((announcement) => (
+							<Announcement
+								key={announcement.id}
+								announcement={announcement}
+								className='mb-2'
+							/>
+						))}
+				</div>
+			) : (
+				<div className='flex-1 flex items-center justify-center'>
+					<p className='text-gray-500'>No announcements found.</p>
+				</div>
+			)}
 		</div>
 	)
 }

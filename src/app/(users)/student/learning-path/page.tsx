@@ -26,7 +26,7 @@ const LearningPathPage = () => {
 		data?.learningPaths.filter((path) => path.completion_percentage < 100) || []
 	console.log('paths data ', data)
 	return (
-		<div className='ml-72 h-screen'>
+		<div className='md:ml-72 pl-2 h-screen'>
 			<LearningPathDeleteDialog />
 			<Button
 				className='fixed bottom-6 right-6 rounded-full p-0 h-12 w-12 flex items-center justify-center bg-primary text-primary-foreground'

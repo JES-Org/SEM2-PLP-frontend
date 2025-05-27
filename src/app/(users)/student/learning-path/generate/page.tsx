@@ -151,7 +151,7 @@ const GenerateLearningPathPage = () => {
 	}
 
 	const runSaveMutation = async () => {
-		const pathTitle = pathTitleinputRef.current?.value 
+		const pathTitle = pathTitleinputRef.current?.value
 		if (!pathTitle?.trim()) return
 		try {
 			const saveResponse = await save({

@@ -40,7 +40,7 @@ const TeacherClassroomNavbar = () => {
 		router.push(basePath.join('/'))
 	}
 	return (
-		<div className='pl-96 pt-10 h-20 z-10 top-0 '>
+		<div className='md:pl-96 pl-1 pt-10 h-20 z-10 top-0 '>
 			<NavigationMenu>
 				<NavigationMenuList>
 					{TeacherRightSideBarItems.map((item, i) => (
@@ -53,7 +53,7 @@ const TeacherClassroomNavbar = () => {
 								})}
 								onClick={() => handleRouting(item.path)}
 							>
-								<div className='inline-flex justify-center items-center gap-x-2'>
+								<div className='inline-flex justify-center items-center md:gap-x-2 gap-1'>
 									{item.icon}
 									<p>{item.text}</p>
 								</div>

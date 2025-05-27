@@ -219,7 +219,7 @@ const EditQuestions = () => {
 	}
 
 	return (
-		<div className='ml-72 mr-24 mt-10 pb-20'>
+		<div className='md:ml-72 pl-3 mr-24 mt-10 pb-20'>
 			<div className='w-full h-full flex flex-col'>
 				<header className='bg-primary rounded-md text-white py-4 px-6 mb-6'>
 					<h1 className='text-primary-foreground text-2xl font-bold'>

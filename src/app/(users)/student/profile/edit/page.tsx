@@ -1,20 +1,19 @@
 // @ts-nocheck
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import {
+	useEditStudentProfileMutation,
+	useGetStudentProfileQuery,
+} from '@/store/student/studentApi'
 import { Calendar, CircleUser, Mail, Pencil, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
+import { toast } from 'sonner'
 import EditableProfileDatePickerField from '@/components/EditableProfileDatePickerField'
 import EditableProfileFields from '@/components/EditableProfileFields'
 import PhoneField from '@/components/PhoneField'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import {
-	useGetStudentProfileQuery,
-	useEditStudentProfileMutation,
-} from '@/store/student/studentApi'
-import { toast } from 'sonner'
 
 const Page = () => {
 	const router = useRouter()
@@ -22,8 +21,8 @@ const Page = () => {
 	const [inputError, setInputError] = useState('')
 
 	const { data: profile, isLoading, isError } = useGetStudentProfileQuery()
-	const [editStudentProfile, { isLoading: isUpdating }] = useEditStudentProfileMutation()
-
+	const [editStudentProfile, { isLoading: isUpdating }] =
+		useEditStudentProfileMutation()
 	const [firstName, setFirstName] = useState('')
 	const [lastName, setLastName] = useState('')
 	const [email, setEmail] = useState('')
@@ -31,7 +30,6 @@ const Page = () => {
 	const [phone, setPhone] = useState('')
 	const [avatarUrl, setAvatarUrl] = useState('https://github.com/shadcn.png')
 	const [selectedFile, setSelectedFile] = useState<File | null>(null)
-
 	useEffect(() => {
 		if (profile) {
 			setFirstName(profile.first_name || '')
@@ -43,20 +41,19 @@ const Page = () => {
 		}
 	}, [profile])
 
-
 	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
 		if (file) {
-		  setSelectedFile(file) // Store actual file
-		  const reader = new FileReader()
-		  reader.onload = () => {
-			if (typeof reader.result === 'string') {
-			  setAvatarUrl(reader.result) // For preview
+			setSelectedFile(file) // Store actual file
+			const reader = new FileReader()
+			reader.onload = () => {
+				if (typeof reader.result === 'string') {
+					setAvatarUrl(reader.result) // For preview
+				}
 			}
-		  }
-		  reader.readAsDataURL(file)
+			reader.readAsDataURL(file)
 		}
-	  }
+	}
 
 	const handleFileInputChange = (event: Event) => {
 		const target = event.target as HTMLInputElement
@@ -79,15 +76,15 @@ const Page = () => {
 	const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault()
 		if (phoneError || inputError) return
-	
+
 		const formData = new FormData()
 		formData.append('first_name', firstName)
 		formData.append('last_name', lastName)
 		formData.append('phone', phone)
 		formData.append('dob', dob)
-	
+
 		if (selectedFile) {
-			formData.append('image', selectedFile)  // ← this must be a File object
+			formData.append('image', selectedFile) // ← this must be a File object
 		}
 		try {
 			await editStudentProfile(formData).unwrap()
@@ -98,7 +95,6 @@ const Page = () => {
 			console.error(err)
 		}
 	}
-	
 
 	return (
 		<div className='pt-20'>
@@ -111,13 +107,16 @@ const Page = () => {
 							{lastName[0]}
 						</AvatarFallback>
 					</Avatar>
-					<Button className='absolute bottom-1 right-0' onClick={handleFileUploadClick}>
+					<Button
+						className='absolute bottom-1 right-0'
+						onClick={handleFileUploadClick}
+					>
 						<Pencil size={15} />
 					</Button>
 				</div>
 			</div>
 
-			<div className='md:pl-60 md:ml-0 ml-6 my-14'>
+			<div className='flex flex-col  md:pl-60 md:ml-0 ml-6 my-14'>
 				<div className='md:flex justify-around space-y-8 md:space-y-0'>
 					<EditableProfileFields
 						ProfileFieldItems={{
@@ -139,8 +138,7 @@ const Page = () => {
 					/>
 				</div>
 
-				<div className='md:flex justify-around mt-8 space-y-8 md:space-y-0'>
-			
+				<div className='md:flex justify-start md:pl-20 md:ml-0 mt-8 space-y-8 md:space-y-0'>
 					<PhoneField
 						ProfileFieldItems={{
 							icon: <Phone />,
@@ -150,24 +148,20 @@ const Page = () => {
 							setError: setPhoneError,
 						}}
 					/>
-					<EditableProfileDatePickerField
-						ProfileFieldItems={{
-							icon: <Calendar />,
-							text: 'Date of Birth',
-							value: dob,
-							onChange: setDob,
-							setError: setInputError,
-						}}
-					/>
+					
 				</div>
 
-			
-
 				<div className='flex justify-center mt-10'>
-					<Button className='md:w-2/12 w-4/12' type='submit' onClick={handleSubmit} disabled={isUpdating}>
+					<Button
+						className='md:w-2/12 w-4/12'
+						type='submit'
+						onClick={handleSubmit}
+						disabled={isUpdating}
+					>
 						{isUpdating ? 'Saving...' : 'Save'}
 					</Button>
 				</div>
+				
 			</div>
 		</div>
 	)

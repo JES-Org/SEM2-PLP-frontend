@@ -1,21 +1,33 @@
 // @ts-nocheck
 'use client'
-import React,{useEffect} from 'react'
+
+import React, { useEffect } from 'react'
+
+import { openDialog } from '@/store/features/studentDialogSlice'
+import { useGetStudentProfileQuery } from '@/store/student/studentApi'
 import {  Calendar, CircleUser, GraduationCap, Landmark, Library, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useDispatch } from 'react-redux'
 
 import NonEditableProfileFields from '@/components/NonEditableProfileFields'
+import StudentDeleteDialog from '@/components/StudentDeleteDialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { useGetStudentProfileQuery } from '@/store/student/studentApi'
 import { IdCardIcon } from '@radix-ui/react-icons'
 
 const Page = () => {
 	const router = useRouter()
-	const { data: profile, isLoading, isError, refetch } = useGetStudentProfileQuery(undefined, {
+	const dispatch = useDispatch()
+
+	const {
+		data: profile,
+		isLoading,
+		isError,
+		refetch,
+	} = useGetStudentProfileQuery(undefined, {
 		refetchOnMountOrArgChange: true,
 	})
-		useEffect(() => {
+	useEffect(() => {
 		const handleVisibilityChange = () => {
 			if (document.visibilityState === 'visible') {
 				refetch()
@@ -31,15 +43,23 @@ const Page = () => {
 		router.push('/student/profile/edit')
 	}
 
-	if (isLoading) return <div className='text-center mt-20'>Loading profile...</div>
-	if (isError || !profile) return <div className='text-center mt-20 text-red-500'>Failed to load profile.</div>
-    console.log("student profile update",profile)
+	if (isLoading)
+		return <div className='text-center mt-20'>Loading profile...</div>
+	if (isError || !profile)
+		return (
+			<div className='text-center mt-20 text-red-500'>
+				Failed to load profile.
+			</div>
+		)
 	return (
 		<div>
+			<StudentDeleteDialog />
 			<div className='flex justify-center pt-20 md:pl-40'>
 				<Avatar className='w-40 h-40'>
-
-					<AvatarImage src={profile.imageUrl || 'https://github.com/shadcn.png'} alt='Profile' />
+					<AvatarImage
+						src={profile.imageUrl || 'https://github.com/shadcn.png'}
+						alt='Profile'
+					/>
 					<AvatarFallback>
 						{profile.first_name?.[0]?.toUpperCase() ?? 'U'}
 						{profile.last_name?.[0]?.toUpperCase() ?? ''}
@@ -77,8 +97,7 @@ const Page = () => {
 							ProfileFieldItems={{
 								icon: <Calendar />,
 								text: 'Email',
-								value: profile.email
-,
+								value: profile.email,
 							}}
 						/>
 						<NonEditableProfileFields
@@ -97,12 +116,17 @@ const Page = () => {
 						/>
 					</div>
 				</div>
-				<div className='flex justify-center mt-6 w-full md:ml-0'>
-					<Button
-						className='text-center md:w-2/12 w-4/12 md:ml-40 '
-						onClick={handleSubmit}
-					>
+				<div className='flex flex-col md:flex-row justify-center items-center gap-4 mt-10 w-full'>
+					<Button className='w-full md:w-2/12' onClick={handleSubmit}>
 						Edit
+					</Button>
+
+					<Button
+						variant='destructive'
+						className='w-full md:w-2/12'
+						onClick={() => dispatch(openDialog('deleteAccount'))}
+					>
+						Delete Account
 					</Button>
 				</div>
 			</div>

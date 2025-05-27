@@ -49,7 +49,7 @@ const StudentClassroomNavbar = () => {
   }
 
   return (
-    <div className='pt-10 md:pl-96'>
+		<div className='md:pl-96 pl-1 pt-10 h-20 z-10 top-0 '>
       {/* Desktop Nav */}
       <div className='hidden md:flex'>
         <NavigationMenu>

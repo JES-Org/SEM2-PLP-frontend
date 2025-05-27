@@ -283,7 +283,7 @@ const SignupPage = () => {
 									Signup
 								</Button>
 
-								<span className='md:hidden text-primary text-center text-sm'>
+								<span className='text-primary text-center text-sm'>
 									Already have an account ?
 									<Link
 										href='/auth/signin'

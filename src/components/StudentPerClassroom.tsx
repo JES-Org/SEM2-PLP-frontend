@@ -61,8 +61,9 @@ const StudentPerClassroom = () => {
    const students =isCurrUserTeacher ?classroomData?.data.members : classroomData?.data.members?.filter((student) => student.id !== currUser.student?.id)
 
 	return (
-		<div className='ml-80 mr-12 my-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-			{students?.map((student, i) => (
+		<div className='md:ml-80 pl-3 mr-12 my-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+			{students?.length !==0?
+				(students?.map((student, i) => (
 				<Card key={i} className='pb-6'>
 					<CardHeader>
 						{isCurrUserTeacher && (
@@ -107,10 +108,15 @@ const StudentPerClassroom = () => {
 					</div>
 				</Card>
 				
-
-
 				
-			))}
+			))
+				) : (
+				<p className='text-center text-gray-500 text-lg font-semibold col-span-full'>
+					No students found in this classroom.
+				</p>
+			)
+		
+		}
 		</div>
 	)
 }
