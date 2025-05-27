@@ -1,16 +1,17 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useRouter } from 'next/navigation'
+
 import LeftSidebar from '@/components/LeftSideBar'
 
 interface LayoutProps {
 	children: React.ReactNode
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout = ({ children }: LayoutProps) => {
 	const router = useRouter()
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	console.log('Layout currUser', getCurrUser())
@@ -26,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 	}, [])
 
 	if (!currUser) {
-		return null 
+		return null
 	}
 
 	const role = currUser.role === 0 ? 'student' : 'teacher'

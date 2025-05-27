@@ -1,11 +1,10 @@
 import StudentClassroomNavbar from '@/components/layout/StudentClassroomNavbar'
 
 interface LayoutProps {
-	role: string
 	children: React.ReactNode
 }
 
-const Layout: React.FC<LayoutProps> = ({ role = 'student', children }) => {
+const Layout = ({ children }: LayoutProps) => {
 	return (
 		<div>
 			<StudentClassroomNavbar />
