@@ -1,4 +1,7 @@
-````md
+Got it! You're right — the Markdown syntax (like triple backticks, hashes, etc.) shouldn't appear as literal text in the final README. Here's the **corrected and clean version** of your `README.md` file — formatted properly without being inside a code block:
+
+---
+
 # 🚀 CustomEd
 
 **CustomEd** is a modern personalized learning path generator built with **Next.js**. It empowers students by creating tailored learning paths that adapt to their unique needs and progress. At the same time, it provides teachers with an intuitive platform to create assessments, track student performance, and foster communication through discussion groups and announcements.
@@ -7,19 +10,19 @@
 
 ## ✨ Features
 
-- **🎯 Personalized Learning Paths**  
+* **🎯 Personalized Learning Paths**
   Generate customized learning journeys for each student, adapting dynamically based on their progress and goals.
 
-- **📝 Teacher Assessments**  
+* **📝 Teacher Assessments**
   Teachers can easily create, assign, and manage assessments to effectively evaluate student understanding.
 
-- **📊 Progress Tracking Dashboard**  
+* **📊 Progress Tracking Dashboard**
   Visualize student progress through detailed analytics and reports, helping teachers identify strengths and gaps.
 
-- **💬 Discussion Groups**  
+* **💬 Discussion Groups**
   Promote collaboration and interaction between students and teachers through focused discussion channels.
 
-- **📢 Announcements**  
+* **📢 Announcements**
   Keep students informed with timely updates and important notifications from teachers.
 
 ---
@@ -32,8 +35,8 @@ Follow the steps below to set up and run **CustomEd** on your local machine.
 
 Make sure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (version 14 or later)
-- [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
+* [Node.js](https://nodejs.org/) (version 14 or later)
+* [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
 
 ---
 
@@ -44,7 +47,7 @@ Make sure you have the following installed:
    ```bash
    git clone https://github.com/JES-Org/SEM2-PLP-frontend.git
    cd custom-ed
-````
+   ```
 
 2. **Install dependencies**
 
