@@ -241,7 +241,7 @@ export default function StudentOnboardingDialog() {
 													<SelectValue placeholder='Select your academic year' />
 												</SelectTrigger>
 												<SelectContent>
-													{[1, 2, 3, 4, 5].map((year) => (
+													{[1, 2, 3, 4, 5,6].map((year) => (
 														<SelectItem key={year} value={year.toString()}>
 															{year}
 														</SelectItem>

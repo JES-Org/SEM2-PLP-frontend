@@ -3,6 +3,7 @@
 
 import { departments } from '@/constants/departments'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useGetFacultyQuery } from '@/store/classroom/classroomApi'
 import { closeDialog } from '@/store/features/dialogSlice'
 import { RootState } from '@/store/index'
 import { useEditTeacherProfileMutation } from '@/store/teacher/teacherApi'
@@ -51,7 +52,7 @@ const formSchema = z.object({
 		.string({ required_error: 'Phone number is required' })
 		.startsWith('+251')
 		.length(13, 'Phone number length is invalid'),
-	department: z.string({ required_error: 'Department is required' }),
+	faculty: z.string({ required_error: 'Faculty is required' }),
 })
 
 type FormType = z.infer<typeof formSchema>
@@ -64,9 +65,10 @@ export default function TeacherOnboardingDialog() {
 	const userType = useSelector((state: RootState) => state.dialog.userType)
 	const dispatch = useDispatch()
 	const router = useRouter()
-
+	const { data: faculties } = useGetFacultyQuery()
 	const [changeProfile, { data, isLoading, isSuccess, isError, error }] =
 		useEditTeacherProfileMutation()
+	console.log('faculties:', faculties)
 
 	const { getItem: getCurrUser, setItem: setCurrUser } =
 		useLocalStorage('currUser')
@@ -77,27 +79,22 @@ export default function TeacherOnboardingDialog() {
 			...profileData,
 			id: currUser.id as string,
 			email: currUser.email as string,
-			joinDate: '2024-05-19',
-			dateOfBirth: '2001-10-04',
-			department: profileData.department,
+			faculty: profileData.faculty,
 		}
 
 		const transformedData = {
 			id: profile.id,
 			first_name: profile.firstName,
 			last_name: profile.lastName,
-			dob: profile.dateOfBirth,
 			phone: profile.phoneNumber,
-			join_date: profile.joinDate,
-			department: profile.department,
+			faculty: profile.faculty,
 			email: profile.email,
 		}
-		console.log(transformedData)
 		changeProfile(transformedData)
 			.unwrap()
 			.then((res) => {
 				toast.success('Profile updated successfully')
-				dispatch(closeDialog())				
+				dispatch(closeDialog())
 				router.push('/teacher/classroom/classroom-list')
 			})
 			.catch((err) => {
@@ -160,22 +157,22 @@ export default function TeacherOnboardingDialog() {
 							/>
 							<FormField
 								control={form.control}
-								name='department'
+								name='faculty'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Department</FormLabel>
+										<FormLabel>Faculty</FormLabel>
 										<FormControl>
 											<Select
 												onValueChange={field.onChange}
 												defaultValue={field.value}
 											>
 												<SelectTrigger>
-													<SelectValue placeholder='Select your department' />
+													<SelectValue placeholder='Select your faculity' />
 												</SelectTrigger>
 												<SelectContent>
-													{departments.map((dept) => (
-														<SelectItem key={dept} value={dept}>
-															{dept}
+													{faculties?.data.map((fac) => (
+														<SelectItem key={fac.id} value={fac.name}>
+															{fac.name}
 														</SelectItem>
 													))}
 												</SelectContent>

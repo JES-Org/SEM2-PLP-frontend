@@ -4,6 +4,7 @@ import {
 	CreateClassroomRequest,
 	CreateClassroomResponse,
 	GetClassroomByIdResponse,
+	GetFacultyResponse,
 	SearchClassroomResponse,
 	StudentClassroomResponse,
 	TeacherClassroomResponse,
@@ -124,6 +125,13 @@ export const classroomApi = createApi({
 			}),
 			invalidatesTags: (result, error, { id }) => [{ type: 'Classroom', id }],
 		}),
+		getFaculty: builder.query<GetFacultyResponse, void>({
+			query: () => ({
+				url: '/faculties/',
+				method: 'GET',
+			}),
+			providesTags: [{ type: 'Classroom', id: 'FacultyList' }],
+		}),
 	}),
 })
 
@@ -140,4 +148,5 @@ export const {
 	useRemoveStudentMutation,
 	useArchiveClassroomMutation,
 	useUnarchiveClassroomMutation,
+	useGetFacultyQuery,
 } = classroomApi
