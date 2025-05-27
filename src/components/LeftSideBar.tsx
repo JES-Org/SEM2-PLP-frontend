@@ -176,7 +176,7 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 				)}
 				{isOpen && (
 					<div
-						className='md:hidden fixed top-0 left-0 w-10/12 h-full z-50 bg-accent justify-between'
+						className='md:hidden fixed top-0 left-0 w-1/2 h-full z-50 bg-accent justify-between'
 						ref={menuRef}
 					>
 						<div className='flex flex-col  justify-between w-full h-full'>
