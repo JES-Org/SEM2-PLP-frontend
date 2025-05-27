@@ -1,68 +1,125 @@
-# CustomEd
+````md
+# 🚀 CustomEd
 
-CustomEd is a personalized learning path generator built with Next.js. It helps students to get tailored learning paths and includes features for teachers to prepare assessments, track student progress, and facilitate communication through discussion groups and announcements.
+**CustomEd** is a modern personalized learning path generator built with **Next.js**. It empowers students by creating tailored learning paths that adapt to their unique needs and progress. At the same time, it provides teachers with an intuitive platform to create assessments, track student performance, and foster communication through discussion groups and announcements.
 
+---
 
-## Features
+## ✨ Features
 
-- **Personalized Learning Paths**: Generate individualized learning paths for students based on their needs and progress.
-- **Teacher Assessments**: Teachers can create and manage assessments to evaluate student performance.
-- **Progress Tracking**: Monitor student progress through a comprehensive dashboard.
-- **Discussion Groups**: Facilitate student and teacher interaction through discussion groups.
-- **Announcements**: Teachers can post announcements to keep students informed about important updates.
+- **🎯 Personalized Learning Paths**  
+  Generate customized learning journeys for each student, adapting dynamically based on their progress and goals.
 
-## Getting Started
+- **📝 Teacher Assessments**  
+  Teachers can easily create, assign, and manage assessments to effectively evaluate student understanding.
 
-Follow these instructions to set up and run the CustomEd project on your local machine.
+- **📊 Progress Tracking Dashboard**  
+  Visualize student progress through detailed analytics and reports, helping teachers identify strengths and gaps.
 
-### Prerequisites
+- **💬 Discussion Groups**  
+  Promote collaboration and interaction between students and teachers through focused discussion channels.
 
-Ensure you have the following installed:
+- **📢 Announcements**  
+  Keep students informed with timely updates and important notifications from teachers.
 
-- [Node.js](https://nodejs.org/) (v14 or later)
+---
+
+## 🛠️ Getting Started
+
+Follow the steps below to set up and run **CustomEd** on your local machine.
+
+### 🔧 Prerequisites
+
+Make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (version 14 or later)
 - [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
 
-### Installation
+---
 
-1. **Clone the repository:**
+### ⚡ Installation
 
-    ```bash
-    git clone https://github.com/JES-Org/SEM2-PLP-frontend.git
-    cd custom-ed
-    ```
+1. **Clone the repository**
 
-2. **Install dependencies:**
+   ```bash
+   git clone https://github.com/JES-Org/SEM2-PLP-frontend.git
+   cd custom-ed
+````
 
-    Using npm:
+2. **Install dependencies**
 
-    ```bash
-    npm install
-    ```
-    
-  ### Running the App
+   Using npm:
 
-1. **Start the development server:**
+   ```bash
+   npm install
+   ```
 
-    Using npm:
+   Or using Yarn:
 
-    ```bash
-    npm run dev
-    ```
+   ```bash
+   yarn install
+   ```
 
-    The app will be available at [http://localhost:3000](http://localhost:3000).
+---
 
-2. **Build for production:**
+### 🚀 Running the App
 
-    Using npm:
+#### 1. Start the development server
 
-    ```bash
-    npm run build
-    ```
+```bash
+npm run dev
+```
 
-3. **Start the production server:**
+or
 
-    Using npm:
+```bash
+yarn dev
+```
 
-    ```bash
-    npm start
-    ```
+Open your browser and visit [http://localhost:3000](http://localhost:3000) to see the app in action.
+
+---
+
+#### 2. Build the app for production
+
+```bash
+npm run build
+```
+
+or
+
+```bash
+yarn build
+```
+
+---
+
+#### 3. Start the production server
+
+```bash
+npm start
+```
+
+or
+
+```bash
+yarn start
+```
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here are a few areas you might want to explore:
+
+* Enhancing **learning path algorithms** to better personalize student journeys.
+* Adding or improving **teacher tools** like assessments and progress tracking.
+* Building out **community features** such as discussion groups and announcements.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
