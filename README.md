@@ -1,7 +1,3 @@
-Got it! You're right — the Markdown syntax (like triple backticks, hashes, etc.) shouldn't appear as literal text in the final README. Here's the **corrected and clean version** of your `README.md` file — formatted properly without being inside a code block:
-
----
-
 # 🚀 CustomEd
 
 **CustomEd** is a modern personalized learning path generator built with **Next.js**. It empowers students by creating tailored learning paths that adapt to their unique needs and progress. At the same time, it provides teachers with an intuitive platform to create assessments, track student performance, and foster communication through discussion groups and announcements.
@@ -45,7 +41,7 @@ Make sure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/JES-Org/SEM2-PLP-frontend.git
+   git clone https://github.com/JES-Org/SEM2-PLP-frontend.git custom-ed
    cd custom-ed
    ```
 
