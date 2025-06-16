@@ -21,7 +21,8 @@ export default function Home() {
 
 	if (currUser) {
 		if (currUser.role == 0) router.push('/student/classroom/classroom-list')
-		else if (currUser.role == 1) router.push('/teacher/classroom/classroom-list')
+		else if (currUser.role == 1)
+			router.push('/teacher/classroom/classroom-list')
 	}
 	return (
 		<>
@@ -35,6 +36,28 @@ export default function Home() {
 								<h1 className='md:text-4xl text-2xl  font-bold mb-5 md:ml-0 ml-4 md:pt-0 pt-9'>
 									Discover Your Unique Path to Learning.
 								</h1>
+								<h2 className='text-xl font-bold text-primary mb-2'>
+									For Testing you can Login:
+								</h2>
+
+								<div className='space-y-3 md:ml-0 mx-4'>
+									<p className='text-primary font-semibold md:text-lg text-base'>
+										As Student:
+										<span className='text-blue-500 ml-2'>
+											Email: kidu0970@gmail.com | Password: 12345678
+										</span>
+									</p>
+									<p className='text-primary font-semibold md:text-lg text-base'>
+										As Teacher:
+										<span className='text-blue-500 ml-2'>
+											Email: abel@gmail.com | Password: 12345678
+										</span>
+									</p>
+									<p className='text-sm text-gray-600'>
+										or create your own account using a valid email address
+									</p>{' '}
+								</div>
+
 								<p className='mt-2 md:text-small mb-10 md:ml-0 mx-4'>
 									Unlock Your Potential, With our Personalized Learning
 									platform.

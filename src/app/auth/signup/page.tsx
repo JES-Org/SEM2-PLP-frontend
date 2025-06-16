@@ -38,10 +38,7 @@ const formSchema = z
 	.object({
 		email: z
 			.string({ required_error: 'Email is required' })
-			.email({ message: 'Please enter a valid email format' })
-			.refine((email) => email.endsWith('@bdu.edu.et'), {
-				message: 'Email must be a valid @bdu.edu.et address',
-			}),
+			.email({ message: 'Please enter a valid email format' }),
 		password: z
 			.string({ required_error: 'Password is required' })
 			.min(8, { message: 'Password must contain at least 8 characters' }),
