@@ -72,7 +72,6 @@ const LeftSideBar: React.FC<Props> = ({ role }: Props) => {
 		}
 	}, [])
 	const handleLogout = () => {
-		console.log('logging out')
 		localStorage.removeItem('currUser')
 		router.replace('/')
 	}

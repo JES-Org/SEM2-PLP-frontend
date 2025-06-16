@@ -32,7 +32,6 @@ const ListOfClassroomPage = () => {
 	const filteredClassrooms = classrooms?.data.filter((classroom) =>
 		classroom.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	)
-   console.log('filteredClassrooms', filteredClassrooms)
 	return (
 		<div className='md:flex overflow-x-hidden md:w-11/12 md:ml-auto h-screen'>
 			<div className='flex-1 mt-20 md:pl-40'>

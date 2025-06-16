@@ -45,7 +45,7 @@ const ForgotPasswordPage = () => {
 	const onSubmit = async (values: FormType) => {
 		try {
 			const response = await fetch(
-				'http://localhost:8000/api/user/reset-password/',
+				'https://plp-backend-production.up.railway.app/api/user/reset-password/',
 				{
 					method: 'POST',
 					headers: {

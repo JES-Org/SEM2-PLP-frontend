@@ -94,7 +94,6 @@ export default function StudentOnboardingDialog() {
 			department: profile.department,
 		}
 
-		console.log('transformedData', transformedData)
 		changeProfile(transformedData)
 			.unwrap()
 			.then((res) => {

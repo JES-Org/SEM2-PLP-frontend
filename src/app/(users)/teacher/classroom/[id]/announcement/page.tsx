@@ -1,18 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { useGetAnnouncementsQuery } from '@/store/announcement/announcementApi'
 import { openDialog } from '@/store/features/announcementDialogSlice'
 import { selectCurrClassroomId } from '@/store/features/classroomSlice'
 import { setNotifications } from '@/store/features/notificationSlice'
 import { useUnreadNotificationsQuery } from '@/store/notification/notificationApi'
-import {
-	HttpTransportType,
-	HubConnection,
-	HubConnectionBuilder,
-} from '@microsoft/signalr'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Announcement from '@/components/Announcement'
@@ -25,8 +19,6 @@ import { Button } from '@/components/ui/button'
 const AnnouncementPage = () => {
 	const dispatch = useDispatch()
 	const currClassroomId = useSelector(selectCurrClassroomId)
-	const [conn, setConn] = useState<HubConnection | null>(null)
-	const [forumConn, setForumConn] = useState<HubConnection | null>(null)
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
 
@@ -38,46 +30,9 @@ const AnnouncementPage = () => {
 		isFetching,
 	} = useGetAnnouncementsQuery(currClassroomId)
 
-	useEffect(() => {
-		const newConnection = new HubConnectionBuilder()
-			.withUrl('http://localhost:5275/notificationhub', {
-				skipNegotiation: true,
-				transport: HttpTransportType.WebSockets,
-				accessTokenFactory: () => currUser?.token! as string,
-			})
-			.withAutomaticReconnect()
-			.build()
-
-		newConnection
-			.start()
-			.then(() => {
-				console.log('Notification connection started!')
-				setConn(newConnection)
-			})
-			.catch((err) => console.log('Error while establishing connection', err))
-
-		const newForumConnection = new HubConnectionBuilder()
-			.withUrl('http://localhost:5082/forumHub', {
-				skipNegotiation: true,
-				transport: HttpTransportType.WebSockets,
-				accessTokenFactory: () => currUser?.token! as string,
-			})
-			.withAutomaticReconnect()
-			.build()
-
-		newForumConnection
-			.start()
-			.then(() => {
-				console.log('Forum connection started!')
-				setForumConn(newForumConnection)
-			})
-			.catch((err) => console.log('Error while establishing connection', err))
-	}, [])
-
+	
 	const { data } = useUnreadNotificationsQuery()
 	dispatch(setNotifications(data?.data))
-
-	console.log(JSON.stringify(data))
 
 	return (
 		<div className='md:ml-72  mr-24 mt-10 flex flex-col h-screen'>

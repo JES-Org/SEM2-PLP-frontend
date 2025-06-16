@@ -107,7 +107,6 @@ const GenerateLearningPathPage = () => {
 		} catch (error) {
 			setTyping(false)
 			toast.error('CustomEd bot is currently unavailable')
-			console.error('Error in greet mutation:', error)
 			router.back()
 		}
 	}
@@ -146,7 +145,6 @@ const GenerateLearningPathPage = () => {
 			setTyping(false)
 			toast.error('CustomEd bot is currently unavailable')
 			router.back()
-			console.error('Error in generate mutation:', error)
 		}
 	}
 

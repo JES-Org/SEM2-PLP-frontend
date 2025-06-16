@@ -17,7 +17,6 @@ import { Input } from '@/components/ui/input'
 const PrepareAssessment = () => {
 	const currPath = usePathname().split('/')
 	const [prepareAssessment, {}] = useAddQuestionMutation()
-	// console.log(currPath)
 	const currClassroomId = currPath[3]
 	const currAssessmentId = currPath[5]
 
@@ -134,7 +133,6 @@ const PrepareAssessment = () => {
 			])
 		} catch (error) {
 			toast.error('Failed to add question')
-			console.error('Error in handleSubmission:', error)
 		}
 	}	
 	

@@ -100,13 +100,11 @@ const Announcement = ({ children, ...props }: AnnouncementProps) => {
 		}
 	}
 	const onDelete = () => {
-		console.log('DELETE IS CLICKED')
 		dispatch(setAnnouncementId(announcement?.id!))
 		dispatch(openDialog('delete'))
 	}
 
 	const onAttachFile = () => {
-		console.log('ATTACH FILE IS CLICKED')
 		dispatch(setAnnouncementId(announcement?.id!))
 		dispatch(openDialog('file'))
 	}

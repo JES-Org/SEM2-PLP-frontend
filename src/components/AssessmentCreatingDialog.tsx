@@ -59,7 +59,6 @@ const AssessmentCreatingDialog = () => {
 	})
 
 	const onAssessmentCreation = () => {
-		console.log(JSON.stringify(formState))
 		const reqBody = {
 			classroomId: currClassroomId,
 			name: formState.title,
@@ -70,7 +69,6 @@ const AssessmentCreatingDialog = () => {
 				.join(','),
 			deadline: formState.deadline?.toISOString()!,
 		}
-		console.log(JSON.stringify(reqBody))
 		createAssessment(reqBody)
 			.unwrap()
 			.then((res) => {

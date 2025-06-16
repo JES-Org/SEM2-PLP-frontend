@@ -14,7 +14,6 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
 	const router = useRouter()
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
-	console.log('Layout currUser', getCurrUser())
 	const [currUser, setCurrUser] = useState<any>(null)
 
 	useEffect(() => {

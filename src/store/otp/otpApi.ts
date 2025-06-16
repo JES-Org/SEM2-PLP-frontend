@@ -3,7 +3,7 @@ import { OtpSendRequest, OtpVerifyRequest, OtpResponse } from '@/types/auth/otp.
 
 export const otpApi = createApi({
   reducerPath: 'otpApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000/api/user/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://plp-backend-production.up.railway.app/api/user/' }),
   endpoints: (builder) => ({
     sendOtp: builder.mutation<OtpResponse, OtpSendRequest>({
       query: (body) => ({

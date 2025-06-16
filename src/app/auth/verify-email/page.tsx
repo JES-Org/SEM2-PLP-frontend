@@ -59,12 +59,10 @@ const VerifyEmailPage = () => {
 	const handleSendOtp = async (e: any) => {
 		e.preventDefault()
 		if (email !== undefined) {
-			console.log(`Things for OTP Send: ${email}, ${userId}, ${role}`)
 			toast.info('Resending OTP')
 			sendOtp({ email })
 				.unwrap()
 				.then((res) => {
-					console.log('OTP Send Response: ', JSON.stringify(res))
 					setTimeout(() => {}, 2000)
 					if (isErrorOtpSend) {
 						toast.error('Failed to send OTP')
@@ -99,12 +97,10 @@ const VerifyEmailPage = () => {
 		}
 	}
 	const handleSubmit = async () => {
-		console.log('OTP: ', otp.join(''))
 		const otpValue = otp.join('')
 		verifyOtp({ otp: otpValue, email })
 			.unwrap()
 			.then((res) => {
-				console.log('OTP Verify Response: ', JSON.stringify(res))
 				toast.success('OTP Verified Successfully')
 				if (getForWhatVerification() === 'forgotPassword') {
 					router.push('/auth/forgot-password')

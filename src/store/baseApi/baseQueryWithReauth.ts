@@ -21,64 +21,77 @@ const createBaseQueryWithReauth = (baseUrl: string): BaseQueryFn<string | FetchA
   });
 
   // Return a function that wraps the raw base query with refresh logic.
-  return async (args, api, extraOptions) => {
-    // Wait for any pending refresh calls to finish.
-    await mutex.waitForUnlock();
+ return async (args, api, extraOptions) => {
+  await mutex.waitForUnlock();
 
-    // Try the original request.
-    let result = await rawBaseQuery(args, api, extraOptions);
+  // Extract URL from args
+  const path = typeof args === 'string' ? args : args.url;
+  const fullUrl = baseUrl + path;
 
-    // If a 401 error is returned...
-    if (result.error && result.error.status === 401) {
-      // If the mutex isn’t already locked, perform token refresh.
-      if (!mutex.isLocked()) {
-        const release = await mutex.acquire();
-        try {
-          // Get refresh token from storage.
-          const currUser = JSON.parse(localStorage.getItem('currUser') || '{}');
-          const refreshToken = currUser.refresh;
-          if (!refreshToken) {
-            // No refresh token means you might want to force a logout.
-            localStorage.removeItem('currUser');
-            return result;
-          }
-          // Attempt to refresh the access token.
-          const refreshResult = await fetchBaseQuery({
-            baseUrl:"", // Note: Use the same or a different URL if your refresh endpoint is separate.
-            prepareHeaders: (headers) => {
-              headers.set('Content-Type', 'application/json');
-              return headers;
-            },
-          })({
-            url: 'http://localhost:8000/api/user/token/refresh/', 
-            method: 'POST',
-            body: { refresh: refreshToken },
-          }, api, extraOptions);
+  // 🔍 LOG the full URL before making request
+  console.log('📡 Making request to:', fullUrl);
 
-          if (refreshResult.data) {
-            // If refresh worked, update the access token in localStorage.
-            const data: any = refreshResult.data;
-            localStorage.setItem(
-              'currUser',
-              JSON.stringify({ ...currUser, token: data.access })
-            );
-            // Retry the initial query with the new token.
-            result = await rawBaseQuery(args, api, extraOptions);
-          } else {
-            // If refresh fails, clear stored credentials (or handle as needed).
-            localStorage.removeItem('currUser');
-          }
-        } finally {
-          release();
+  // Try the original request.
+  let result = await rawBaseQuery(args, api, extraOptions);
+
+  if (result.error && result.error.status === 401) {
+    console.warn('🔐 Token expired, attempting refresh...');
+
+    if (!mutex.isLocked()) {
+      const release = await mutex.acquire();
+      try {
+        const currUser = JSON.parse(localStorage.getItem('currUser') || '{}');
+        const refreshToken = currUser.refresh;
+        if (!refreshToken) {
+          localStorage.removeItem('currUser');
+          return result;
         }
-      } else {
-        // If another refresh request is in process, wait for it and retry.
-        await mutex.waitForUnlock();
-        result = await rawBaseQuery(args, api, extraOptions);
+
+        // 🔁 Log refresh attempt
+        console.log('🔁 Refreshing token at: https://plp-backend-production.up.railway.app/api/user/token/refresh/');
+
+        const refreshResult = await fetchBaseQuery({
+          baseUrl: '',
+          prepareHeaders: (headers) => {
+            headers.set('Content-Type', 'application/json');
+            return headers;
+          },
+        })({
+          url: 'https://plp-backend-production.up.railway.app/api/user/token/refresh/',
+          method: 'POST',
+          body: { refresh: refreshToken },
+        }, api, extraOptions);
+
+        if (refreshResult.data) {
+          const data: any = refreshResult.data;
+          localStorage.setItem('currUser', JSON.stringify({ ...currUser, token: data.access }));
+          console.log('✅ Token refreshed successfully');
+
+          // Retry the original request with new token
+          result = await rawBaseQuery(args, api, extraOptions);
+        } else {
+          console.error('❌ Token refresh failed');
+          localStorage.removeItem('currUser');
+        }
+      } finally {
+        release();
       }
+    } else {
+      await mutex.waitForUnlock();
+      result = await rawBaseQuery(args, api, extraOptions);
     }
-    return result;
-  };
+  }
+
+  // 🧪 Optional: log response data or error
+  if (result.error) {
+    console.error('❌ Request error:', result.error);
+  } else {
+    console.log('✅ Request succeeded:', result.data);
+  }
+
+  return result;
+};
+
 };
 
 export default createBaseQueryWithReauth;

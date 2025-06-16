@@ -57,7 +57,6 @@ const AnnouncementCreatingDialog = () => {
 	const onAnnouncementCreation = (
 		newAnnouncement: z.infer<typeof formSchema>,
 	) => {
-		// console.log(newAnnouncement)
 		createAnnouncement({
 			...newAnnouncement,
 			classRoomId: currClassroomId,

@@ -37,7 +37,7 @@ import { EllipsisVertical } from './Icons'
 import { Button } from './ui/button'
 
 const StudentPerClassroom = () => {
-	const mediaBaseUrl = 'http://localhost:8000/media/'
+	const mediaBaseUrl = 'https://plp-backend-production.up.railway.app/media/'
 	const { getItem: getCurrUser } = useLocalStorage('currUser')
 	const currUser = getCurrUser()
 	const isCurrUserTeacher = currUser.role === 1

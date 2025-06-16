@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
 import { LearningPath ,Task} from '@/types/learningPath/pathType';
 const baseQueryWithReauth = createBaseQueryWithReauth(
-	'http://localhost:8000/api/learning-path',
+	'https://plp-backend-production.up.railway.app/api/learning-path',
 )
 
 

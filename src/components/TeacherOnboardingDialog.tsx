@@ -68,7 +68,6 @@ export default function TeacherOnboardingDialog() {
 	const { data: faculties } = useGetFacultyQuery()
 	const [changeProfile, { data, isLoading, isSuccess, isError, error }] =
 		useEditTeacherProfileMutation()
-	console.log('faculties:', faculties)
 
 	const { getItem: getCurrUser, setItem: setCurrUser } =
 		useLocalStorage('currUser')

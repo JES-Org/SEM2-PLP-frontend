@@ -103,7 +103,6 @@ const SignupPage = () => {
 			studentSignup(credentials)
 				.unwrap()
 				.then((res) => {
-					console.log(`studentSignupResponse: ${JSON.stringify(res)}`)
 					setEmailForVerification(res.data?.email!)
 					setIdForVerification(res.data?.id!)
 					setRoleForVerification(res.data?.role!)
@@ -116,7 +115,6 @@ const SignupPage = () => {
 					router.push('/auth/verify-email')
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`signup error ${JSON.stringify(err)}`)
 					const errorList = err?.data?.errors
 
 					let errorMessage = 'Signup failed'
@@ -136,7 +134,6 @@ const SignupPage = () => {
 			teacherSignup(credentials)
 				.unwrap()
 				.then((res) => {
-					console.log(`teacherSignupData: ${JSON.stringify(res)}`)
 					setEmailForVerification(res.data?.email!)
 					setIdForVerification(res.data?.id!)
 					setRoleForVerification(res.data?.role!)
@@ -150,7 +147,6 @@ const SignupPage = () => {
 					router.push('/auth/verify-email')
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`signup error ${JSON.stringify(err)}`)
 					const errorList = err?.data?.errors
 
 					let errorMessage = 'Signup failed'

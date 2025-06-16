@@ -21,7 +21,7 @@ interface MinimalAssessment {
 }
 
 const baseQueryWithReauth = createBaseQueryWithReauth(
-	'http://localhost:8000/api/classroom',
+	'https://plp-backend-production.up.railway.app/api/classroom',
 )
 
 export const assessmentApi = createApi({

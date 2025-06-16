@@ -168,21 +168,18 @@ const SigninPage = () => {
 			sendOtp({ email: emailverfication })
 				.unwrap()
 				.then((res) => {
-					console.log(`response ${JSON.stringify(res)}`)
 					setEmailForVerification(emailverfication)
 					setforWhatVerification('forgotPassword')
 					toast.success('Please check your email for verification.')
 					router.push('/auth/verify-email')
 				})
 				.catch((err: ExtendedError) => {
-					console.log(`error ${JSON.stringify(err)}`)
 					toast.error('Invalid credentials')
 				})
 		}
 	}
 
 	const onSubmit = (credentials: FormType) => {
-		console.log(`credentials ${JSON.stringify(credentials)}`)
 		setShowResendOtpLink(false)
 		setEmailForResend(credentials.email)
 
@@ -203,6 +200,7 @@ const SigninPage = () => {
 				}
 			})
 			.catch((err: ExtendedError) => {
+				console.log("error",err)
 				if (err.data?.message?.includes('Account not verified')) {
 					toast.error(
 						'Your account is not verified. Please check your email for an OTP.',

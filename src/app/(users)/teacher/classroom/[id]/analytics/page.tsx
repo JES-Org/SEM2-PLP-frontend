@@ -140,7 +140,6 @@ const chapters: string[] = Array.from(
 
 const AnalyticsPage = () => {
 	const currClassroomId = usePathname().split('/').at(-2)
-	console.log('CLASSROOM ID', currClassroomId)
 	const {
 		data: fetchedAssessments,
 		isLoading: isLoadingFetchedAssessments,
@@ -184,8 +183,6 @@ const AnalyticsPage = () => {
 	} = useAggregateAssessmentAnalyticsQuery(
 		currClassroomId)
 
-	// console.debug('ASSESSMENTS', JSON.stringify(assessments, null, 2))
-	// console.debug('ANALYSIS', JSON.stringify(aggregateData, null, 2))
 
 const graphData = assessments.map((assessment) => {
 	const metricKey = getMetricKey(selectedMetric.label)
@@ -197,20 +194,14 @@ const graphData = assessments.map((assessment) => {
 })
 
 
-	
-
-	console.log('GRAPH DATA', graphData)
-	console.log('GRAPH aggregateData DATA', aggregateData)
 
 
-	// console.debug(assessments)
 	const [selectedAssessment, setSelectedAssessment] = useState({
 		label: assessments.length > 0 ? assessments[0].name : 'No assessments',
 		id: assessments.length > 0 ? assessments[0].id : '',
 		isOpen: false,
 	})
 
-	// console.debug(selectedAssessment.id)
 
 	const {
 		data: singleAssessmentAnalytics,
@@ -226,15 +217,12 @@ const graphData = assessments.map((assessment) => {
 		{ skip: selectedAssessment.id === '' },
 	)
 
-	// console.debug(singleAssessmentAnalytics)
 
 	const {data: classData} = useGetClassroomByIdQuery(currClassroomId)
 	const studentIds = classData?.data.members?.map((member) => member.id) || []
 
 	const {data: studentData, isLoading: isLoadingStudentData } = useAggregateGetStudentByIdQuery({studentIds: studentIds})
-	console.log("student ids: ", studentData)
 	const fullNames = studentData?.map((student) => `${student.data?.first_name} ${student.data?.last_name}` ) || []
-	console.log("fullnames: ", fullNames)
 
 	const studentNameMap = useMemo(() => {
 		const map = new Map<string, string>();

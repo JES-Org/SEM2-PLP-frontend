@@ -77,7 +77,6 @@ const DiscussionChat = ({ typing }: ChatProps) => {
 		}
 
 		chatSocket.onclose = () => {
-			console.warn('WebSocket closed. Reconnecting in 3 seconds...')
 			setTimeout(() => setSocket(new WebSocket(wsUrl)), 3000)
 		}
 

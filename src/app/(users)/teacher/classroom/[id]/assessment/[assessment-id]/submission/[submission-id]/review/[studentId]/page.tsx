@@ -76,7 +76,6 @@ const ReviewStudentSubmissionPage = () => {
                 }
             }
         });
-        // console.log("Calculated baseMcqScore:", score);
         return score;
     }, [fetchedQuestions, studentAnswersMap]);
 
@@ -153,7 +152,6 @@ const ReviewStudentSubmissionPage = () => {
                 studentId: studentId,
                 question_scores: scoresToSubmit,
             };
-            // console.log("Payload for grading:", payload);
             const result = await gradeShortAnswers(payload).unwrap();
             if (result.isSuccess) {
                 toast.success("Grades saved successfully!");

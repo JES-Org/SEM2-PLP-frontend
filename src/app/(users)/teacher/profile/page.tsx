@@ -20,7 +20,6 @@ const Page = () => {
 	} = useGetTeacherProfileQuery(undefined, {
 		refetchOnMountOrArgChange: true,
 	})
- console.log("Teacher profile",profile)
 	useEffect(() => {
 		const handleVisibilityChange = () => {
 			if (document.visibilityState === 'visible') {

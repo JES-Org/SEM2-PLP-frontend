@@ -58,12 +58,10 @@ export default function Page() {
 
 	const { data: studentData, isLoading: isLoadingStudentData } =
 		useAggregateGetStudentByIdQuery({ studentIds: studentIds })
-	console.log('student ids: ', studentData)
 	const fullNames =
 		studentData?.map(
 			(student) => `${student.data?.first_name} ${student.data?.last_name}`,
 		) || []
-	console.log('fullnames: ', fullNames)
 
 	const studentNameMap = useMemo(() => {
 		const map = new Map<string, string>()
@@ -114,7 +112,6 @@ export default function Page() {
 		return [...scoreDataList].sort((a, b) => a.result - b.result).slice(0, 5)
 	}, [scoreDataList])
 
-	console.log('singleAssessmentAnalytics', singleAssessmentAnalytics)
 
 	return (
 		<div>

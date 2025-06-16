@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
 
 const baseQueryWithReauth = createBaseQueryWithReauth(
-  'http://localhost:8000/api/notifications',
+  'https://plp-backend-production.up.railway.app/api/notifications',
 )
 
 export const notificationApi = createApi({

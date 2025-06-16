@@ -24,7 +24,6 @@ const useSignalR = (hubUrl: string) => {
     connection
       .start()
       .then(() => {
-        console.log("SignalR Connected.");
         setIsConnected(true);
 
         connection.on("ReceiveMessage", (message: string) => {

@@ -20,12 +20,9 @@ import {
 
 const AnnouncementDeleteDialog = () => {
 	const dialogType = useSelector(selectAnnouncementDialog)
-	console.log(`DIALOG_TYPE ${dialogType}`)
 	const dispatch = useDispatch()
 	const currClassroomId = useSelector(selectCurrClassroomId)
 	const currAnnouncementId = useSelector(selectAnnouncementId)
-	console.log(`CURR_ANNOUNCEMENT_ID ${currAnnouncementId}`)
-	console.log(`CURR_CLASSROOM_ID ${currClassroomId}`)
 	const [deleteAnnouncement, { isLoading, isSuccess, isError, error }] =
 		useDeleteAnnouncementMutation()
 

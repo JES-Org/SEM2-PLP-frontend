@@ -19,7 +19,6 @@ export const extractTime = (dateStr: string) => {
   const date = new Date(Date.parse(dateStr))
 
   if (!isValid(date)) {
-    console.warn("Invalid date in extractTime:", dateStr)
     return "Invalid time"
   }
 
@@ -33,7 +32,6 @@ export const toMonthAndDay = (dateString: string) => {
   const date = new Date(dateString)
 
   if (!isValid(date)) {
-    console.warn("Invalid date in toMonthAndDay:", dateString)
     return "Invalid date"
   }
 
@@ -44,7 +42,6 @@ export const toLocalDateTime = (dateStr: string) => {
   const date = new Date(Date.parse(dateStr));
 
   if (!isValid(date)) {
-    console.warn("Invalid date in toLocalDateTime:", dateStr);
     return "Invalid date/time";
   }
 
@@ -61,7 +58,6 @@ export const timeAgo = (dateStr: string) => {
   const date = new Date(dateStr)
 
   if (!isValid(date)) {
-    console.warn("Invalid date in timeAgo:", dateStr)
     return "Invalid time"
   }
 
