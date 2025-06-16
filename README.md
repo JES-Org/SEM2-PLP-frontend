@@ -122,3 +122,9 @@ We welcome contributions! Here are a few areas you might want to explore:
 This project is licensed under the [MIT License](LICENSE).
 
 ---
+
+Student Dahsboard 
+
+![image](https://github.com/user-attachments/assets/d24bda27-779f-492f-9ed6-1016494856c9)
+![image](https://github.com/user-attachments/assets/e6c17141-83a7-47a0-8399-d9eca0277e93)
+
