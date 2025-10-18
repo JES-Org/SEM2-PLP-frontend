@@ -4,7 +4,7 @@ import { GetSingleTeacherResponse, EditTeacherProfileRequest } from '@/types/tea
 
 export const teacherAuthApi = createApi({
   reducerPath: 'teacherAuthApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://plp-backend-production.up.railway.app/api/user/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://plp-backend-c969.onrender.com/api/user/' }),
   endpoints: (builder) => ({
     teacherSignup: builder.mutation<TeacherSignupResponse, TeacherSignupRequest>({
       query: (body) => ({

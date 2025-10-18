@@ -10,7 +10,7 @@ import {
 import createBaseQueryWithReauth from "../baseApi/baseQueryWithReauth";
 
 const baseQueryWithReauth = createBaseQueryWithReauth(
-  "https://plp-backend-production.up.railway.app/api/forum"
+  "https://plp-backend-c969.onrender.com/api/forum"
 );
 
 export const discussionApi = createApi({

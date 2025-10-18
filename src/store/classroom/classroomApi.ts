@@ -14,7 +14,7 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
 
 const baseQueryWithReauth = createBaseQueryWithReauth(
-	'https://plp-backend-production.up.railway.app/api/classroom',
+	'https://plp-backend-c969.onrender.com/api/classroom',
 )
 export const classroomApi = createApi({
 	reducerPath: 'classroomApi',

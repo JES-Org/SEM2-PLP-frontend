@@ -13,7 +13,7 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import createBaseQueryWithReauth from '../baseApi/baseQueryWithReauth'
 
 const baseQueryWithReauth = createBaseQueryWithReauth(
-	'https://plp-backend-production.up.railway.app/api/user'
+	'https://plp-backend-c969.onrender.com/api/user'
 
 )
 export const studentAuthApi = createApi({
