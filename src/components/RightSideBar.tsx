@@ -53,14 +53,14 @@ const RightSideBar: React.FC<Props> = ({ role, classname }: Props) => {
 		<div className='fixed top-0 left-0 h-screen w-full z-50 flex justify-end'>
 			<div
 				className={cn(
-					'bg-white z-50 h-screen w-55  fixed justify-between shadow-md hidden',
+					'bg-white z-50 h-screen w-55 fixed justify-between shadow-md hidden',
 					{
 						flex: isOpen,
 					},
 				)}
 				ref={menuRef}
 			>
-				<div className='flex flex-col justify-between w-full h-full'>
+				<div className='flex flex-col justify-between  w-full h-full'>
 					<div> 
 						<Link
 							href='/'

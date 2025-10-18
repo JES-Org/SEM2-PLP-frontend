@@ -48,7 +48,7 @@ const createBaseQueryWithReauth = (baseUrl: string): BaseQueryFn<string | FetchA
         }
 
         // 🔁 Log refresh attempt
-        console.log('🔁 Refreshing token at: https://plp-backend-production.up.railway.app/api/user/token/refresh/');
+        console.log('🔁 Refreshing token at: https://plp-backend-c969.onrender.com/api/user/token/refresh/');
 
         const refreshResult = await fetchBaseQuery({
           baseUrl: '',
@@ -57,7 +57,7 @@ const createBaseQueryWithReauth = (baseUrl: string): BaseQueryFn<string | FetchA
             return headers;
           },
         })({
-          url: 'https://plp-backend-production.up.railway.app/api/user/token/refresh/',
+          url: 'https://plp-backend-c969.onrender.com/api/user/token/refresh/',
           method: 'POST',
           body: { refresh: refreshToken },
         }, api, extraOptions);

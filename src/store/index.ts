@@ -52,7 +52,8 @@ export const store = configureStore({
 
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware()
-    .concat(studentAuthApi.middleware, 
+    .concat(
+      studentAuthApi.middleware, 
       otpApi.middleware, 
       teacherAuthApi.middleware,
       chatbotApi.middleware,
